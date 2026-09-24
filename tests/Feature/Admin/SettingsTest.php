@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Enums\Role;
 use App\Models\Cms\Setting;
 use App\Models\User;
+use App\Support\Settings;
 use Database\Seeders\SettingsSeeder;
 
 /*
@@ -81,6 +82,26 @@ it('turns analytics on when a ga_id is saved', function () {
     ]);
 
     $this->get(route('home'))->assertOk()->assertSee('G-ADMIN123', false);
+});
+
+it('never undoes settings edited in the admin when re-seeded', function () {
+    // These are starting values, not managed config. Re-running the seeder
+    // must not reset the client's contact details — least of all the address
+    // their contact form delivers to.
+    $this->actingAs(settingsUser(Role::Owner))->put(route('admin.settings.update'), [
+        'settings' => [
+            'email' => 'pelatis@example.com',
+            'contact_form_recipient' => 'pelatis@example.com',
+            'phone' => '22420 99 999',
+        ],
+    ]);
+
+    $this->seed(SettingsSeeder::class);
+    Settings::flush();
+
+    expect(setting('contact_form_recipient'))->toBe('pelatis@example.com')
+        ->and(setting('email'))->toBe('pelatis@example.com')
+        ->and(setting('phone'))->toBe('22420 99 999');
 });
 
 it('covers every key the seeder writes', function () {

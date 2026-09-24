@@ -17,8 +17,8 @@ class SettingsSeeder extends Seeder
 
             'phone' => '22420 29 100',
             'phone_href' => '+302242029100',
-            'email' => 'info@arogi.gr',
-            'contact_form_recipient' => 'info@arogi.gr',
+            'email' => 'arogicenter@gmail.com',
+            'contact_form_recipient' => 'arogicenter@gmail.com',
             'address' => 'Ιπποκράτους 24, Κως 85300',
             'hours' => 'Δευτέρα – Παρασκευή · 09:00–21:00',
 
@@ -32,7 +32,11 @@ class SettingsSeeder extends Seeder
         ];
 
         foreach ($settings as $key => $value) {
-            Setting::updateOrCreate(['key' => $key], ['value' => $value]);
+            // firstOrCreate, NOT updateOrCreate: these are starting values, and
+            // every one of them is editable from the panel. Overwriting would
+            // silently reset the client's own phone number, address and — worst
+            // of all — the address their contact form delivers to.
+            Setting::firstOrCreate(['key' => $key], ['value' => $value]);
         }
     }
 }
