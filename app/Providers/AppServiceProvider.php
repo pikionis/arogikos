@@ -42,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
         ));
 
         ResetPassword::toMailUsing(fn (User $user, string $url) => (new MailMessage)
+            ->replyTo(setting('email', config('mail.from.address')))
             ->subject('Επαναφορά κωδικού — '.setting('org_name', 'Αρωγή'))
             ->greeting('Γεια σας '.$user->name.',')
             ->line('Λάβαμε αίτημα επαναφοράς του κωδικού σας για τη διαχείριση του site.')

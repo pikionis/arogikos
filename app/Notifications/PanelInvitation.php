@@ -37,6 +37,9 @@ class PanelInvitation extends Notification
         $inviter = $this->invitation->inviter?->name;
 
         return (new MailMessage)
+            // Sent from noreply@arogikos.gr (the only domain this server is
+            // authorised to send for); replies go to the centre's real inbox.
+            ->replyTo(setting('email', config('mail.from.address')))
             ->subject('Πρόσκληση στη διαχείριση του '.$org)
             ->greeting('Γεια σας '.$this->invitation->name.',')
             ->line($inviter
