@@ -48,6 +48,7 @@ it('renders every admin screen for an owner', function (string $routeName) {
     'gallery.create' => 'admin.gallery.create',
     'messages.index' => 'admin.messages.index',
     'settings.edit' => 'admin.settings.edit',
+    'profile.edit' => 'admin.profile.edit',
 ]);
 
 it('renders every edit screen for an owner', function () {
@@ -87,4 +88,5 @@ it('renders every admin screen an editor is allowed to see', function (string $r
     'events.index' => 'admin.events.index',
     'authors.index' => 'admin.authors.index',
     'messages.index' => 'admin.messages.index',
+    'profile.edit' => 'admin.profile.edit',
 ]);

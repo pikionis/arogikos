@@ -75,10 +75,12 @@
                 <a href="{{ route('home') }}" target="_blank" rel="noopener"
                    class="a-btn a-btn-ghost a-btn-sm">Προβολή site ↗</a>
 
-                <div style="text-align:right;line-height:1.3">
-                    <div style="font-weight:700;font-size:.88rem">{{ $user->name }}</div>
+                <a href="{{ route('admin.profile.edit') }}"
+                   style="text-align:right;line-height:1.3;text-decoration:none"
+                   title="Το προφίλ μου">
+                    <div style="font-weight:700;font-size:.88rem;color:var(--color-ink)">{{ $user->name }}</div>
                     <div style="color:var(--color-ink-400);font-size:.78rem">{{ $user->role->label() }}</div>
-                </div>
+                </a>
 
                 <form method="POST" action="{{ route('admin.logout') }}">
                     @csrf

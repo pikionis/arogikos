@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PageContentController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
@@ -64,6 +65,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 
         Route::get('/', DashboardController::class)->name('dashboard');
+
+        /* -------------------------------------------------------- profile */
+
+        // Reachable by every role: with mail unconfigured this is the only way
+        // anyone can change the password they were given.
+        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
         /* ------------------------------------------------------- articles */
 
