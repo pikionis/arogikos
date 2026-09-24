@@ -1,0 +1,31 @@
+*.log
+.DS_Store
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+/.claude
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+/node_modules
+# NOT ignored: the shared host has no Node, so `npm run build` cannot run
+# there. The compiled assets ship in the repo — without them a `git pull`
+# leaves the site unstyled and every /admin route 500s on a missing manifest.
+# /public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db

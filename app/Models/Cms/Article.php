@@ -1,0 +1,162 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models\Cms;
+
+use App\Support\Categories;
+use App\Support\SitemapCache;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
+
+/**
+ * Blog article. Mirrors pikionis/cms-core's Article model so the public site
+ * can swap to the package model untouched.
+ */
+class Article extends Model implements HasMedia
+{
+    use HasFactory;
+    use HasSlug;
+    use InteractsWithMedia;
+
+    protected $fillable = [
+        'title', 'slug', 'excerpt', 'body', 'author_id', 'category',
+        'published_at', 'is_published', 'seo_title', 'seo_description',
+    ];
+
+    protected $casts = [
+        'is_published' => 'boolean',
+        'published_at' => 'datetime',
+    ];
+
+    protected static function booted(): void
+    {
+        // Slug, published_at, is_published and updated_at all feed the cached
+        // sitemap XML. Mass updates skip model events — bulk actions must call
+        // SitemapCache::flush() themselves.
+        $bust = fn () => SitemapCache::flush();
+        static::saved($bust);
+        static::deleted($bust);
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    public function getSlugOptions(): SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('title')
+            ->saveSlugsTo('slug')
+            ->doNotGenerateSlugsOnUpdate();
+    }
+
+    public function author(): BelongsTo
+    {
+        return $this->belongsTo(Author::class);
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('cover')->singleFile();
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')->width(400)->nonQueued();
+        $this->addMediaConversion('web')->width(1600)->format('webp')->nonQueued();
+    }
+
+    /* ---------------------------------------------------------------- scopes */
+
+    /** Published and past its publish date. */
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('is_published', true)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
+    }
+
+    public function scopeInCategory(Builder $query, ?string $category): Builder
+    {
+        return $query->when(
+            $category && app(Categories::class)->has($category),
+            fn (Builder $q) => $q->where('category', $category)
+        );
+    }
+
+    /**
+     * Up to $limit published articles in the same category, newest first,
+     * excluding this one. Falls back to latest published if too few.
+     *
+     * @return Collection<int, static>
+     */
+    public function related(int $limit = 3)
+    {
+        return static::published()
+            ->with('author')
+            ->whereKeyNot($this->getKey())
+            ->where('category', $this->category)
+            ->latest('published_at')
+            ->take($limit)
+            ->get();
+    }
+
+    /* ------------------------------------------------------------- accessors */
+
+    /**
+     * Label, pill colour and cover motif for this article's category.
+     *
+     * Reads the FULL list, archived categories included: withdrawing a
+     * category must never change how the articles that already carry it look.
+     *
+     * @return array{label: string, color: string, motif: string}
+     */
+    public function categoryMeta(): array
+    {
+        $meta = $this->category ? app(Categories::class)->get($this->category) : null;
+
+        if ($meta === null) {
+            // Category row gone entirely (hard-deleted while unused, or data
+            // written by hand). Degrade to the raw key rather than blanking.
+            return [
+                'label' => $this->category ?? '',
+                'color' => 'green',
+                'motif' => 'book',
+            ];
+        }
+
+        // `archived` is bookkeeping for the admin; it is not part of what a
+        // template asks for here.
+        return [
+            'label' => $meta['label'],
+            'color' => $meta['color'],
+            'motif' => $meta['motif'],
+        ];
+    }
+
+    public function getCategoryLabelAttribute(): string
+    {
+        return $this->categoryMeta()['label'];
+    }
+
+    public function getCategoryColorAttribute(): string
+    {
+        return $this->categoryMeta()['color'];
+    }
+
+    /** Branded SVG motif used when the article has no real cover image. */
+    public function getCoverMotifAttribute(): string
+    {
+        return $this->categoryMeta()['motif'];
+    }
+}

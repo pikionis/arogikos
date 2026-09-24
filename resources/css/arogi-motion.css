@@ -1,0 +1,195 @@
+/* ============================================================
+   ΑΡΩΓΗ — Motion
+   All animation lives here. Loops are slow & calm; every loop
+   stops and entrances become plain fades under reduced-motion.
+   ============================================================ */
+
+/* ---------------- HERO SCENE ---------------- */
+.hero-scene { width: 100%; height: auto; overflow: visible; }
+.hero-walker { opacity: 1; }
+.hero-walker.w1 { transform: translateX(300px); }
+.hero-walker.w2 { transform: translateX(460px); }
+.hero-walker.w3 { transform: translateX(620px); }
+
+@keyframes hero-walk {
+  0%   { transform: translateX(-170px); opacity: 0; }
+  5%   { opacity: 1; }
+  26%  { transform: translateX(740px); opacity: 1; }
+  31%  { transform: translateX(800px); opacity: 0; }
+  100% { transform: translateX(800px); opacity: 0; }
+}
+@keyframes hero-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes hero-door {
+  0%, 70%   { transform: scaleX(1); }
+  82%, 90%  { transform: scaleX(0.06); }
+  100%      { transform: scaleX(1); }
+}
+@keyframes sun-pulse {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.05); }
+}
+@keyframes sun-ray {
+  0%, 100% { opacity: .5; }
+  50%      { opacity: 1; }
+}
+
+.hero-anim .hero-walker { animation: hero-walk 9s var(--ease-soft) infinite; }
+.hero-anim .hero-walker.w1 { animation-delay: 0s; }
+.hero-anim .hero-walker.w2 { animation-delay: 3s; }
+.hero-anim .hero-walker.w3 { animation-delay: 6s; }
+.hero-anim .hero-bob { animation: hero-bob .55s ease-in-out infinite; }
+.hero-anim .hero-door { transform-box: fill-box; transform-origin: left center; animation: hero-door 3s var(--ease-soft) infinite; }
+.hero-anim .hero-sun  { transform-box: fill-box; transform-origin: center; animation: sun-pulse 4s ease-in-out infinite; }
+.hero-anim .hero-rays { transform-box: fill-box; transform-origin: center; animation: sun-ray 4s ease-in-out infinite; }
+
+/* ---------------- SERVICE ICONS ---------------- */
+.svc-icon { width: 84px; height: 84px; }
+
+/* 1 — climbing circle on steps */
+@keyframes climb {
+  0%   { transform: translate(0,0); }
+  20%  { transform: translate(0,-6px); }
+  33%  { transform: translate(22px,-18px); }
+  53%  { transform: translate(22px,-24px); }
+  66%  { transform: translate(44px,-36px); }
+  86%  { transform: translate(44px,-42px); }
+  100% { transform: translate(0,0); }
+}
+.ico-climb-dot { transform-box: fill-box; transform-origin: center; }
+.svc-card:hover .ico-climb-dot,
+.svc-icon.play .ico-climb-dot { animation: climb 2.6s var(--ease-soft) infinite; }
+
+/* 2 — arch hugs a circle (breathing) */
+@keyframes hug-arch { 0%,100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(4px) scaleY(.9); } }
+@keyframes hug-dot  { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.ico-hug-arch, .ico-hug-dot { transform-box: fill-box; transform-origin: center bottom; }
+.svc-card:hover .ico-hug-arch,
+.svc-icon.play .ico-hug-arch { animation: hug-arch 2.8s ease-in-out infinite; }
+.svc-card:hover .ico-hug-dot,
+.svc-icon.play .ico-hug-dot { animation: hug-dot 2.8s ease-in-out infinite; }
+
+/* 3 — circle picks a branch */
+@keyframes branch-travel {
+  0%   { transform: translate(0,0); }
+  45%  { transform: translate(26px,0); }
+  100% { transform: translate(52px,-20px); }
+}
+@keyframes branch-fade-up   { 0%,40% { opacity:.25; } 100% { opacity:1; } }
+@keyframes branch-fade-down { 0%,40% { opacity:.25; } 100% { opacity:.2; } }
+.ico-branch-dot { transform-box: fill-box; transform-origin: center; }
+.svc-card:hover .ico-branch-dot,
+.svc-icon.play .ico-branch-dot { animation: branch-travel 2.6s var(--ease-soft) infinite alternate; }
+.svc-card:hover .ico-branch-up,
+.svc-icon.play .ico-branch-up { animation: branch-fade-up 2.6s var(--ease-soft) infinite alternate; }
+.svc-card:hover .ico-branch-down,
+.svc-icon.play .ico-branch-down { animation: branch-fade-down 2.6s var(--ease-soft) infinite alternate; }
+
+/* ---------------- WHY ΑΡΩΓΗ — dropping circles ---------------- */
+@keyframes drop-bounce {
+  0%   { transform: translateY(-130px); opacity: 0; }
+  55%  { transform: translateY(0); opacity: 1; }
+  72%  { transform: translateY(-16px); }
+  86%  { transform: translateY(0); }
+  93%  { transform: translateY(-6px); }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.why-dot { opacity: 1; }
+html.reveal-on .why-dot { opacity: 0; }
+html.reveal-on .why-row.in .why-dot { animation: drop-bounce .9s var(--ease-out) forwards; }
+html.reveal-on .why-row.in .why-row-1 .why-dot { animation-delay: .05s; }
+html.reveal-on .why-row.in .why-row-2 .why-dot { animation-delay: .25s; }
+html.reveal-on .why-row.in .why-row-3 .why-dot { animation-delay: .45s; }
+html.reveal-on .why-row.in .why-row-4 .why-dot { animation-delay: .65s; }
+
+/* ---------------- SUNRISE (about) — scroll linked ---------------- */
+.sunrise-stage { --p: 0.5; }
+.sunrise-sun {
+  transform: translateY(calc((1 - var(--p)) * 120px)) scale(calc(.7 + var(--p) * .3));
+  opacity: calc(.2 + var(--p) * .8);
+  transition: none;
+}
+.sunrise-glow { opacity: var(--p); }
+
+/* ---------------- BLOG cards ---------------- */
+.blog-card .title-underline {
+  display: block; height: 3px; background: var(--coral); border-radius: 3px;
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform .45s var(--ease-out); margin-top: 8px; width: 56px;
+}
+.blog-card:hover .title-underline { transform: scaleX(1); }
+.blog-card .cover-img, .blog-card image-slot { transition: transform .6s var(--ease-out); }
+.blog-card:hover .cover-zoom { transform: scale(1.05); }
+
+/* ---------------- EVENTS ---------------- */
+@keyframes date-pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.event-date { animation: date-pulse 2.6s ease-in-out infinite; }
+@keyframes gather {
+  0%   { transform: translateX(var(--from)); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.gather-fig { opacity: 1; }
+html.reveal-on .gather-fig { opacity: 0; }
+html.reveal-on .events-hero.in .gather-fig { animation: gather .8s var(--ease-out) forwards; }
+.events-hero.in .gf1 { --from: -120px; animation-delay: .0s; }
+.events-hero.in .gf2 { --from: -60px;  animation-delay: .12s; }
+.events-hero.in .gf3 { --from: 60px;   animation-delay: .24s; }
+.events-hero.in .gf4 { --from: 120px;  animation-delay: .36s; }
+.events-hero.in .gf5 { --from: 180px;  animation-delay: .48s; }
+
+/* ---------------- GALLERY ---------------- */
+.gal-item { overflow: hidden; position: relative; }
+.gal-item .gal-img, .gal-item image-slot { transition: transform .6s var(--ease-out); width: 100%; height: 100%; }
+.gal-item:hover .gal-img, .gal-item:hover image-slot { transform: scale(1.07); }
+.gal-cap { position: absolute; inset: auto 0 0 0; padding: var(--s-5) var(--s-4) var(--s-4); color:#fff;
+  background: linear-gradient(to top, rgba(43,43,43,.62), transparent); font-family: var(--font-head); font-weight: 700;
+  opacity: 0; transform: translateY(8px); transition: opacity .3s, transform .3s; }
+.gal-item:hover .gal-cap { opacity: 1; transform: none; }
+
+/* ---------------- CONTACT success ---------------- */
+.send-scene { display: none; }
+.contact-form-wrap.sent .form-body { display: none; }
+.contact-form-wrap.sent .send-scene { display: block; }
+@keyframes run-deliver {
+  0%   { transform: translateX(0); opacity: 0; }
+  8%   { opacity: 1; }
+  72%  { transform: translateX(230px); opacity: 1; }
+  82%  { transform: translateX(270px); opacity: 0; }
+  100% { transform: translateX(270px); opacity: 0; }
+}
+@keyframes run-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes door-open2 { 0%,55% { transform: scaleX(1); } 72%,86% { transform: scaleX(.07); } 100% { transform: scaleX(1); } }
+@keyframes msg-in { 0%,55% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: none; } }
+.contact-form-wrap.sent .run-fig { animation: run-deliver 2.6s var(--ease-soft) forwards; }
+.contact-form-wrap.sent .run-bob { animation: run-bob .4s ease-in-out infinite; }
+.contact-form-wrap.sent .run-door { transform-box: fill-box; transform-origin: left center; animation: door-open2 2.6s var(--ease-soft) forwards; }
+.contact-form-wrap.sent .send-msg { animation: msg-in 3s var(--ease-out) forwards; }
+
+/* ---------------- FOOTER assembly ---------------- */
+.footer-logo-assemble .fa-circle,
+.footer-logo-assemble .fa-line,
+.footer-logo-assemble .fa-arch { opacity: 1; }
+html.reveal-on .footer-logo-assemble .fa-circle,
+html.reveal-on .footer-logo-assemble .fa-line,
+html.reveal-on .footer-logo-assemble .fa-arch { opacity: 0; transition: transform .8s var(--ease-out), opacity .8s var(--ease-out); }
+html.reveal-on .footer-logo-assemble .fa-circle { transform: translate(-60px,-40px); }
+html.reveal-on .footer-logo-assemble .fa-line   { transform: translateX(70px); }
+html.reveal-on .footer-logo-assemble .fa-arch   { transform: translate(0,60px); }
+html.reveal-on .footer-logo-assemble.in .fa-circle,
+html.reveal-on .footer-logo-assemble.in .fa-line,
+html.reveal-on .footer-logo-assemble.in .fa-arch { opacity: 1; transform: none; }
+
+/* ---------------- reduced motion ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero-anim .hero-walker, .hero-anim .hero-bob, .hero-anim .hero-door,
+  .hero-anim .hero-sun, .hero-anim .hero-rays,
+  .event-date, .svc-card:hover .ico-climb-dot, .svc-icon.play .ico-climb-dot,
+  .svc-card:hover .ico-hug-arch, .svc-card:hover .ico-hug-dot,
+  .svc-card:hover .ico-branch-dot { animation: none !important; }
+  .why-dot, .gather-fig { opacity: 1 !important; animation: none !important; transform: none !important; }
+  .hero-walker { opacity: 1 !important; }
+  .contact-form-wrap.sent .run-fig { animation: none !important; opacity: 0 !important; }
+  .contact-form-wrap.sent .send-msg { animation: none !important; opacity: 1 !important; transform: none !important; }
+}

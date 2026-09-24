@@ -1,0 +1,40 @@
+/* ============================================================
+   ΑΡΩΓΗ — public site Vite entry
+   Order matters:
+   1. Self-hosted fonts (GDPR — zero external requests)
+   2. Tailwind theme + utilities ONLY (no preflight — the design
+      ships its own reset; preflight would fight arogi.css)
+   3. The faithful design system (source of truth)
+   ============================================================ */
+
+/* 1 — Self-hosted fonts (shared with the admin panel). */
+@import './_fonts.css';
+
+/* 2 — Tailwind v4, preflight intentionally omitted. */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Scan Blade for incidental utility usage. The admin panel has its own
+   entry and its own @source, so it is excluded here. */
+@source '../views/pages';
+@source '../views/components';
+@source '../views/layouts';
+@source '../views/partials';
+@source '../views/errors';
+@source '../views/emails';
+@source '../../app';
+
+/* 3 — Design system, faithfully ported. Loaded last so it always wins. */
+@import './arogi.css';
+@import './arogi-motion.css';
+
+/* Brand palette mirrored as Tailwind theme tokens (shared with the panel). */
+@import './_tokens.css';
+
+/* Heading-font override. arogi.css is imported unlayered, so its :root
+   --font-head wins over the @theme token above; this later unlayered rule
+   takes precedence and points the design's heading variable at Comfortaa. */
+:root {
+    --font-head: 'Comfortaa', system-ui, sans-serif;
+}

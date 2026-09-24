@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog — Αρωγή</title>
+<meta name="description" content="Άρθρα και συμβουλές από τους εκπαιδευτικούς και ειδικούς της Αρωγής.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arogi.css">
+<link rel="stylesheet" href="arogi-motion.css">
+<style>
+  .filters { display: flex; flex-wrap: wrap; gap: var(--s-2); justify-content: center; margin-top: var(--s-8); }
+  .chip { font-family: var(--font-head); font-weight: 700; font-size: .95rem; padding: 9px 18px; border-radius: var(--r-pill); background: #fff; color: var(--ink-600); border: 1.5px solid var(--hair); cursor: pointer; transition: all .2s var(--ease-out); }
+  .chip:hover { border-color: var(--green-300); color: var(--green-700); }
+  .chip.active { background: var(--green); color: #fff; border-color: var(--green); }
+</style>
+</head>
+<body data-page="blog">
+<header id="site-header"></header>
+
+<main>
+<section class="page-hero bg-coral">
+  <div class="deco deco-dot" style="width:70px;height:70px;top:40px;left:10%;background:var(--yellow-300)"></div>
+  <div class="container" style="position:relative;z-index:1">
+    <p class="breadcrumb reveal"><a href="index.html">Αρχική</a> · Blog</p>
+    <h1 class="reveal">Σκέψεις & συμβουλές</h1>
+    <p class="lead reveal reveal-d1">Άρθρα γραμμένα από τους εκπαιδευτικούς και ειδικούς της Αρωγής — για γονείς, εκπαιδευτικούς και κάθε ενήλικο που νοιάζεται.</p>
+    <div class="filters reveal reveal-d2">
+      <button class="chip active" data-filter="all">Όλα</button>
+      <button class="chip" data-filter="learning">Μαθησιακές δυσκολίες</button>
+      <button class="chip" data-filter="counseling">Συμβουλευτική</button>
+      <button class="chip" data-filter="parents">Γονείς</button>
+      <button class="chip" data-filter="career">Προσανατολισμός</button>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-white">
+  <div class="container">
+    <div class="grid-3" style="gap:var(--s-8)">
+      <a class="post-card blog-card reveal" href="article.html" data-cat="learning">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="book" style="background:var(--soft-green)"></div></div>
+        <div class="post-body"><span class="cat-pill green">Μαθησιακές δυσκολίες</span><h3>Δυσλεξία: 7 σημάδια που καλό είναι να προσέξετε έγκαιρα</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Η έγκαιρη αναγνώριση κάνει τη διαφορά. Δείτε τι να παρατηρήσετε.</p><div class="post-meta"><span class="avatar g">ΜΚ</span> Μαρία Κωνσταντίνου · 12 Μαΐου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal reveal-d1" href="article.html" data-cat="counseling">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="one" style="background:var(--soft-coral)"></div></div>
+        <div class="post-body"><span class="cat-pill coral">Συμβουλευτική</span><h3>Άγχος εξετάσεων: πώς στηρίζουμε τον έφηβο χωρίς πίεση</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Πρακτικές που μειώνουν το άγχος και χτίζουν αυτοπεποίθηση.</p><div class="post-meta"><span class="avatar c">ΓΠ</span> Γιώργος Παπαδάκης · 28 Απριλίου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal reveal-d2" href="article.html" data-cat="parents">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="group" style="background:var(--soft-yellow)"></div></div>
+        <div class="post-body"><span class="cat-pill yellow">Γονείς</span><h3>Το παιχνίδι ως εργαλείο μάθησης στην προσχολική ηλικία</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Γιατί το παιχνίδι είναι η πιο σοβαρή δουλειά ενός παιδιού.</p><div class="post-meta"><span class="avatar y">ΕΣ</span> Ελένη Σαββίδη · 15 Απριλίου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal" href="article.html" data-cat="learning">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="one" style="background:var(--soft-coral)"></div></div>
+        <div class="post-body"><span class="cat-pill green">Μαθησιακές δυσκολίες</span><h3>Δυσαριθμησία: όταν τα μαθηματικά μοιάζουν με ξένη γλώσσα</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Τι είναι, πώς εκδηλώνεται και πώς μπορούμε να βοηθήσουμε.</p><div class="post-meta"><span class="avatar g">ΑΜ</span> Άννα Μιχαηλίδου · 2 Απριλίου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal reveal-d1" href="article.html" data-cat="career">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="sun" style="background:var(--soft-green)"></div></div>
+        <div class="post-body"><span class="cat-pill green">Προσανατολισμός</span><h3>Λύκειο & επιλογή κατεύθυνσης: 5 ερωτήσεις-κλειδιά</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Πώς να σκεφτεί ο έφηβος πέρα από τη βαθμολογία.</p><div class="post-meta"><span class="avatar g">ΝΒ</span> Νίκος Βλαχάκης · 20 Μαρτίου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal reveal-d2" href="article.html" data-cat="parents">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="figures" style="background:var(--soft-coral)"></div></div>
+        <div class="post-body"><span class="cat-pill yellow">Γονείς</span><h3>Όρια με αγάπη: η ισορροπία που ψάχνει κάθε γονιός</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Πώς θέτουμε σταθερά όρια χωρίς να χάνουμε τη σύνδεση.</p><div class="post-meta"><span class="avatar c">ΓΠ</span> Γιώργος Παπαδάκης · 8 Μαρτίου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal" href="article.html" data-cat="counseling">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="one" style="background:var(--soft-yellow)"></div></div>
+        <div class="post-body"><span class="cat-pill coral">Συμβουλευτική</span><h3>Όταν το παιδί δεν θέλει να πάει σχολείο</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Κατανοώντας τι κρύβεται πίσω από την άρνηση.</p><div class="post-meta"><span class="avatar y">ΔΡ</span> Δήμητρα Ροδίτη · 24 Φεβρουαρίου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal reveal-d1" href="article.html" data-cat="learning">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="book" style="background:var(--soft-green)"></div></div>
+        <div class="post-body"><span class="cat-pill green">Μαθησιακές δυσκολίες</span><h3>Διάσπαση προσοχής: 6 στρατηγικές για το σπίτι</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Μικρές αλλαγές στο περιβάλλον με μεγάλη διαφορά.</p><div class="post-meta"><span class="avatar g">ΜΚ</span> Μαρία Κωνσταντίνου · 11 Φεβρουαρίου 2026</div></div>
+      </a>
+      <a class="post-card blog-card reveal reveal-d2" href="article.html" data-cat="career">
+        <div class="post-cover"><div class="photo-ph cover-zoom" data-motif="sun" style="background:var(--soft-coral)"></div></div>
+        <div class="post-body"><span class="cat-pill green">Προσανατολισμός</span><h3>Δεξιότητες του μέλλοντος: τι αξίζει να καλλιεργήσουμε</h3><span class="title-underline"></span><p style="color:var(--ink-600);font-size:.96rem">Πέρα από τη γνώση — η προσαρμοστικότητα ως υπερδύναμη.</p><div class="post-meta"><span class="avatar g">ΝΒ</span> Νίκος Βλαχάκης · 30 Ιανουαρίου 2026</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="arogi.js"></script>
+</body>
+</html>

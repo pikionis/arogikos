@@ -1,0 +1,27 @@
+/* ============================================================
+   Self-hosted fonts — GDPR: zero external requests, ever.
+
+   Shared by app.css (public site) and admin.css (panel). Vite
+   dedupes the .woff2 files; only the @font-face rules repeat.
+
+   Headings: Comfortaa (rounded, Greek subset) — replaces the
+   design's Nunito, which has no Greek glyphs.
+   Body: Source Sans 3 (Latin + Greek).
+   ============================================================ */
+
+@import '@fontsource/comfortaa/400.css';
+@import '@fontsource/comfortaa/500.css';
+@import '@fontsource/comfortaa/600.css';
+@import '@fontsource/comfortaa/700.css';
+@import '@fontsource/comfortaa/greek-400.css';
+@import '@fontsource/comfortaa/greek-500.css';
+@import '@fontsource/comfortaa/greek-600.css';
+@import '@fontsource/comfortaa/greek-700.css';
+@import '@fontsource/source-sans-3/400.css';
+@import '@fontsource/source-sans-3/500.css';
+@import '@fontsource/source-sans-3/600.css';
+@import '@fontsource/source-sans-3/700.css';
+@import '@fontsource/source-sans-3/greek-400.css';
+@import '@fontsource/source-sans-3/greek-500.css';
+@import '@fontsource/source-sans-3/greek-600.css';
+@import '@fontsource/source-sans-3/greek-700.css';

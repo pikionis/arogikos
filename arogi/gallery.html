@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — Αρωγή</title>
+<meta name="description" content="Στιγμές από τις δραστηριότητες, τους χώρους και τις εκδηλώσεις της Αρωγής στην Κω.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arogi.css">
+<link rel="stylesheet" href="arogi-motion.css">
+</head>
+<body data-page="gallery">
+<header id="site-header"></header>
+
+<main>
+<section class="page-hero bg-green">
+  <div class="deco deco-ring" style="width:120px;height:120px;bottom:-30px;left:6%;border-color:var(--yellow-300)"></div>
+  <div class="container" style="position:relative;z-index:1">
+    <p class="breadcrumb reveal"><a href="index.html">Αρχική</a> · Gallery</p>
+    <h1 class="reveal">Στιγμές από την Αρωγή</h1>
+    <p class="lead reveal reveal-d1">Δραστηριότητες, χώροι και εκδηλώσεις — μικρές στιγμές που δείχνουν τι σημαίνει «Αρωγή».</p>
+    <div class="filters reveal reveal-d2">
+      <button class="chip active" data-filter="all">Όλα</button>
+      <button class="chip" data-filter="act">Δραστηριότητες</button>
+      <button class="chip" data-filter="space">Χώροι</button>
+      <button class="chip" data-filter="event">Εκδηλώσεις</button>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-white">
+  <div class="container">
+    <div class="gal-grid">
+      <div class="gal-item frame-arch tall reveal" data-cat="act" data-lightbox data-shape="arch" data-tint="var(--soft-green)" data-motif="group" data-cap="Ομαδική δραστηριότητα μάθησης">
+        <div class="photo-ph gal-img" style="background:var(--soft-green)"></div>
+        <div class="gal-cap">Ομαδική δραστηριότητα</div>
+      </div>
+      <div class="gal-item frame-circle sq reveal reveal-d1" data-cat="space" data-lightbox data-shape="circle" data-tint="var(--soft-coral)" data-motif="one" data-cap="Η αίθουσα συμβουλευτικής">
+        <div class="photo-ph gal-img" style="background:var(--soft-coral)"></div>
+        <div class="gal-cap">Αίθουσα συμβουλευτικής</div>
+      </div>
+      <div class="gal-item frame-arch wide reveal reveal-d2" data-cat="event" data-lightbox data-shape="arch" data-tint="var(--soft-yellow)" data-motif="figures" data-cap="Ανοιχτή ημέρα γνωριμίας">
+        <div class="photo-ph gal-img" style="background:var(--soft-yellow)"></div>
+        <div class="gal-cap">Ανοιχτή ημέρα</div>
+      </div>
+      <div class="gal-item frame-circle sq reveal" data-cat="act" data-lightbox data-shape="circle" data-tint="var(--soft-yellow)" data-motif="book" data-cap="Εργαστήρι ανάγνωσης">
+        <div class="photo-ph gal-img" style="background:var(--soft-yellow)"></div>
+        <div class="gal-cap">Εργαστήρι ανάγνωσης</div>
+      </div>
+      <div class="gal-item frame-arch tall reveal reveal-d1" data-cat="space" data-lightbox data-shape="arch" data-tint="var(--soft-green)" data-motif="sun" data-cap="Ο χώρος υποδοχής">
+        <div class="photo-ph gal-img" style="background:var(--soft-green)"></div>
+        <div class="gal-cap">Χώρος υποδοχής</div>
+      </div>
+      <div class="gal-item frame-circle sq reveal reveal-d2" data-cat="event" data-lightbox data-shape="circle" data-tint="var(--soft-coral)" data-motif="group" data-cap="Χριστουγεννιάτικη γιορτή">
+        <div class="photo-ph gal-img" style="background:var(--soft-coral)"></div>
+        <div class="gal-cap">Γιορτή Αρωγής</div>
+      </div>
+      <div class="gal-item frame-arch wide reveal" data-cat="act" data-lightbox data-shape="arch" data-tint="var(--soft-coral)" data-motif="figures" data-cap="Ομάδα κοινωνικών δεξιοτήτων">
+        <div class="photo-ph gal-img" style="background:var(--soft-coral)"></div>
+        <div class="gal-cap">Ομάδα δεξιοτήτων</div>
+      </div>
+      <div class="gal-item frame-circle sq reveal reveal-d1" data-cat="space" data-lightbox data-shape="circle" data-tint="var(--soft-yellow)" data-motif="book" data-cap="Η βιβλιοθήκη μας">
+        <div class="photo-ph gal-img" style="background:var(--soft-yellow)"></div>
+        <div class="gal-cap">Βιβλιοθήκη</div>
+      </div>
+      <div class="gal-item frame-arch tall reveal reveal-d2" data-cat="event" data-lightbox data-shape="arch" data-tint="var(--soft-green)" data-motif="one" data-cap="Ημερίδα για εκπαιδευτικούς">
+        <div class="photo-ph gal-img" style="background:var(--soft-green)"></div>
+        <div class="gal-cap">Ημερίδα εκπαιδευτικών</div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer id="site-footer"></footer>
+<script src="arogi.js"></script>
+</body>
+</html>

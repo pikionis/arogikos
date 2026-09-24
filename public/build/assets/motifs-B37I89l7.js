@@ -1,0 +1,4 @@
+var e=`#1E9E58`,t=`#E26D5A`,n=`#F4B62A`;function r(e,t,n){return n||=0,`<g transform="translate(${e},${64-n})">
+        <circle cx="0" cy="-30" r="9" fill="${t}"/>
+        <path d="M-13 0 C-13 -22 13 -22 13 0 Z" fill="${t}"/></g>`}function i(i){let a=``;return a=i===`group`?r(34,n,6)+r(60,t,0)+r(86,e,9):i===`one`?`<circle cx="60" cy="26" r="13" fill="none" stroke="${n}" stroke-width="5"/>`+r(60,t,0):i===`sun`?`<circle cx="60" cy="30" r="15" fill="${n}"/><path d="M30 64 A30 30 0 0 1 90 64" fill="none" stroke="${t}" stroke-width="6" stroke-linecap="round"/>`:i===`book`?`<path d="M22 30 Q60 18 60 30 V62 Q60 52 22 60 Z" fill="${t}"/><path d="M98 30 Q60 18 60 30 V62 Q60 52 98 60 Z" fill="${e}"/><circle cx="60" cy="20" r="7" fill="${n}"/>`:r(44,t,4)+r(76,e,0),`<svg viewBox="0 0 120 78" fill="none" aria-hidden="true">
+      <rect x="14" y="62" width="92" height="5" rx="2.5" fill="${e}" opacity=".5"/>${a}</svg>`}export{i as t};
