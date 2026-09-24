@@ -25,7 +25,11 @@ class SettingsSeeder extends Seeder
             'instagram' => 'https://instagram.com/arogicenter',
             'facebook' => 'https://facebook.com/arogicenter',
 
-            'maps_embed_url' => 'https://www.google.com/maps?q=Kos,Greece&z=14&output=embed',
+            // The centre itself, not a generic view of Kos: ?cid= addresses the
+            // actual Google Maps listing, so the pin carries the name, photos
+            // and reviews rather than a bare marker.
+            'maps_url' => 'https://maps.google.com/?cid=4202208299327602585',
+            'maps_embed_url' => 'https://www.google.com/maps?q=36.8884583,27.2767477&z=17&output=embed',
 
             // Empty by default — the analytics snippet renders only when set.
             'ga_id' => '',

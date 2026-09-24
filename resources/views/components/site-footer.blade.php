@@ -56,7 +56,7 @@
                     <a href="mailto:{{ setting('email') }}">{{ setting('email') }}</a>
                 @endif
                 @if (filled(setting('address')))
-                    <p>{{ setting('address') }}</p>
+                    <p><x-site-address /></p>
                 @endif
                 @if (filled(setting('hours')))
                     <p>{{ setting('hours') }}</p>
