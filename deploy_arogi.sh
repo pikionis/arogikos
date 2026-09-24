@@ -2,6 +2,20 @@
 set -e
 cd ~/domains/arogikos.gr
 
+# The default `php` on this host is 7.4; the app needs 8.3+. Pick a good one
+# explicitly rather than failing halfway through a deploy.
+PHP=$(command -v php8.3 || true)
+for c in /opt/alt/php83/usr/bin/php /opt/alt/php84/usr/bin/php /usr/bin/php8.3; do
+  [ -z "$PHP" ] && [ -x "$c" ] && PHP="$c"
+done
+[ -z "$PHP" ] && PHP=php
+
+if ! "$PHP" -r 'exit(PHP_VERSION_ID >= 80300 ? 0 : 1);'; then
+  echo "FATAL: need PHP 8.3+, found $("$PHP" -v | head -1)" >&2
+  exit 1
+fi
+echo "PHP: $("$PHP" -v | head -1)"
+
 # Drop Hostinger placeholder if present
 if [ -f public_html/default.php ]; then rm -f public_html/default.php; fi
 
@@ -41,16 +55,16 @@ sed -i "s#__DIR__\.'/\.\./#__DIR__.'/../laravel/#g" public_html/index.php
 
 # Schema + caches. Must run AFTER the code is in place.
 cd laravel
-php artisan migrate --force
+"$PHP" artisan migrate --force
 
 # Only creates what is missing, so it never overwrites categories the client
 # has renamed or withdrawn in the admin.
-php artisan db:seed --class=CategorySeeder --force
+"$PHP" artisan db:seed --class=CategorySeeder --force
 
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+"$PHP" artisan optimize:clear
+"$PHP" artisan config:cache
+"$PHP" artisan route:cache
+"$PHP" artisan view:cache
 cd ..
 
 echo "OK_DEPLOY"
