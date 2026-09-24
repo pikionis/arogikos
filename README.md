@@ -116,8 +116,21 @@ production caches.
 `QUEUE_CONNECTION=sync` (το SQLite cache δεν κερδίζει τίποτα και δεν τρέχει
 queue worker), `SESSION_SECURE_COOKIE=true` πίσω από το TLS.
 
-**Εκκρεμεί:** `MAIL_MAILER=log`. Μέχρι να μπει SMTP, οι προσκλήσεις νέων μελών
-δεν παραδίδονται — το panel δείχνει τον σύνδεσμο με κουμπί αντιγραφής.
+### Email
+
+`MAIL_MAILER=sendmail` μέσω του τοπικού MTA του Hostinger — χωρίς διαπιστευτήρια
+mailbox. Δοκιμασμένο: η αποστολή περνά και η ουρά του exim αδειάζει.
+
+**Εκκρεμεί στο DNS:** το `arogikos.gr` δεν έχει SPF, οπότε τα μηνύματα φεύγουν
+αλλά κινδυνεύουν να θεωρηθούν spam. Πρόσθεσε:
+
+```
+TXT  @  v=spf1 include:_spf.mail.hostinger.com ~all
+```
+
+Το `info@arogi.gr` (των Ρυθμίσεων) είναι άλλο domain, σε Microsoft 365, και
+είναι η διεύθυνση **λήψης**. Δεν στέλνουμε από αυτήν μέσω Hostinger — το SPF
+του arogi.gr επιτρέπει μόνο το Outlook.
 
 ### Πρώτος λογαριασμός
 
