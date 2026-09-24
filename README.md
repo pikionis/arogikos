@@ -79,18 +79,55 @@ php artisan serve
 
 Καμία αλλαγή σε routes/controllers/views δεν χρειάζεται.
 
-## Production / deployment (EU host — όρος GDPR)
+## Production / deployment (arogikos.gr — Hostinger, EU)
+
+Ο server είναι git checkout του `main`, με read-only deploy key. Κάθε deploy:
 
 ```bash
-composer install --no-dev --optimize-autoloader
-npm ci && npm run build
-php artisan migrate --force
-php artisan config:cache && php artisan route:cache && php artisan view:cache
-php artisan storage:link
+cd ~/domains/arogikos.gr/laravel && git pull
+cd .. && bash laravel/deploy_arogi.sh
 ```
 
-Ρύθμισε στο `.env`: `APP_ENV=production`, `APP_DEBUG=false`, MySQL/MariaDB,
-SMTP (`MAIL_MAILER=smtp`), και τα στοιχεία επικοινωνίας μέσω του πίνακα Settings.
+Δύο εντολές, όχι μία: το `deploy_arogi.sh` βρίσκεται μέσα στο repo, οπότε ένα
+`git pull` **μέσα** στο ίδιο το script θα αντικαθιστούσε το αρχείο ενώ το bash
+το διαβάζει ακόμη.
+
+Το `deploy_arogi.sh` αναλαμβάνει τα υπόλοιπα: backup της SQLite, `migrate`,
+seed κατηγοριών, συγχρονισμό του `public/` στο `public_html/`, symlinks και
+production caches.
+
+### Τι πρέπει να ξέρεις γι' αυτόν τον server
+
+- **Το `php` είναι 7.4** — η εφαρμογή θέλει 8.3+. Το script εντοπίζει μόνο του
+  το `/opt/alt/php83/usr/bin/php`· για χειροκίνητες εντολές χρησιμοποίησέ το
+  ρητά, αλλιώς το `artisan` δεν τρέχει καν.
+- **Δεν υπάρχει Node.** Γι' αυτό το `public/build` είναι committed στο repo —
+  τρέξε `npm run build` τοπικά και κάνε commit τα παραγόμενα αρχεία. Χωρίς
+  αυτά το site μένει χωρίς στυλ και κάθε `/admin` route βγάζει 500.
+- **Το `composer install` χρειάζεται το ίδιο php83 binary:**
+  `/opt/alt/php83/usr/bin/php $(command -v composer) install --no-dev --optimize-autoloader`
+- Η βάση είναι SQLite και **το `deploy_arogi.sh` κρατά backup πριν κάθε
+  migrate** (`~/backups/`, τα 5 τελευταία).
+
+### .env στο production
+
+`APP_ENV=production`, `APP_DEBUG=false`, `APP_TIMEZONE=Europe/Athens`
+(αλλιώς οι ώρες δημοσίευσης πέφτουν 3 ώρες έξω), `CACHE_STORE=file` και
+`QUEUE_CONNECTION=sync` (το SQLite cache δεν κερδίζει τίποτα και δεν τρέχει
+queue worker), `SESSION_SECURE_COOKIE=true` πίσω από το TLS.
+
+**Εκκρεμεί:** `MAIL_MAILER=log`. Μέχρι να μπει SMTP, οι προσκλήσεις νέων μελών
+δεν παραδίδονται — το panel δείχνει τον σύνδεσμο με κουμπί αντιγραφής.
+
+### Πρώτος λογαριασμός
+
+```bash
+/opt/alt/php83/usr/bin/php artisan cms:make-owner <email> --name="<όνομα>"
+```
+
+Χωρίς `--password` στέλνει σύνδεσμο ορισμού κωδικού· με `--password` τον
+ορίζει απευθείας. Δεν υπάρχει δημόσια εγγραφή — τα υπόλοιπα μέλη μπαίνουν με
+πρόσκληση από το panel.
 
 ## Πηγή σχεδιασμού
 
