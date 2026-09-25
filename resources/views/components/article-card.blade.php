@@ -1,5 +1,9 @@
 @props([
     'article',
+    // Card titles sit under a section heading on most pages, but on the blog
+    // index they follow the h1 directly — passing the level keeps the document
+    // outline from skipping a step.
+    'level' => 3,
     'delay' => '',
     'showExcerpt' => false,
     'showDate' => true,
@@ -23,7 +27,7 @@
     </div>
     <div class="post-body">
         <span class="cat-pill {{ $color }}">{{ $article->category_label }}</span>
-        <h3>{{ $article->title }}</h3>
+        <h{{ $level }}>{{ $article->title }}</h{{ $level }}>
         <span class="title-underline"></span>
         @if ($showExcerpt && filled($article->excerpt))
             <p style="color:var(--ink-600);font-size:.96rem">{{ $article->excerpt }}</p>

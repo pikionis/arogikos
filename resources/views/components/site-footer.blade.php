@@ -34,21 +34,21 @@
             </div>
 
             <div class="footer-col">
-                <h4>{{ content('shared.footer_nav_heading') }}</h4>
+                <h4 role="heading" aria-level="2">{{ content('shared.footer_nav_heading') }}</h4>
                 @foreach ($footerNav as $item)
                     <a href="{{ route($item['route']) }}">{{ $item['label'] }}</a>
                 @endforeach
             </div>
 
             <div class="footer-col">
-                <h4>{{ content('shared.footer_services_heading') }}</h4>
+                <h4 role="heading" aria-level="2">{{ content('shared.footer_services_heading') }}</h4>
                 @foreach (content_items('shared.services') as $service)
                     <a href="{{ route('services') }}">{{ $service['name'] ?? '' }}</a>
                 @endforeach
             </div>
 
             <div class="footer-col">
-                <h4>{{ content('shared.footer_contact_heading') }}</h4>
+                <h4 role="heading" aria-level="2">{{ content('shared.footer_contact_heading') }}</h4>
                 @if (filled(setting('phone')))
                     <a href="tel:{{ setting('phone_href', setting('phone')) }}">{{ setting('phone') }}</a>
                 @endif

@@ -10,7 +10,7 @@
   --green-700: #178049;
   --green-300: #6FC79A;
   --coral: #E26D5A;
-  --coral-700: #C85543;
+  --coral-700: #BE4E3D;
   --coral-300: #EEA294;
   --yellow: #F4B62A;
   --yellow-700: #D89A12;
@@ -21,7 +21,7 @@
   --off-white: #FAF8F5;
   --ink: #2B2B2B;
   --ink-600: #555049;
-  --ink-400: #8A847C;
+  --ink-400: #726C64;
   --hair: rgba(43, 43, 43, 0.10);
   --hair-soft: rgba(43, 43, 43, 0.06);
 
@@ -320,7 +320,10 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .post-card h3 { font-size: 1.22rem; line-height: 1.25; }
 .post-meta { display: flex; align-items: center; gap: var(--s-2); margin-top: auto; padding-top: var(--s-3); color: var(--ink-400); font-size: .9rem; }
 .avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: .85rem; color: #fff; flex: none; }
-.avatar.g { background: var(--green); } .avatar.c { background: var(--coral); } .avatar.y { background: var(--yellow-700); }
+.avatar.g { background: var(--green); } .avatar.c { background: var(--coral); }
+/* Ink on yellow, not white: white initials on this yellow are 2.46:1,
+   which fails at every size. Dark ink on the same yellow is 5.77:1. */
+.avatar.y { background: var(--yellow); color: var(--ink); }
 /* An author who uploaded a photo shows it instead of their initials; the
    coloured disc stays underneath as the placeholder while it loads. */
 .avatar.has-photo { overflow: hidden; }
