@@ -19,14 +19,24 @@
     <meta property="og:title" content="@yield('meta_title', $defaultTitle)">
     <meta property="og:description" content="@yield('meta_description', $defaultDescription)">
     <meta property="og:url" content="{{ url()->current() }}">
-    @hasSection('og_image')
-        <meta property="og:image" content="@yield('og_image')">
+    @php
+        // A page can name its own (an article uses its cover); otherwise the
+        // site-wide share image, uploaded from Κείμενα σελίδων → Κοινά στοιχεία.
+        $ogImage = trim($__env->yieldContent('og_image')) ?: content_image('shared.share_image', 'web');
+    @endphp
+    @if (filled($ogImage))
+        <meta property="og:image" content="{{ $ogImage }}">
         <meta name="twitter:card" content="summary_large_image">
     @else
         <meta name="twitter:card" content="summary">
     @endif
 
     <meta name="theme-color" content="#1E9E58">
+
+    {{-- Who the centre is, where it is, what it offers — assembled from the
+         Settings table so it cannot drift from the visible page. --}}
+    <x-schema :data="\App\Support\StructuredData::site()" />
+    @yield('schema')
 
     @include('partials.analytics')
 

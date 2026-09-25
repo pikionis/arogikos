@@ -15,12 +15,12 @@ class SettingsSeeder extends Seeder
             'org_name' => 'Αρωγή',
             'footer_tagline' => 'Κέντρο εξειδικευμένης μαθησιακής υποστήριξης, συμβουλευτικής και επαγγελματικού προσανατολισμού στην Κω.',
 
-            'phone' => '22420 29 100',
-            'phone_href' => '+302242029100',
+            'phone' => '22420 21429',
+            'phone_href' => '+302242021429',
             'email' => 'arogicenter@gmail.com',
             'contact_form_recipient' => 'arogicenter@gmail.com',
-            'address' => 'Ιπποκράτους 24, Κως 85300',
-            'hours' => 'Δευτέρα – Παρασκευή · 09:00–21:00',
+            'address' => 'Ασκληπιού 12, Κως 85300',
+            'hours' => 'Δευτέρα – Παρασκευή · 13:00–21:00',
 
             'instagram' => 'https://instagram.com/arogicenter',
             'facebook' => 'https://facebook.com/arogicenter',
@@ -28,6 +28,16 @@ class SettingsSeeder extends Seeder
             // The centre itself, not a generic view of Kos: ?cid= addresses the
             // actual Google Maps listing, so the pin carries the name, photos
             // and reviews rather than a bare marker.
+            // Structured-data twins of the address and hours above: Google
+            // wants the parts separately and the hours in its own notation.
+            'street_address' => 'Ασκληπιού 12',
+            'locality' => 'Κως',
+            'postal_code' => '85300',
+            'region' => 'Δωδεκάνησα',
+            'geo_lat' => '36.8884583',
+            'geo_lng' => '27.2767477',
+            'opening_hours_schema' => 'Mo-Fr 13:00-21:00',
+
             'maps_url' => 'https://maps.google.com/?cid=4202208299327602585',
             'maps_embed_url' => 'https://www.google.com/maps?q=36.8884583,27.2767477&z=17&output=embed',
 

@@ -35,6 +35,12 @@ it('declares a non-empty default for every field', function () {
     $missing = [];
 
     foreach (registryFields() as [$pageKey, $field]) {
+        // An image has no text to fall back to; it is simply absent until
+        // somebody uploads one, and every template guards for that.
+        if ($field['type'] === 'image') {
+            continue;
+        }
+
         $default = $field['default'] ?? null;
 
         $empty = $default === null

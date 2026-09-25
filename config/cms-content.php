@@ -122,6 +122,13 @@ return [
                 ],
             ],
             [
+                'label' => 'Κοινοποίηση σε social media',
+                'hint' => 'Η εικόνα που εμφανίζεται όταν κάποιος μοιράζεται σύνδεσμο του site σε Facebook, Instagram ή Viber. Ιδανικά 1200×630.',
+                'fields' => [
+                    ['key' => 'share_image', 'label' => 'Εικόνα κοινοποίησης', 'type' => 'image', 'default' => ''],
+                ],
+            ],
+            [
                 'label' => 'Υποσέλιδο',
                 'fields' => [
                     ['key' => 'footer_services_heading', 'label' => 'Τίτλος στήλης υπηρεσιών', 'type' => 'text', 'default' => 'Υπηρεσίες'],

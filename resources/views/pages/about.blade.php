@@ -3,6 +3,13 @@
 @section('meta_title', $page?->seo_title ?? 'Σχετικά με εμάς — Αρωγή')
 @section('meta_description', $page?->seo_description ?? 'Η ιστορία, η φιλοσοφία και η ομάδα της Αρωγής — κέντρο μάθησης και συμβουλευτικής στην Κω.')
 
+@section('schema')
+    <x-schema :data="App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => content('about.hero.crumb'), 'url' => route('about')],
+    ])" />
+@endsection
+
 @section('content')
 <x-page-hero bg="bg-yellow" :crumb="content('about.hero.crumb')" :title="content('about.hero.title')"
   :lead="content('about.hero.lead')">

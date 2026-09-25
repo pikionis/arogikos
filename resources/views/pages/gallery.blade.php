@@ -3,6 +3,13 @@
 @section('meta_title', 'Gallery — Αρωγή')
 @section('meta_description', 'Στιγμές από τις δραστηριότητες, τους χώρους και τις εκδηλώσεις της Αρωγής στην Κω.')
 
+@section('schema')
+    <x-schema :data="App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => content('gallery.hero.crumb'), 'url' => route('gallery')],
+    ])" />
+@endsection
+
 @section('content')
 <x-page-hero bg="bg-green" :crumb="content('gallery.hero.crumb')" :title="content('gallery.hero.title')"
   :lead="content('gallery.hero.lead')">

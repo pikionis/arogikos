@@ -3,6 +3,13 @@
 @section('meta_title', 'Blog — Αρωγή')
 @section('meta_description', 'Άρθρα και συμβουλές από τους εκπαιδευτικούς και ειδικούς της Αρωγής.')
 
+@section('schema')
+    <x-schema :data="App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => content('blog.hero.crumb'), 'url' => route('blog.index')],
+    ])" />
+@endsection
+
 @section('content')
 <x-page-hero bg="bg-coral" :crumb="content('blog.hero.crumb')" :title="content('blog.hero.title')"
   :lead="content('blog.hero.lead')">

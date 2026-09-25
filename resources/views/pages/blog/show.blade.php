@@ -14,6 +14,20 @@
     $readMinutes = max(1, (int) round($words / 200));
 @endphp
 
+@section('og_type', 'article')
+@if ($article->getFirstMediaUrl('cover', 'web'))
+    @section('og_image', $article->getFirstMediaUrl('cover', 'web'))
+@endif
+
+@section('schema')
+    <x-schema :data="App\Support\StructuredData::article($article)" />
+    <x-schema :data="App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => content('blog.hero.crumb'), 'url' => route('blog.index')],
+        ['name' => $article->title, 'url' => route('blog.show', $article->slug)],
+    ])" />
+@endsection
+
 @section('content')
 <article>
   <div class="container" style="max-width:820px">

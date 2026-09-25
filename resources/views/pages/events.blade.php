@@ -3,6 +3,13 @@
 @section('meta_title', 'Εκδηλώσεις — Αρωγή')
 @section('meta_description', 'Εργαστήρια, ημερίδες και εκδηλώσεις της Αρωγής για γονείς, παιδιά και εκπαιδευτικούς στην Κω.')
 
+@section('schema')
+    <x-schema :data="App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => content('events.hero.crumb'), 'url' => route('events')],
+    ])" />
+@endsection
+
 @section('content')
 <x-page-hero bg="bg-yellow" class="events-hero" :crumb="content('events.hero.crumb')" :title="content('events.hero.title')"
   :lead="content('events.hero.lead')">

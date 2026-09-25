@@ -3,6 +3,13 @@
 @section('meta_title', 'Επικοινωνία — Αρωγή')
 @section('meta_description', 'Επικοινωνήστε με την Αρωγή στην Κω — τηλέφωνο, email, φόρμα και χάρτης.')
 
+@section('schema')
+    <x-schema :data="App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => content('contact.hero.crumb'), 'url' => route('contact')],
+    ])" />
+@endsection
+
 @section('content')
 <x-page-hero bg="bg-yellow" :crumb="content('contact.hero.crumb')" :title="content('contact.hero.title')"
   :lead="content('contact.hero.lead')">
