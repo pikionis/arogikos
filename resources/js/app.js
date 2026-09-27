@@ -139,6 +139,54 @@ import { motif } from './motifs.js';
     if (document.documentElement.classList.contains('reveal-on')) checkReveals();
   });
 
+
+  /* ---- team profiles ----
+
+     Το βιογραφικό ζει κομμένο μέσα στην κάρτα και ολόκληρο μέσα σε ένα
+     <dialog>. Το native dialog φέρνει Esc, παγίδευση εστίασης και inert
+     υπόλοιπη σελίδα — τίποτα από αυτά δεν ξαναγράφεται εδώ. Μένει μόνο ο
+     συγχρονισμός της κίνησης: η κλάση μπαίνει στο επόμενο καρέ ώστε το
+     transition να έχει από πού να ξεκινήσει, και το κλείσιμο περιμένει
+     να τελειώσει πριν αποσυρθεί το dialog. */
+  function initTeam() {
+    var openers = document.querySelectorAll('[data-team-open]');
+    if (!openers.length) return;
+
+    var quick = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function close(dlg) {
+      dlg.classList.remove('is-open');
+      if (quick) { dlg.close(); return; }
+      window.setTimeout(function () { if (dlg.open) dlg.close(); }, 260);
+    }
+
+    openers.forEach(function (btn) {
+      var dlg = document.getElementById(btn.dataset.teamOpen);
+      if (!dlg) return;
+
+      btn.addEventListener('click', function () {
+        dlg.showModal();
+        requestAnimationFrame(function () { dlg.classList.add('is-open'); });
+      });
+
+      /* Το κλικ στο φόντο φτάνει στο ίδιο το dialog, όχι στο πάνελ. */
+      dlg.addEventListener('click', function (e) {
+        if (e.target === dlg) close(dlg);
+      });
+
+      dlg.querySelectorAll('[data-team-close]').forEach(function (x) {
+        x.addEventListener('click', function () { close(dlg); });
+      });
+
+      /* Esc κλείνει το dialog μόνο του· το κρατάμε για να παίξει η κίνηση. */
+      dlg.addEventListener('cancel', function (e) {
+        e.preventDefault();
+        close(dlg);
+      });
+    });
+  }
+
   initLightbox();
   initFilters();
+  initTeam();
 })();
