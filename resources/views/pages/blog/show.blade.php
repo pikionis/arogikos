@@ -3,9 +3,25 @@
 @section('meta_title', $article->seo_title ?? $article->title.' — Αρωγή')
 @section('meta_description', $article->seo_description ?? $article->excerpt)
 @section('og_type', 'article')
-@if ($article->getFirstMedia('cover'))
-    @section('og_image', $article->getFirstMediaUrl('cover', 'web'))
-@endif
+@section('og_image', $article->getFirstMediaUrl('cover', 'web'))
+@section('og_image_alt', $article->title)
+
+{{-- What Facebook and LinkedIn read to date and attribute a post. Without
+     these a shared article is undated, which reads as older than it is. --}}
+@section('og_extra')
+    @if ($article->published_at)
+        <meta property="article:published_time" content="{{ $article->published_at->toIso8601String() }}">
+    @endif
+    @if ($article->updated_at)
+        <meta property="article:modified_time" content="{{ $article->updated_at->toIso8601String() }}">
+    @endif
+    @if ($article->author)
+        <meta property="article:author" content="{{ $article->author->name }}">
+    @endif
+    @if (filled($article->category_label))
+        <meta property="article:section" content="{{ $article->category_label }}">
+    @endif
+@endsection
 
 @php
     $color = $article->category_color;
@@ -13,11 +29,6 @@
     $words = count(preg_split('/\s+/', trim(strip_tags((string) $article->body))) ?: []);
     $readMinutes = max(1, (int) round($words / 200));
 @endphp
-
-@section('og_type', 'article')
-@if ($article->getFirstMediaUrl('cover', 'web'))
-    @section('og_image', $article->getFirstMediaUrl('cover', 'web'))
-@endif
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::article($article)" />

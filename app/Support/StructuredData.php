@@ -155,7 +155,9 @@ class StructuredData
 
     private static function shareImage(): ?string
     {
-        return content_image('shared.share_image', 'web');
+        // Same picture the social cards use, so the graph and a shared link
+        // never show two different images for the same centre.
+        return ShareImage::resolve()['url'];
     }
 
     /* -------------------------------------------------------------- website */

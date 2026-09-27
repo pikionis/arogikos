@@ -12,6 +12,10 @@
     <meta name="description" content="@yield('meta_description', $defaultDescription)">
     <link rel="canonical" href="{{ url()->current() }}">
 
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="32x32">
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+
     {{-- Open Graph / social --}}
     <meta property="og:site_name" content="{{ setting('org_name', 'Αρωγή') }}">
     <meta property="og:locale" content="el_GR">
@@ -20,16 +24,19 @@
     <meta property="og:description" content="@yield('meta_description', $defaultDescription)">
     <meta property="og:url" content="{{ url()->current() }}">
     @php
-        // A page can name its own (an article uses its cover); otherwise the
-        // site-wide share image, uploaded from Κείμενα σελίδων → Κοινά στοιχεία.
-        $ogImage = trim($__env->yieldContent('og_image')) ?: content_image('shared.share_image', 'web');
+        // A page can name its own — an article uses its cover. Everything else
+        // falls back through the uploaded share image to the brand card.
+        $share = \App\Support\ShareImage::resolve($__env->yieldContent('og_image'));
     @endphp
-    @if (filled($ogImage))
-        <meta property="og:image" content="{{ $ogImage }}">
-        <meta name="twitter:card" content="summary_large_image">
-    @else
-        <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="{{ $share['url'] }}">
+    @if ($share['width'])
+        {{-- Saves the crawler a download before it can lay the card out. --}}
+        <meta property="og:image:width" content="{{ $share['width'] }}">
+        <meta property="og:image:height" content="{{ $share['height'] }}">
     @endif
+    <meta property="og:image:alt" content="@yield('og_image_alt', setting('org_name', 'Αρωγή').' — '.setting('locality', 'Κως'))">
+    <meta name="twitter:card" content="summary_large_image">
+    @yield('og_extra')
 
     <meta name="theme-color" content="#1E9E58">
 
