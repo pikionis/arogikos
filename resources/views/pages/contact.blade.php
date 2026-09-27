@@ -10,6 +10,34 @@
     ])" />
 @endsection
 
+@if (session('contact_sent'))
+    @push('scripts')
+        @php
+            $adsId = setting('google_ads_id');
+            $label = setting('google_ads_conversion_label');
+        @endphp
+
+        {{-- An enquiry is the thing the centre is actually paying for, so it is
+             what Google Ads needs to count. Fires once, only on the page shown
+             after a successful submit, and only when both ids are configured. --}}
+        @if (filled($adsId) && filled($label))
+            <script>
+                if (typeof gtag === 'function') {
+                    gtag('event', 'conversion', { send_to: @json($adsId.'/'.$label) });
+                }
+            </script>
+        @endif
+
+        @if (filled(setting('ga_id')))
+            <script>
+                if (typeof gtag === 'function') {
+                    gtag('event', 'generate_lead', { form: 'contact' });
+                }
+            </script>
+        @endif
+    @endpush
+@endif
+
 @section('content')
 <x-page-hero bg="bg-yellow" :crumb="content('contact.hero.crumb')" :title="content('contact.hero.title')"
   :lead="content('contact.hero.lead')">

@@ -50,5 +50,7 @@
     </main>
 
     <x-site-footer />
+
+    @stack('scripts')
 </body>
 </html>

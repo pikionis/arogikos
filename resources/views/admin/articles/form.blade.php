@@ -54,7 +54,19 @@
                 </section>
 
                 <section class="a-card">
-                    <h2 style="font-size:.95rem;margin:0 0 14px">SEO</h2>
+                    <h2 style="font-size:.95rem;margin:0 0 4px">Πώς θα φαίνεται στη Google</h2>
+                    <p style="color:var(--color-ink-400);font-size:.84rem;margin:0 0 14px">
+                        Αν αφήσετε τα πεδία κενά, χρησιμοποιούνται ο τίτλος και η περίληψη
+                        του άρθρου.
+                    </p>
+
+                    <x-admin.seo-preview
+                        title-name="seo_title"
+                        description-name="seo_description"
+                        fallback-title-name="title"
+                        fallback-description-name="excerpt"
+                        title-suffix=" — Αρωγή"
+                        :url="url('/blog/…')" />
 
                     <div class="a-field">
                         <label class="a-label" for="seo_title">Τίτλος SEO</label>
@@ -68,7 +80,7 @@
                         <label class="a-label" for="seo_description">Περιγραφή SEO</label>
                         <textarea class="a-textarea" id="seo_description" name="seo_description" maxlength="300"
                                   style="min-height:70px">{{ old('seo_description', $article->seo_description) }}</textarea>
-                        <span class="a-hint">Έως 300 χαρακτήρες. Αν μείνει κενή, χρησιμοποιείται η περίληψη.</span>
+                        <span class="a-hint">Αν μείνει κενή, χρησιμοποιείται η περίληψη του άρθρου.</span>
                         @error('seo_description')<span class="a-error">{{ $message }}</span>@enderror
                     </div>
                 </section>

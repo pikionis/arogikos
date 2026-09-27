@@ -461,6 +461,66 @@
         display: none;
     }
 
+    /* --- SEO preview --- */
+
+    .a-seo-preview {
+        border: 1px solid var(--admin-border);
+        border-radius: 9px;
+        padding: 14px;
+        background: #fff;
+        margin-bottom: 18px;
+    }
+
+    .a-seo-serp {
+        font-family: arial, sans-serif;
+        line-height: 1.4;
+        margin-bottom: 12px;
+    }
+
+    .a-seo-serp-url { color: #4d5156; font-size: .78rem; }
+    .a-seo-serp-title { color: #1a0dab; font-size: 1.12rem; margin: 2px 0; }
+    .a-seo-serp-desc { color: #4d5156; font-size: .86rem; }
+
+    .a-seo-meters {
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--admin-border);
+        padding-top: 10px;
+    }
+
+    .a-seo-meter-label {
+        font-weight: 700;
+        font-size: .8rem;
+        margin-right: 6px;
+    }
+
+    .a-seo-meter {
+        font-family: var(--font-head);
+        font-weight: 700;
+        font-size: .78rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+    }
+
+    .a-seo-meter.is-good  { background: var(--color-soft-green); color: var(--color-green-700); }
+    .a-seo-meter.is-short { background: var(--color-soft-yellow); color: #8a6200; }
+    .a-seo-meter.is-long  { background: var(--color-soft-coral); color: var(--color-coral-700); }
+    .a-seo-meter.is-empty { background: #f0ece6; color: var(--color-ink-600); }
+
+    .a-seo-note {
+        font-size: .76rem;
+        color: var(--color-ink-400);
+        margin-left: 6px;
+    }
+
+    .a-seo-hint {
+        font-size: .78rem;
+        color: var(--color-ink-400);
+        line-height: 1.5;
+        margin: 10px 0 0;
+    }
+
     /* --- auth screens --- */
 
     .a-auth {

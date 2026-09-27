@@ -203,6 +203,68 @@ Alpine.data('categoryPicker', (config) => ({
     },
 }));
 
+
+/**
+ * Live Google-result preview for the SEO fields.
+ *
+ * Authors could previously type a twelve-character title with no way of
+ * knowing it was too short, or a 400-character description that Google would
+ * simply cut. This shows the snippet as it will appear, counts against the
+ * windows Google actually displays, and says when a field is falling back to
+ * the article title or excerpt.
+ */
+Alpine.data('seoPreview', (config) => ({
+    shownTitle: '',
+    shownDescription: '',
+    titleLength: 0,
+    descriptionLength: 0,
+    usingFallbackTitle: false,
+    usingFallbackDescription: false,
+
+    init() {
+        const names = [config.title, config.description, config.fallbackTitle, config.fallbackDescription];
+
+        names.filter(Boolean).forEach((name) => {
+            const el = this.field(name);
+            if (el) el.addEventListener('input', () => this.refresh());
+        });
+
+        this.refresh();
+    },
+
+    field(name) {
+        return name ? document.querySelector(`[name="${CSS.escape(name)}"]`) : null;
+    },
+
+    value(name) {
+        return (this.field(name)?.value ?? '').trim();
+    },
+
+    refresh() {
+        const title = this.value(config.title);
+        const fallbackTitle = this.value(config.fallbackTitle);
+
+        this.usingFallbackTitle = !title && !!fallbackTitle;
+        this.shownTitle = title || (fallbackTitle ? fallbackTitle + (config.suffix || '') : '');
+        this.titleLength = this.shownTitle.length;
+
+        const description = this.value(config.description);
+        const fallbackDescription = this.value(config.fallbackDescription);
+
+        this.usingFallbackDescription = !description && !!fallbackDescription;
+        this.shownDescription = description || fallbackDescription;
+        this.descriptionLength = this.shownDescription.length;
+    },
+
+    verdict(length, min, max) {
+        if (length === 0) return 'is-empty';
+        if (length < min) return 'is-short';
+        if (length > max) return 'is-long';
+
+        return 'is-good';
+    },
+}));
+
 Alpine.start();
 
 /* ------------------------------------------------------------------ Trix */

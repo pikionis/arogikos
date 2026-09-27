@@ -79,7 +79,11 @@ return [
             ['key' => 'maps_embed_url', 'label' => 'Google Maps embed URL', 'type' => 'url',
                 'hint' => 'Η διεύθυνση από το «Ενσωμάτωση χάρτη» του Google Maps.'],
             ['key' => 'ga_id', 'label' => 'Google Analytics ID', 'type' => 'text',
-                'hint' => 'π.χ. G-XXXXXXX. Αν μείνει κενό, δεν φορτώνεται κανένα script παρακολούθησης.'],
+                'hint' => 'Μορφή G-XXXXXXXXXX, από Analytics → Διαχείριση → Ροές δεδομένων. Αν μείνει κενό, δεν φορτώνεται κανένα script παρακολούθησης.'],
+            ['key' => 'google_ads_id', 'label' => 'Google Ads ID', 'type' => 'text',
+                'hint' => 'Μορφή AW-XXXXXXXXX, από Google Ads → Εργαλεία → Μετατροπές. Χρειάζεται μόνο αν τρέχετε διαφημίσεις.'],
+            ['key' => 'google_ads_conversion_label', 'label' => 'Ετικέτα μετατροπής (Ads)', 'type' => 'text',
+                'hint' => 'Το κομμάτι μετά την κάθετο, π.χ. AbC-D_efGh. Όταν συμπληρωθεί, κάθε υποβολή της φόρμας επικοινωνίας μετριέται ως μετατροπή.'],
         ],
     ],
 

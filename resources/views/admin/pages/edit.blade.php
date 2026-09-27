@@ -50,6 +50,15 @@
                         <div style="height:12px"></div>
                     @endisset
 
+                    {{-- The SEO group gets the same live Google preview the
+                         article form uses, so nobody has to guess at lengths. --}}
+                    @if (collect($group['fields'])->pluck('key')->contains('seo.title'))
+                        <x-admin.seo-preview
+                            title-name="fields[seo.title]"
+                            description-name="fields[seo.description]"
+                            :url="isset($page['route']) ? route($page['route']) : url('/')" />
+                    @endif
+
                     @foreach ($group['fields'] as $field)
                         @if ($field['type'] === 'repeater')
                             @php $items = $values[$field['key']] ?? []; @endphp
