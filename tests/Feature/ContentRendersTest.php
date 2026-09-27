@@ -83,7 +83,9 @@ it('renders the shared service names on home, services and the footer', function
 it('renders the four why-Arogi points on home', function () {
     $html = $this->get(route('home'))->assertOk()->getContent();
 
-    foreach (config('cms-content.home.groups')[2]['fields'][3]['default'] as $item) {
+    // Looked up by key, not by position: adding a group to the page must not
+    // silently point this test at something else.
+    foreach (content_items('home.why.items') as $item) {
         expect($html)->toContain(e($item['title']));
     }
 });
