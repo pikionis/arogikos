@@ -1,0 +1,516 @@
+/* ============================================================
+   ΑΡΩΓΗ — εξώφυλλα άρθρων
+
+   Μία σκηνή ανά άρθρο, διαλεγμένη από τον αρθρογράφο. Τα ονόματα
+   κλάσεων επαναλαμβάνονται ανάμεσα στις σκηνές, γι' αυτό κάθε κανόνας
+   και κάθε @keyframes φέρει το κλειδί της σκηνής: δύο εξώφυλλα στην
+   ίδια σελίδα αλλιώς θα οδηγούσαν το ένα την κίνηση του άλλου.
+
+   Η κίνηση παίζει μόνο κάτω από .is-live — δηλαδή στη σελίδα του
+   άρθρου. Στη λίστα του blog τα εξώφυλλα είναι ακίνητα: εννιά
+   κινούμενες σκηνές μαζί είναι λούνα παρκ, όχι κέντρο μάθησης.
+
+   Παράγεται από τα artboards του καμβά· μετά την εξαγωγή, πηγή είναι
+   αυτό το αρχείο και τα resources/views/covers/*.blade.php.
+   ============================================================ */
+
+/* Οι σκηνές εμφανίζονται και στο site και στο panel, όπου η παλέτα έχει
+   άλλα ονόματα. Δηλώνονται εδώ ώστε το εξώφυλλο να είναι αυτάρκες. */
+.cv {
+  --green: var(--color-green, #1E9E58);
+  --coral: var(--color-coral, #E26D5A);
+  --yellow: var(--color-yellow, #F4B62A);
+  --soft-green: var(--color-soft-green, #EAF6EF);
+  --soft-coral: var(--color-soft-coral, #FCEEE9);
+  --soft-yellow: var(--color-soft-yellow, #FFF7E6);
+  --off-white: var(--color-off-white, #FAF8F5);
+  --white: #FFFFFF;
+
+  display: block; width: 100%; height: 100%;
+}
+.cv-svg { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---- dyslexia · Σελίδα με γραμμές ---- */
+@keyframes cv-dyslexia-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-26px); } }
+@keyframes cv-dyslexia-float-b { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(20px); } }
+@keyframes cv-dyslexia-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-dyslexia-twinkle { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.25; } }
+@keyframes cv-dyslexia-halo { 0%, 100% { transform: scale(1); opacity: 0.45; } 50% { transform: scale(1.28); opacity: 0.06; } }
+@keyframes cv-dyslexia-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-dyslexia-settle-right {
+  0%, 50% { transform: translateX(0); }
+  68%, 82% { transform: translateX(-30px); }
+  100% { transform: translateX(0); }
+}
+@keyframes cv-dyslexia-settle-left {
+  0%, 50% { transform: translateX(0); }
+  68%, 82% { transform: translateX(24px); }
+  100% { transform: translateX(0); }
+}
+@keyframes cv-dyslexia-ribbon { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2.6deg); } }
+@keyframes cv-dyslexia-tilt-back { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(-1.4deg); } }
+.cv-dyslexia.is-live .f-a { animation: cv-dyslexia-float-a 9s ease-in-out infinite; }
+.cv-dyslexia.is-live .f-b { animation: cv-dyslexia-float-b 11s ease-in-out infinite; }
+.cv-dyslexia.is-live .br { animation: cv-dyslexia-breathe 13s ease-in-out infinite; }
+.cv-dyslexia.is-live .tw { animation: cv-dyslexia-twinkle 7s ease-in-out infinite; }
+.cv-dyslexia.is-live .halo { animation: cv-dyslexia-halo 7s ease-in-out infinite; }
+.cv-dyslexia.is-live .orbit { animation: cv-dyslexia-orbit 34s linear infinite; transform-origin: 800px 528px; }
+.cv-dyslexia.is-live .d1 { animation-delay: -1.4s; }
+.cv-dyslexia.is-live .d2 { animation-delay: -2.8s; }
+.cv-dyslexia.is-live .d3 { animation-delay: -4.2s; }
+.cv-dyslexia.is-live .d4 { animation-delay: -5.6s; }
+.cv-dyslexia.is-live .line-a { animation: cv-dyslexia-settle-right 8s ease-in-out infinite; }
+.cv-dyslexia.is-live .line-b { animation: cv-dyslexia-settle-left 8s ease-in-out infinite; }
+.cv-dyslexia.is-live .ribbon { animation: cv-dyslexia-ribbon 6s ease-in-out infinite; transform-origin: 1046px 292px; }
+.cv-dyslexia.is-live .back { animation: cv-dyslexia-tilt-back 15s ease-in-out infinite; transform-origin: 800px 528px; }
+
+/* ---- arithmetic · Πλέγμα σχημάτων ---- */
+@keyframes cv-arithmetic-find-slot {
+  0%, 16% { transform: translate(0, 0) rotate(-8deg); }
+  40%, 66% { transform: translate(-108px, 68px) rotate(0deg); }
+  92%, 100% { transform: translate(0, 0) rotate(-8deg); }
+}
+@keyframes cv-arithmetic-guide-fade { 0%, 16% { opacity: 0.5; } 40%, 66% { opacity: 0; } 92%, 100% { opacity: 0.5; } }
+@keyframes cv-arithmetic-cell-pulse { 0%, 34%, 100% { transform: scale(1); } 14% { transform: scale(1.07); } }
+@keyframes cv-arithmetic-ring-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-arithmetic-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-arithmetic-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-24px); } }
+@keyframes cv-arithmetic-twinkle { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.22; } }
+.cv-arithmetic.is-live .stray { animation: cv-arithmetic-find-slot 9s ease-in-out infinite; transform-origin: 1160px 610px; }
+.cv-arithmetic.is-live .guide { animation: cv-arithmetic-guide-fade 9s ease-in-out infinite; }
+.cv-arithmetic.is-live .cell { animation: cv-arithmetic-cell-pulse 9s ease-in-out infinite; }
+.cv-arithmetic.is-live .k1 { animation-delay: 0s; }
+.cv-arithmetic.is-live .k2 { animation-delay: 0.4s; }
+.cv-arithmetic.is-live .k3 { animation-delay: 0.8s; }
+.cv-arithmetic.is-live .k4 { animation-delay: 1.2s; }
+.cv-arithmetic.is-live .k5 { animation-delay: 1.6s; }
+.cv-arithmetic.is-live .k6 { animation-delay: 2s; }
+.cv-arithmetic.is-live .k7 { animation-delay: 2.4s; }
+.cv-arithmetic.is-live .k8 { animation-delay: 2.8s; }
+.cv-arithmetic.is-live .slowring { animation: cv-arithmetic-ring-slow 46s linear infinite; transform-origin: 800px 540px; }
+.cv-arithmetic.is-live .br { animation: cv-arithmetic-breathe 14s ease-in-out infinite; }
+.cv-arithmetic.is-live .f-a { animation: cv-arithmetic-float-a 10s ease-in-out infinite; }
+.cv-arithmetic.is-live .tw { animation: cv-arithmetic-twinkle 6s ease-in-out infinite; }
+.cv-arithmetic.is-live .d1 { animation-delay: -1.6s; }
+.cv-arithmetic.is-live .d2 { animation-delay: -3.2s; }
+.cv-arithmetic.is-live .d3 { animation-delay: -4.8s; }
+
+/* ---- attention · Από τον θόρυβο στην εστίαση ---- */
+@keyframes cv-attention-quieten { 0%, 100% { opacity: 1; } 55% { opacity: 0.16; } }
+@keyframes cv-attention-scatter {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-22px, 16px); }
+  55% { transform: translate(14px, -20px); }
+  80% { transform: translate(-10px, -8px); }
+}
+@keyframes cv-attention-focus-grow { 0%, 100% { transform: scale(1); } 55% { transform: scale(1.07); } }
+@keyframes cv-attention-halo { 0%, 100% { transform: scale(1); opacity: 0.4; } 55% { transform: scale(1.3); opacity: 0.05; } }
+@keyframes cv-attention-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-attention-calm-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+.cv-attention.is-live .noise { animation: cv-attention-quieten 9s ease-in-out infinite; }
+.cv-attention.is-live .n2 { animation-delay: -0.6s; }
+.cv-attention.is-live .n3 { animation-delay: -1.2s; }
+.cv-attention.is-live .n4 { animation-delay: -1.8s; }
+.cv-attention.is-live .n5 { animation-delay: -2.4s; }
+.cv-attention.is-live .n6 { animation-delay: -3s; }
+.cv-attention.is-live .n7 { animation-delay: -3.6s; }
+.cv-attention.is-live .chaos { animation: cv-attention-scatter 7s ease-in-out infinite; }
+.cv-attention.is-live .x2 { animation-delay: -2s; }
+.cv-attention.is-live .x3 { animation-delay: -4s; }
+.cv-attention.is-live .x4 { animation-delay: -5.5s; }
+.cv-attention.is-live .focus { animation: cv-attention-focus-grow 9s ease-in-out infinite; transform-origin: 1230px 500px; }
+.cv-attention.is-live .halo { animation: cv-attention-halo 9s ease-in-out infinite; transform-origin: 1230px 500px; }
+.cv-attention.is-live .br { animation: cv-attention-breathe 15s ease-in-out infinite; }
+.cv-attention.is-live .calm { animation: cv-attention-calm-float 9s ease-in-out infinite; }
+.cv-attention.is-live .c2 { animation-delay: -3s; }
+.cv-attention.is-live .c3 { animation-delay: -6s; }
+
+/* ---- routine · Ρυθμός και επανάληψη ---- */
+@keyframes cv-routine-marker {
+  0%, 10% { transform: translateX(0); }
+  16%, 26% { transform: translateX(160px); }
+  32%, 42% { transform: translateX(320px); }
+  48%, 58% { transform: translateX(480px); }
+  64%, 74% { transform: translateX(640px); }
+  80%, 94% { transform: translateX(800px); }
+  100% { transform: translateX(0); }
+}
+@keyframes cv-routine-bar-lift {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.05); }
+}
+@keyframes cv-routine-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-routine-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }
+@keyframes cv-routine-twinkle { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.2; } }
+@keyframes cv-routine-arcglow { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.6; } }
+.cv-routine.is-live .marker { animation: cv-routine-marker 14s ease-in-out infinite; }
+.cv-routine.is-live .bar { animation: cv-routine-bar-lift 8s ease-in-out infinite; }
+.cv-routine.is-live .b1 { animation-delay: 0s; }
+.cv-routine.is-live .b2 { animation-delay: 0.5s; }
+.cv-routine.is-live .b3 { animation-delay: 1s; }
+.cv-routine.is-live .b4 { animation-delay: 1.5s; }
+.cv-routine.is-live .b5 { animation-delay: 2s; }
+.cv-routine.is-live .b6 { animation-delay: 2.5s; }
+.cv-routine.is-live .br { animation: cv-routine-breathe 15s ease-in-out infinite; }
+.cv-routine.is-live .f-a { animation: cv-routine-float-a 10s ease-in-out infinite; }
+.cv-routine.is-live .tw { animation: cv-routine-twinkle 7s ease-in-out infinite; }
+.cv-routine.is-live .arc { animation: cv-routine-arcglow 9s ease-in-out infinite; }
+.cv-routine.is-live .d1 { animation-delay: -2s; }
+.cv-routine.is-live .d2 { animation-delay: -4s; }
+.cv-routine.is-live .d3 { animation-delay: -6s; }
+
+/* ---- calm · Κύκλοι που ηρεμούν ---- */
+@keyframes cv-calm-ripple {
+  0%, 100% { transform: scale(1); opacity: var(--rest); }
+  50% { transform: scale(1.1); opacity: var(--peak); }
+}
+@keyframes cv-calm-breathe-in { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.03); } }
+@keyframes cv-calm-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-calm-orbit-back { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+@keyframes cv-calm-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes cv-calm-twinkle { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.2; } }
+.cv-calm.is-live .ring { animation: cv-calm-ripple 7s ease-in-out infinite; transform-origin: 800px 520px; }
+.cv-calm.is-live .r1 { --rest: 0.45; --peak: 0.2; animation-delay: 0s; }
+.cv-calm.is-live .r2 { --rest: 0.32; --peak: 0.13; animation-delay: 0.7s; }
+.cv-calm.is-live .r3 { --rest: 0.2; --peak: 0.07; animation-delay: 1.4s; }
+.cv-calm.is-live .r4 { --rest: 0.11; --peak: 0.03; animation-delay: 2.1s; }
+.cv-calm.is-live .figure { animation: cv-calm-breathe-in 7s ease-in-out infinite; transform-origin: 800px 700px; }
+.cv-calm.is-live .orbit { animation: cv-calm-orbit 40s linear infinite; transform-origin: 800px 520px; }
+.cv-calm.is-live .orbit-b { animation: cv-calm-orbit-back 56s linear infinite; transform-origin: 800px 520px; }
+.cv-calm.is-live .br { animation: cv-calm-breathe 15s ease-in-out infinite; }
+.cv-calm.is-live .tw { animation: cv-calm-twinkle 6s ease-in-out infinite; }
+.cv-calm.is-live .d1 { animation-delay: -2s; }
+.cv-calm.is-live .d2 { animation-delay: -4s; }
+
+/* ---- threshold · Σπίτι και σχολείο ---- */
+@keyframes cv-threshold-hesitate {
+  0%, 100% { transform: translateX(0); }
+  40%, 60% { transform: translateX(26px); }
+}
+@keyframes cv-threshold-doorlight { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+@keyframes cv-threshold-glide { 0% { transform: translate(0, 0); } 100% { transform: translate(430px, -36px); } }
+@keyframes cv-threshold-leafsway { 0%, 100% { transform: rotate(-2.5deg); } 50% { transform: rotate(2.5deg); } }
+@keyframes cv-threshold-cloud { 0% { transform: translateX(0); } 100% { transform: translateX(300px); } }
+@keyframes cv-threshold-strapsway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+.cv-threshold.is-live .child { animation: cv-threshold-hesitate 9s ease-in-out infinite; }
+.cv-threshold.is-live .doorlight { animation: cv-threshold-doorlight 9s ease-in-out infinite; }
+.cv-threshold.is-live .bird { animation: cv-threshold-glide 20s linear infinite; }
+.cv-threshold.is-live .tree { animation: cv-threshold-leafsway 8s ease-in-out infinite; transform-origin: 300px 760px; }
+.cv-threshold.is-live .cloud { animation: cv-threshold-cloud 40s linear infinite; }
+.cv-threshold.is-live .c2 { animation-duration: 55s; animation-delay: -20s; }
+.cv-threshold.is-live .strap { animation: cv-threshold-strapsway 6s ease-in-out infinite; transform-origin: 596px 700px; }
+
+/* ---- growth · Ανατολή και ανάπτυξη ---- */
+@keyframes cv-growth-rise { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }
+@keyframes cv-growth-widen { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(1.12); } }
+@keyframes cv-growth-unfurl { 0%, 100% { transform: rotate(-5deg) scale(1); } 50% { transform: rotate(3deg) scale(1.06); } }
+@keyframes cv-growth-rayspin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-growth-sparkle { 0%, 100% { transform: scale(0.6); opacity: 0.15; } 50% { transform: scale(1); opacity: 0.9; } }
+@keyframes cv-growth-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-growth.is-live .sun { animation: cv-growth-rise 9s ease-in-out infinite; }
+.cv-growth.is-live .shadow { animation: cv-growth-widen 9s ease-in-out infinite; transform-origin: 800px 764px; }
+.cv-growth.is-live .rays { animation: cv-growth-rayspin 70s linear infinite; transform-origin: 800px 500px; }
+.cv-growth.is-live .leaf-l { animation: cv-growth-unfurl 8s ease-in-out infinite; transform-origin: 800px 700px; }
+.cv-growth.is-live .leaf-r { animation: cv-growth-unfurl 10s ease-in-out infinite; transform-origin: 800px 700px; }
+.cv-growth.is-live .spk { animation: cv-growth-sparkle 5s ease-in-out infinite; }
+.cv-growth.is-live .s2 { animation-delay: -1.6s; }
+.cv-growth.is-live .s3 { animation-delay: -3.2s; }
+.cv-growth.is-live .s4 { animation-delay: -0.8s; }
+.cv-growth.is-live .br { animation: cv-growth-breathe 15s ease-in-out infinite; }
+.cv-growth.is-live .d1 { animation-delay: -3s; }
+
+/* ---- moods · Χρώματα που επικαλύπτονται ---- */
+@keyframes cv-moods-drift-a { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-42px, -30px) scale(1.06); } }
+@keyframes cv-moods-drift-b { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(34px, 40px) scale(0.95); } }
+@keyframes cv-moods-drift-c { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(44px, -24px) scale(1.04); } }
+@keyframes cv-moods-spinslow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-moods-twinkle { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.18; } }
+@keyframes cv-moods-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.cv-moods.is-live .d-a { animation: cv-moods-drift-a 11s ease-in-out infinite; transform-origin: 640px 500px; }
+.cv-moods.is-live .d-b { animation: cv-moods-drift-b 9s ease-in-out infinite; transform-origin: 800px 560px; }
+.cv-moods.is-live .d-c { animation: cv-moods-drift-c 13s ease-in-out infinite; transform-origin: 960px 480px; }
+.cv-moods.is-live .spin { animation: cv-moods-spinslow 60s linear infinite; transform-origin: 800px 520px; }
+.cv-moods.is-live .tw { animation: cv-moods-twinkle 6s ease-in-out infinite; }
+.cv-moods.is-live .br { animation: cv-moods-breathe 16s ease-in-out infinite; }
+.cv-moods.is-live .x1 { animation-delay: -1.5s; }
+.cv-moods.is-live .x2 { animation-delay: -3s; }
+.cv-moods.is-live .x3 { animation-delay: -4.5s; }
+.cv-moods.is-live .x4 { animation-delay: -6s; }
+
+/* ---- boundaries · Ανοιχτή κορνίζα ---- */
+@keyframes cv-boundaries-frame-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+@keyframes cv-boundaries-inner-glow { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.7; } }
+@keyframes cv-boundaries-lift-out { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(-44px); opacity: 0.85; } }
+@keyframes cv-boundaries-tiny-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes cv-boundaries-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-boundaries.is-live .frame { animation: cv-boundaries-frame-breathe 10s ease-in-out infinite; transform-origin: 800px 560px; }
+.cv-boundaries.is-live .inner { animation: cv-boundaries-inner-glow 10s ease-in-out infinite; }
+.cv-boundaries.is-live .out { animation: cv-boundaries-lift-out 9s ease-in-out infinite; }
+.cv-boundaries.is-live .o2 { animation-delay: -3s; }
+.cv-boundaries.is-live .o3 { animation-delay: -6s; }
+.cv-boundaries.is-live .bob { animation: cv-boundaries-tiny-bob 6s ease-in-out infinite; }
+.cv-boundaries.is-live .bob2 { animation: cv-boundaries-tiny-bob 7.5s ease-in-out infinite; }
+.cv-boundaries.is-live .br { animation: cv-boundaries-breathe 16s ease-in-out infinite; }
+.cv-boundaries.is-live .d1 { animation-delay: -4s; }
+
+/* ---- play · Στοίβα από σχήματα ---- */
+@keyframes cv-play-tilt-a { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(4deg); } }
+@keyframes cv-play-tilt-b { 0%, 100% { transform: rotate(5deg); } 50% { transform: rotate(-6deg); } }
+@keyframes cv-play-hop {
+  0%, 55%, 100% { transform: translateY(0) rotate(0deg); }
+  66% { transform: translateY(-140px) rotate(140deg); }
+  78% { transform: translateY(0) rotate(250deg); }
+  86% { transform: translateY(-46px) rotate(300deg); }
+  94% { transform: translateY(0) rotate(340deg); }
+}
+@keyframes cv-play-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-play-wobble { 0%, 100% { transform: rotate(-3deg) translateY(0); } 50% { transform: rotate(3deg) translateY(-10px); } }
+@keyframes cv-play-confetti { 0% { transform: translate(0, -30px) rotate(0deg); opacity: 0; } 15% { opacity: 0.9; } 85% { opacity: 0.9; } 100% { transform: translate(-40px, 380px) rotate(260deg); opacity: 0; } }
+@keyframes cv-play-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-play.is-live .tilt-a { animation: cv-play-tilt-a 8s ease-in-out infinite; transform-origin: 600px 700px; }
+.cv-play.is-live .tilt-b { animation: cv-play-tilt-b 10s ease-in-out infinite; transform-origin: 636px 470px; }
+.cv-play.is-live .hop { animation: cv-play-hop 7s ease-in-out infinite; transform-origin: 830px 620px; }
+.cv-play.is-live .spin { animation: cv-play-spin 24s linear infinite; transform-origin: 1120px 420px; }
+.cv-play.is-live .wob { animation: cv-play-wobble 6s ease-in-out infinite; transform-origin: 960px 400px; }
+.cv-play.is-live .cf { animation: cv-play-confetti 7s linear infinite; }
+.cv-play.is-live .c2 { animation-delay: -1.8s; }
+.cv-play.is-live .c3 { animation-delay: -3.6s; }
+.cv-play.is-live .c4 { animation-delay: -5.4s; }
+.cv-play.is-live .br { animation: cv-play-breathe 15s ease-in-out infinite; }
+.cv-play.is-live .d1 { animation-delay: -4s; }
+
+/* ---- balance · Ζυγαριά ---- */
+@keyframes cv-balance-tip { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+@keyframes cv-balance-pan-left { 0%, 100% { transform: translateY(-46px); } 50% { transform: translateY(46px); } }
+@keyframes cv-balance-pan-right { 0%, 100% { transform: translateY(46px); } 50% { transform: translateY(-46px); } }
+@keyframes cv-balance-screenglow { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+@keyframes cv-balance-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+@keyframes cv-balance-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-balance.is-live .beam { animation: cv-balance-tip 11s ease-in-out infinite; transform-origin: 800px 360px; }
+.cv-balance.is-live .pan-l { animation: cv-balance-pan-left 11s ease-in-out infinite; }
+.cv-balance.is-live .pan-r { animation: cv-balance-pan-right 11s ease-in-out infinite; }
+.cv-balance.is-live .glow { animation: cv-balance-screenglow 5s ease-in-out infinite; }
+.cv-balance.is-live .f-a { animation: cv-balance-float-a 9s ease-in-out infinite; }
+.cv-balance.is-live .br { animation: cv-balance-breathe 15s ease-in-out infinite; }
+.cv-balance.is-live .d1 { animation-delay: -2s; }
+.cv-balance.is-live .d2 { animation-delay: -4s; }
+.cv-balance.is-live .d3 { animation-delay: -6s; }
+
+/* ---- seesaw · Τραμπάλα ---- */
+@keyframes cv-seesaw-seesaw { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes cv-seesaw-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-22px); } }
+@keyframes cv-seesaw-twinkle { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.2; } }
+@keyframes cv-seesaw-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-seesaw-archglow { 0%, 100% { opacity: 0.22; } 50% { opacity: 0.5; } }
+.cv-seesaw.is-live .seesaw { animation: cv-seesaw-seesaw 9s ease-in-out infinite; transform-origin: 800px 640px; }
+.cv-seesaw.is-live .f-a { animation: cv-seesaw-float-a 10s ease-in-out infinite; }
+.cv-seesaw.is-live .tw { animation: cv-seesaw-twinkle 6s ease-in-out infinite; }
+.cv-seesaw.is-live .br { animation: cv-seesaw-breathe 16s ease-in-out infinite; }
+.cv-seesaw.is-live .arc { animation: cv-seesaw-archglow 9s ease-in-out infinite; }
+.cv-seesaw.is-live .d1 { animation-delay: -2s; }
+.cv-seesaw.is-live .d2 { animation-delay: -4s; }
+.cv-seesaw.is-live .d3 { animation-delay: -6s; }
+
+/* ---- branching · Τρεις δρόμοι ---- */
+@keyframes cv-branching-consider { 0%, 24%, 100% { transform: scale(1); } 9% { transform: scale(1.12); } }
+@keyframes cv-branching-pathglow { 0%, 24%, 100% { opacity: 0.55; } 9% { opacity: 1; } }
+@keyframes cv-branching-cloud { 0% { transform: translateX(0); } 100% { transform: translateX(340px); } }
+@keyframes cv-branching-sunbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-branching-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-branching.is-live .end { animation: cv-branching-consider 9s ease-in-out infinite; }
+.cv-branching.is-live .branch { animation: cv-branching-pathglow 9s ease-in-out infinite; }
+.cv-branching.is-live .e1, .cv-branching.is-live .br1 { animation-delay: 0s; }
+.cv-branching.is-live .e2, .cv-branching.is-live .br2 { animation-delay: 3s; }
+.cv-branching.is-live .e3, .cv-branching.is-live .br3 { animation-delay: 6s; }
+.cv-branching.is-live .cloud { animation: cv-branching-cloud 44s linear infinite; }
+.cv-branching.is-live .c2 { animation-duration: 60s; animation-delay: -22s; }
+.cv-branching.is-live .sun { animation: cv-branching-sunbeat 9s ease-in-out infinite; transform-origin: 1330px 200px; }
+.cv-branching.is-live .br { animation: cv-branching-breathe 16s ease-in-out infinite; }
+.cv-branching.is-live .d1 { animation-delay: -4s; }
+
+/* ---- network · Δίκτυο κόμβων ---- */
+@keyframes cv-network-node-pulse { 0%, 26%, 100% { transform: scale(1); } 10% { transform: scale(1.12); } }
+@keyframes cv-network-link-pulse { 0%, 26%, 100% { opacity: 0.22; } 10% { opacity: 0.7; } }
+@keyframes cv-network-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-network-twinkle { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.2; } }
+@keyframes cv-network-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-network.is-live .node { animation: cv-network-node-pulse 10s ease-in-out infinite; }
+.cv-network.is-live .link { animation: cv-network-link-pulse 10s ease-in-out infinite; }
+.cv-network.is-live .n1, .cv-network.is-live .k1 { animation-delay: 0s; }
+.cv-network.is-live .n2, .cv-network.is-live .k2 { animation-delay: 1.4s; }
+.cv-network.is-live .n3, .cv-network.is-live .k3 { animation-delay: 2.8s; }
+.cv-network.is-live .n4, .cv-network.is-live .k4 { animation-delay: 4.2s; }
+.cv-network.is-live .n5, .cv-network.is-live .k5 { animation-delay: 5.6s; }
+.cv-network.is-live .n6, .cv-network.is-live .k6 { animation-delay: 7s; }
+.cv-network.is-live .orbit { animation: cv-network-orbit 54s linear infinite; transform-origin: 800px 520px; }
+.cv-network.is-live .tw { animation: cv-network-twinkle 6s ease-in-out infinite; }
+.cv-network.is-live .br { animation: cv-network-breathe 16s ease-in-out infinite; }
+.cv-network.is-live .d1 { animation-delay: -3s; }
+.cv-network.is-live .d2 { animation-delay: -6s; }
+
+/* ---- journey · Φιδωτός δρόμος ---- */
+@keyframes cv-journey-stop-reach { 0%, 22%, 100% { transform: scale(1); } 9% { transform: scale(1.18); } }
+@keyframes cv-journey-halo-reach { 0%, 22%, 100% { opacity: 0.18; transform: scale(1); } 9% { opacity: 0.55; transform: scale(1.12); } }
+@keyframes cv-journey-needle { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-journey-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+@keyframes cv-journey-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-journey-dashmove { to { stroke-dashoffset: -120; } }
+.cv-journey.is-live .stop { animation: cv-journey-stop-reach 9s ease-in-out infinite; }
+.cv-journey.is-live .halo { animation: cv-journey-halo-reach 9s ease-in-out infinite; }
+.cv-journey.is-live .p1, .cv-journey.is-live .h1 { animation-delay: 0s; }
+.cv-journey.is-live .p2, .cv-journey.is-live .h2 { animation-delay: 2.25s; }
+.cv-journey.is-live .p3, .cv-journey.is-live .h3 { animation-delay: 4.5s; }
+.cv-journey.is-live .p4, .cv-journey.is-live .h4 { animation-delay: 6.75s; }
+.cv-journey.is-live .needle { animation: cv-journey-needle 30s linear infinite; transform-origin: 300px 250px; }
+.cv-journey.is-live .f-a { animation: cv-journey-float-a 10s ease-in-out infinite; }
+.cv-journey.is-live .br { animation: cv-journey-breathe 16s ease-in-out infinite; }
+.cv-journey.is-live .dash { animation: cv-journey-dashmove 6s linear infinite; }
+.cv-journey.is-live .d1 { animation-delay: -3s; }
+.cv-journey.is-live .d2 { animation-delay: -6s; }
+
+/* ---- bridge · Γέφυρα ---- */
+@keyframes cv-bridge-cross {
+  0% { transform: translate(0, 0); opacity: 1; }
+  34% { transform: translate(250px, -20px); opacity: 1; }
+  44% { transform: translate(250px, -20px); opacity: 0; }
+  46%, 56% { transform: translate(-250px, 156px); opacity: 0; }
+  64% { transform: translate(-250px, 156px); opacity: 1; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+@keyframes cv-bridge-step-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes cv-bridge-cloud { 0% { transform: translateX(0); } 100% { transform: translateX(320px); } }
+@keyframes cv-bridge-flagwave { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.84); } }
+@keyframes cv-bridge-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-bridge-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+.cv-bridge.is-live .cross { animation: cv-bridge-cross 10s ease-in-out infinite; }
+.cv-bridge.is-live .bob { animation: cv-bridge-step-bob 1.5s ease-in-out infinite; }
+.cv-bridge.is-live .cloud { animation: cv-bridge-cloud 46s linear infinite; }
+.cv-bridge.is-live .c2 { animation-duration: 62s; animation-delay: -24s; }
+.cv-bridge.is-live .flag { animation: cv-bridge-flagwave 3.4s ease-in-out infinite; transform-origin: 1210px 372px; }
+.cv-bridge.is-live .br { animation: cv-bridge-breathe 16s ease-in-out infinite; }
+.cv-bridge.is-live .f-a { animation: cv-bridge-float-a 10s ease-in-out infinite; }
+.cv-bridge.is-live .d1 { animation-delay: -3s; }
+.cv-bridge.is-live .d2 { animation-delay: -6s; }
+
+/* ---- september · Πρώτη μέρα στο σχολείο ---- */
+@keyframes cv-september-walk {
+  0% { transform: translateX(0); opacity: 1; }
+  56% { transform: translateX(250px); opacity: 1; }
+  66% { transform: translateX(300px); opacity: 0; }
+  67%, 76% { transform: translateX(-260px); opacity: 0; }
+  86% { transform: translateX(-140px); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes cv-september-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes cv-september-wave { 0%, 100% { transform: scaleX(1) skewY(0deg); } 50% { transform: scaleX(0.86) skewY(-4deg); } }
+@keyframes cv-september-tick { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-september-fall {
+  0% { transform: translate(0, -40px) rotate(0deg); opacity: 0; }
+  12% { opacity: 0.9; }
+  88% { opacity: 0.9; }
+  100% { transform: translate(-70px, 430px) rotate(230deg); opacity: 0; }
+}
+@keyframes cv-september-sunbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes cv-september-glide { 0% { transform: translate(0, 0); } 100% { transform: translate(420px, -40px); } }
+@keyframes cv-september-doorlight { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+.cv-september.is-live .walk { animation: cv-september-walk 11s ease-in-out infinite; }
+.cv-september.is-live .w2 { animation-delay: -1.6s; }
+.cv-september.is-live .w3 { animation-delay: -3.2s; }
+.cv-september.is-live .bob { animation: cv-september-bob 1.5s ease-in-out infinite; }
+.cv-september.is-live .b2 { animation-duration: 1.7s; }
+.cv-september.is-live .b3 { animation-duration: 1.3s; }
+.cv-september.is-live .flag { animation: cv-september-wave 3.4s ease-in-out infinite; transform-origin: 1180px 282px; }
+.cv-september.is-live .hand { animation: cv-september-tick 24s linear infinite; transform-origin: 1180px 424px; }
+.cv-september.is-live .leaf { animation: cv-september-fall 9s linear infinite; }
+.cv-september.is-live .l2 { animation-delay: -2.2s; }
+.cv-september.is-live .l3 { animation-delay: -4.4s; }
+.cv-september.is-live .l4 { animation-delay: -6.6s; }
+.cv-september.is-live .sun { animation: cv-september-sunbeat 9s ease-in-out infinite; transform-origin: 250px 190px; }
+.cv-september.is-live .bird { animation: cv-september-glide 17s linear infinite; }
+.cv-september.is-live .bird2 { animation-delay: -8s; }
+.cv-september.is-live .doorlight { animation: cv-september-doorlight 9s ease-in-out infinite; }
+
+/* ---- summit · Κορυφή βουνού ---- */
+@keyframes cv-summit-climb {
+  0%, 12% { transform: translate(0, 0); opacity: 1; }
+  30%, 42% { transform: translate(150px, -132px); opacity: 1; }
+  52% { transform: translate(150px, -132px); opacity: 0; }
+  54%, 62% { transform: translate(-300px, 264px); opacity: 0; }
+  70%, 80% { transform: translate(-300px, 264px); opacity: 1; }
+  88%, 96% { transform: translate(-150px, 132px); opacity: 1; }
+  100% { transform: translate(0, 0); opacity: 1; }
+}
+@keyframes cv-summit-sunrise { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-26px); } }
+@keyframes cv-summit-cloud { 0% { transform: translateX(0); } 100% { transform: translateX(380px); } }
+@keyframes cv-summit-flagwave { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.82); } }
+@keyframes cv-summit-sparkle { 0%, 100% { transform: scale(0.6); opacity: 0.2; } 50% { transform: scale(1); opacity: 0.95; } }
+@keyframes cv-summit-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-summit.is-live .climber { animation: cv-summit-climb 14s ease-in-out infinite; }
+.cv-summit.is-live .sun { animation: cv-summit-sunrise 10s ease-in-out infinite; }
+.cv-summit.is-live .cloud { animation: cv-summit-cloud 48s linear infinite; }
+.cv-summit.is-live .c2 { animation-duration: 64s; animation-delay: -26s; }
+.cv-summit.is-live .flag { animation: cv-summit-flagwave 3.2s ease-in-out infinite; transform-origin: 1128px 252px; }
+.cv-summit.is-live .spk { animation: cv-summit-sparkle 5s ease-in-out infinite; }
+.cv-summit.is-live .s2 { animation-delay: -1.7s; }
+.cv-summit.is-live .s3 { animation-delay: -3.4s; }
+.cv-summit.is-live .br { animation: cv-summit-breathe 16s ease-in-out infinite; }
+.cv-summit.is-live .d1 { animation-delay: -4s; }
+
+/* ---- summer · Παραλία ---- */
+@keyframes cv-summer-drift { from { transform: translateX(0); } to { transform: translateX(-200px); } }
+@keyframes cv-summer-bounce {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(-120px) rotate(70deg); }
+  60% { transform: translateY(0) rotate(150deg); }
+  75% { transform: translateY(-40px) rotate(190deg); }
+  90% { transform: translateY(0) rotate(230deg); }
+}
+@keyframes cv-summer-sway { 0%, 100% { transform: rotate(-1.8deg); } 50% { transform: rotate(1.8deg); } }
+@keyframes cv-summer-sail { 0% { transform: translateX(-120px); } 100% { transform: translateX(560px); } }
+@keyframes cv-summer-glide { 0% { transform: translate(0, 0); } 100% { transform: translate(460px, -50px); } }
+@keyframes cv-summer-sunbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-summer-flagwave { 0%, 100% { transform: scaleX(1); } 50% { transform: scaleX(0.82); } }
+.cv-summer.is-live .wave { animation: cv-summer-drift 7s linear infinite; }
+.cv-summer.is-live .v2 { animation-duration: 9s; }
+.cv-summer.is-live .v3 { animation-duration: 11s; }
+.cv-summer.is-live .ball { animation: cv-summer-bounce 6s ease-in-out infinite; transform-origin: 1120px 856px; }
+.cv-summer.is-live .umbrella { animation: cv-summer-sway 8s ease-in-out infinite; transform-origin: 520px 862px; }
+.cv-summer.is-live .boat { animation: cv-summer-sail 26s linear infinite; }
+.cv-summer.is-live .gull { animation: cv-summer-glide 19s linear infinite; }
+.cv-summer.is-live .g2 { animation-delay: -9s; }
+.cv-summer.is-live .sun { animation: cv-summer-sunbeat 9s ease-in-out infinite; transform-origin: 1330px 200px; }
+.cv-summer.is-live .flag { animation: cv-summer-flagwave 3.2s ease-in-out infinite; transform-origin: 1380px 636px; }
+
+/* ---- announcement · Κύματα και χαρτοπόλεμο ---- */
+@keyframes cv-announcement-ripple-out {
+  0% { transform: scale(0.55); opacity: 0; }
+  20% { opacity: 0.55; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes cv-announcement-wake { 0%, 36%, 100% { transform: scale(1); } 12% { transform: scale(1.08); } }
+@keyframes cv-announcement-confetti {
+  0% { transform: translate(0, -40px) rotate(0deg); opacity: 0; }
+  14% { opacity: 0.95; }
+  86% { opacity: 0.95; }
+  100% { transform: translate(-90px, 500px) rotate(300deg); opacity: 0; }
+}
+@keyframes cv-announcement-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.cv-announcement.is-live .wave { animation: cv-announcement-ripple-out 6s ease-out infinite; transform-origin: 620px 500px; }
+.cv-announcement.is-live .w2 { animation-delay: -2s; }
+.cv-announcement.is-live .w3 { animation-delay: -4s; }
+.cv-announcement.is-live .part { animation: cv-announcement-wake 9s ease-in-out infinite; }
+.cv-announcement.is-live .p2 { animation-delay: 0.9s; }
+.cv-announcement.is-live .p3 { animation-delay: 1.8s; }
+.cv-announcement.is-live .cf { animation: cv-announcement-confetti 7s linear infinite; }
+.cv-announcement.is-live .c2 { animation-delay: -1.2s; }
+.cv-announcement.is-live .c3 { animation-delay: -2.4s; }
+.cv-announcement.is-live .c4 { animation-delay: -3.6s; }
+.cv-announcement.is-live .c5 { animation-delay: -4.8s; }
+.cv-announcement.is-live .c6 { animation-delay: -6s; }
+.cv-announcement.is-live .br { animation: cv-announcement-breathe 16s ease-in-out infinite; }
+.cv-announcement.is-live .d1 { animation-delay: -4s; }
+
+/* Ό,τι κινείται, σταματά όταν το ζητήσει το λειτουργικό. */
+@media (prefers-reduced-motion: reduce) {
+  .cv * { animation: none !important; }
+}

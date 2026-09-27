@@ -155,6 +155,8 @@
                 <section class="a-card">
                     <h2 style="font-size:.95rem;margin:0 0 14px">Εξώφυλλο</h2>
                     <x-admin.image-field name="cover" :model="$article" collection="cover" />
+
+                    <x-admin.cover-picker :selected="old('cover_preset', $article->cover_preset)" />
                 </section>
 
                 <section class="a-card">

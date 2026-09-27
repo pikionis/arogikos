@@ -23,6 +23,9 @@
 
 @import './_tokens.css';
 
+/* Οι σκηνές των εξωφύλλων, για την προεπισκόπηση στον επιλογέα. */
+@import './arogi-covers.css';
+
 /* ------------------------------------------------------------------ base */
 
 @layer base {
@@ -577,3 +580,58 @@
         animation-duration: .01ms !important;
     }
 }
+
+/* ------------------------------------------------------ επιλογέας εξωφύλλου
+
+   Είκοσι έτοιμες σκηνές. Ο αρθρογράφος διαλέγει βλέποντας — γι' αυτό η
+   προεπισκόπηση είναι η ίδια η σκηνή και όχι μια μικρογραφία της: ό,τι
+   βλέπει εδώ είναι ακριβώς ό,τι θα βγει στη σελίδα. */
+
+.a-scenes { border: 0; padding: 22px 0 0; margin: 22px 0 0; border-top: 1px solid var(--color-soft-green); }
+.a-scenes-legend { font-size: .95rem; font-weight: 600; padding: 0; margin-bottom: 4px; color: var(--color-ink); }
+
+.a-scene-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+}
+
+.a-scene {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px;
+    border: 2px solid var(--color-soft-green);
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease;
+}
+.a-scene:hover { border-color: var(--color-green-300); background: var(--color-soft-green); }
+.a-scene.is-on { border-color: var(--color-green); background: var(--color-soft-green); }
+
+/* Ο πραγματικός έλεγχος μένει στο DOM για πληκτρολόγιο και αναγνώστες
+   οθόνης — απλώς δεν ζωγραφίζεται. */
+.a-scene input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.a-scene:focus-within { outline: 3px solid var(--color-green); outline-offset: 2px; }
+
+.a-scene-art {
+    display: block;
+    aspect-ratio: 16 / 10;
+    border-radius: 9px;
+    overflow: hidden;
+    background: var(--color-off-white);
+}
+.a-scene-none {
+    background: var(--color-soft-green);
+    display: grid;
+    place-items: center;
+}
+.a-scene-none::after {
+    content: '—';
+    color: var(--color-ink-400);
+    font-size: 1.4rem;
+}
+
+.a-scene-name { font-size: .88rem; font-weight: 600; color: var(--color-ink); }
+.a-scene-for { font-size: .78rem; line-height: 1.35; color: var(--color-ink-600); }

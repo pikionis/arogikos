@@ -28,7 +28,7 @@ class Article extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-        'title', 'slug', 'excerpt', 'body', 'author_id', 'category',
+        'title', 'slug', 'excerpt', 'body', 'author_id', 'category', 'cover_preset',
         'published_at', 'is_published', 'seo_title', 'seo_description',
     ];
 
@@ -154,9 +154,25 @@ class Article extends Model implements HasMedia
         return $this->categoryMeta()['color'];
     }
 
-    /** Branded SVG motif used when the article has no real cover image. */
+    /** Branded SVG motif used when the article has neither cover nor scene. */
     public function getCoverMotifAttribute(): string
     {
         return $this->categoryMeta()['motif'];
+    }
+
+    /**
+     * The chosen cover scene, or null.
+     *
+     * Guarded against a scene that has since been retired from the registry:
+     * the column keeps whatever was picked, but only a scene that still has a
+     * Blade partial may reach the page.
+     */
+    public function getCoverSceneAttribute(): ?string
+    {
+        $key = $this->cover_preset;
+
+        return filled($key) && array_key_exists($key, config('cms-covers', []))
+            ? $key
+            : null;
     }
 }

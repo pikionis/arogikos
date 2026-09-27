@@ -28,6 +28,7 @@
 /* 3 — Design system, faithfully ported. Loaded last so it always wins. */
 @import './arogi.css';
 @import './arogi-motion.css';
+@import './arogi-covers.css';
 
 /* Brand palette mirrored as Tailwind theme tokens (shared with the panel). */
 @import './_tokens.css';

@@ -57,7 +57,7 @@
 
   <div class="container" style="max-width:960px;margin-top:var(--s-10)">
     <div class="frame-soft reveal" style="aspect-ratio:21/9">
-      <x-media-image :model="$article" collection="cover" :motif="$article->cover_motif" :tint="$tint" :alt="$article->title" />
+      <x-media-image :model="$article" collection="cover" :motif="$article->cover_motif" :scene="$article->cover_scene" live :tint="$tint" :alt="$article->title" />
     </div>
   </div>
 

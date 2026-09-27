@@ -38,6 +38,7 @@ class ArticleRequest extends FormRequest
             // Any existing category, archived included: an old article must
             // keep the one it was given even after it stopped being offered.
             'category' => ['nullable', 'string', Rule::in(array_keys(app(Categories::class)->all()))],
+            'cover_preset' => ['nullable', 'string', Rule::in(array_keys(config('cms-covers', [])))],
             'published_at' => ['nullable', 'date'],
             'is_published' => ['boolean'],
             'seo_title' => ['nullable', 'string', 'max:200'],

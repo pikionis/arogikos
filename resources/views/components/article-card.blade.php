@@ -20,6 +20,7 @@
             :model="$article"
             collection="cover"
             :motif="$article->cover_motif"
+            :scene="$article->cover_scene"
             :tint="$tint"
             :alt="$article->title"
             imgClass="cover-zoom"

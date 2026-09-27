@@ -118,6 +118,9 @@ class ArticleController extends Controller
         $article->body = $data['body'] ?? null;
         $article->author_id = $data['author_id'] ?? null;
         $article->category = $data['category'] ?? null;
+        // Empty means "no ready-made scene", which is a null and not a '' —
+        // the accessor looks the key up in the registry either way.
+        $article->cover_preset = filled($data['cover_preset'] ?? null) ? $data['cover_preset'] : null;
         $article->seo_title = $data['seo_title'] ?? null;
         $article->seo_description = $data['seo_description'] ?? null;
         $article->is_published = $data['is_published'] ?? false;
