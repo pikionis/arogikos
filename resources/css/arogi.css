@@ -441,3 +441,38 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   .event-date { margin-inline: auto; }
   .event-info .meta { justify-content: center; }
 }
+
+/* ---- numbered process steps (services page) ---- */
+.step-list { list-style: none; counter-reset: step; display: grid; gap: var(--s-3); }
+.step-list li { counter-increment: step; position: relative; padding-left: 44px; color: var(--ink-600); }
+.step-list li::before {
+  content: counter(step);
+  position: absolute; left: 0; top: -2px;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--soft-green); color: var(--green-700);
+  font-family: var(--font-head); font-weight: 800; font-size: .9rem;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ---- FAQ accordion ---- */
+.faq-item {
+  border: 1.5px solid var(--hair); border-radius: var(--r-md);
+  background: #fff; padding: 0; overflow: hidden;
+  transition: border-color .2s var(--ease-out);
+}
+.faq-item[open] { border-color: var(--green-300); }
+.faq-item summary {
+  cursor: pointer; list-style: none;
+  padding: var(--s-4) var(--s-5);
+  font-family: var(--font-head); font-weight: 700; font-size: 1.02rem;
+  color: var(--ink); display: flex; align-items: center; justify-content: space-between; gap: var(--s-4);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "+"; flex: none;
+  font-size: 1.4rem; line-height: 1; color: var(--green-700);
+  transition: transform .2s var(--ease-out);
+}
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item summary:hover { color: var(--green-700); }
+.faq-item p { padding: 0 var(--s-5) var(--s-5); color: var(--ink-600); margin: 0; }

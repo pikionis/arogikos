@@ -8,6 +8,7 @@
         ['name' => 'Αρχική', 'url' => route('home')],
         ['name' => content('services.hero.crumb'), 'url' => route('services')],
     ])" />
+    <x-schema :data="App\Support\StructuredData::faq()" />
 @endsection
 
 @section('content')
@@ -43,12 +44,31 @@
           <span class="zig-tag" style="background:{{ $layout['tagBg'] }};color:{{ $layout['tagColor'] }}">{{ content('services.tag_prefix') }} {{ str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) }}</span>
           <h2>{{ $service['name'] ?? '' }}</h2>
           <p class="lead" style="margin:var(--s-4) 0 var(--s-5)">{{ $service['lead'] ?? '' }}</p>
+          @if (filled($service['signs'] ?? []))
+            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">Πότε να απευθυνθείτε</h3>
+            <ul class="tri-list" style="margin-bottom:var(--s-5)">
+              @foreach ((array) $service['signs'] as $sign)
+                <li>{{ $sign }}</li>
+              @endforeach
+            </ul>
+          @endif
+
           @if (filled($service['bullets'] ?? []))
-            <ul class="tri-list" style="margin-bottom:var(--s-6)">
+            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">Τι περιλαμβάνει</h3>
+            <ul class="tri-list" style="margin-bottom:var(--s-5)">
               @foreach ((array) $service['bullets'] as $bullet)
                 <li>{{ $bullet }}</li>
               @endforeach
             </ul>
+          @endif
+
+          @if (filled($service['process'] ?? []))
+            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">Πώς δουλεύουμε</h3>
+            <ol class="step-list" style="margin-bottom:var(--s-6)">
+              @foreach ((array) $service['process'] as $step)
+                <li>{{ $step }}</li>
+              @endforeach
+            </ol>
           @endif
           <p style="color:var(--ink-400);font-weight:700;font-family:var(--font-head)">{{ $service['note'] ?? '' }}</p>
         </div>
@@ -56,6 +76,30 @@
     </div>
   </section>
 @endforeach
+
+@php
+  // Blank slots are how staff remove a question, so only render the filled ones.
+  $faqs = collect(content_items('services.faq'))
+      ->filter(fn (array $f) => filled($f['question'] ?? null) && filled($f['answer'] ?? null))
+      ->values();
+@endphp
+
+@if ($faqs->isNotEmpty())
+<section class="section bg-white" id="syxnes-erotiseis">
+  <div class="container" style="max-width:820px">
+    <x-section-head :title="content('services.faq_title')" :lead="content('services.faq_lead')" />
+
+    <div style="display:grid;gap:var(--s-3);margin-top:var(--s-10)">
+      @foreach ($faqs as $faq)
+        <details class="faq-item reveal">
+          <summary>{{ $faq['question'] }}</summary>
+          <p>{{ $faq['answer'] }}</p>
+        </details>
+      @endforeach
+    </div>
+  </div>
+</section>
+@endif
 
 <section class="section-sm bg-green">
   <div class="container center">

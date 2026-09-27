@@ -251,6 +251,37 @@ class StructuredData
         return $node;
     }
 
+    /* ------------------------------------------------------------------ faq */
+
+    /**
+     * FAQPage for the services page.
+     *
+     * Only the filled-in pairs: an empty slot is how staff remove a question,
+     * and a blank entry here would be invalid markup.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function faq(): ?array
+    {
+        $entries = collect(content_items('services.faq'))
+            ->filter(fn (array $f) => filled($f['question'] ?? null) && filled($f['answer'] ?? null))
+            ->values();
+
+        if ($entries->isEmpty()) {
+            return null;
+        }
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => $entries->map(fn (array $f) => [
+                '@type' => 'Question',
+                'name' => $f['question'],
+                'acceptedAnswer' => ['@type' => 'Answer', 'text' => $f['answer']],
+            ])->all(),
+        ];
+    }
+
     /* ---------------------------------------------------------- breadcrumbs */
 
     /**
