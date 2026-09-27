@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('meta_title', 'Blog — Αρωγή')
-@section('meta_description', 'Άρθρα και συμβουλές από τους εκπαιδευτικούς και ειδικούς της Αρωγής.')
+@section('meta_title', content('blog.seo.title'))
+@section('meta_description', content('blog.seo.description'))
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([

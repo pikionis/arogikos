@@ -306,18 +306,20 @@ it('strips scripts from the About page prose body', function () {
     $this->get(route('about'))->assertOk()->assertDontSee('alert(1)', false);
 });
 
-it('saves the About page SEO fields', function () {
+it('edits the About page SEO from the one place that owns it', function () {
+    // SEO used to live on the pages table as well, which meant two fields for
+    // the same tag that could disagree. It is the content registry now.
     $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'about'), [
-        'fields' => [],
-        'page' => [
-            'body' => '<p>Κείμενο</p>',
-            'seo_title' => 'Ο τίτλος SEO μας',
-            'seo_description' => 'Η περιγραφή SEO μας',
+        'fields' => [
+            'seo.title' => 'Ο τίτλος SEO μας για τη Google',
+            'seo.description' => 'Η περιγραφή SEO μας για τη Google.',
         ],
-    ]);
+        'page' => ['body' => '<p>Η ιστορία μας</p>'],
+    ])->assertRedirect();
 
     $this->get(route('about'))
         ->assertOk()
-        ->assertSee('Ο τίτλος SEO μας', false)
-        ->assertSee('Η περιγραφή SEO μας', false);
+        ->assertSee('Ο τίτλος SEO μας για τη Google', false)
+        ->assertSee('Η περιγραφή SEO μας για τη Google.', false)
+        ->assertSeeText('Η ιστορία μας');
 });

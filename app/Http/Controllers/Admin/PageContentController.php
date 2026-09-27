@@ -279,8 +279,8 @@ class PageContentController extends Controller
     }
 
     /**
-     * The About and Services pages keep their prose body and SEO fields in the
-     * `pages` table, which the public templates already read.
+     * The About and Services pages keep their prose body in the `pages` table,
+     * which the public templates already read.
      */
     private function savePageModel(string $pageKey, Request $request): void
     {
@@ -292,13 +292,12 @@ class PageContentController extends Controller
 
         $validated = $request->validate([
             'page.body' => ['nullable', 'string', 'max:500000'],
-            'page.seo_title' => ['nullable', 'string', 'max:200'],
-            'page.seo_description' => ['nullable', 'string', 'max:300'],
         ]);
 
+        // SEO title and description live in the content registry now, one
+        // field per page, so there is a single place to edit them rather than
+        // two that can disagree.
         $model->body = HtmlSanitizer::clean($validated['page']['body'] ?? null);
-        $model->seo_title = $validated['page']['seo_title'] ?? null;
-        $model->seo_description = $validated['page']['seo_description'] ?? null;
         $model->save();
     }
 

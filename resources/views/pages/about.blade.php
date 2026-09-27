@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('meta_title', $page?->seo_title ?? 'Σχετικά με εμάς — Αρωγή')
-@section('meta_description', $page?->seo_description ?? 'Η ιστορία, η φιλοσοφία και η ομάδα της Αρωγής — κέντρο μάθησης και συμβουλευτικής στην Κω.')
+@section('meta_title', content('about.seo.title'))
+@section('meta_description', content('about.seo.description'))
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('meta_title', 'Εκδηλώσεις — Αρωγή')
-@section('meta_description', 'Εργαστήρια, ημερίδες και εκδηλώσεις της Αρωγής για γονείς, παιδιά και εκπαιδευτικούς στην Κω.')
+@section('meta_title', content('events.seo.title'))
+@section('meta_description', content('events.seo.description'))
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([

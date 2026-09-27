@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('meta_title', 'Επικοινωνία — Αρωγή')
-@section('meta_description', 'Επικοινωνήστε με την Αρωγή στην Κω — τηλέφωνο, email, φόρμα και χάρτης.')
+@section('meta_title', content('contact.seo.title'))
+@section('meta_description', content('contact.seo.description'))
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([

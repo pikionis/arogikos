@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('meta_title', 'Gallery — Αρωγή')
-@section('meta_description', 'Στιγμές από τις δραστηριότητες, τους χώρους και τις εκδηλώσεις της Αρωγής στην Κω.')
+@section('meta_title', content('gallery.seo.title'))
+@section('meta_description', content('gallery.seo.description'))
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([

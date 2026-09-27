@@ -1,5 +1,8 @@
 @extends('layouts.app')
 
+@section('meta_title', content('home.seo.title'))
+@section('meta_description', content('home.seo.description'))
+
 @section('content')
 <!-- ============ HERO ============ -->
 <section class="hero">

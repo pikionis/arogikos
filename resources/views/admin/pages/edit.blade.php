@@ -104,27 +104,15 @@
             {{-- The two pages that also own a `pages` row. --}}
             @if ($pageModel)
                 <section class="a-card">
-                    <h2 style="font-size:1rem;margin:0 0 4px">Κυρίως κείμενο &amp; SEO</h2>
+                    <h2 style="font-size:1rem;margin:0 0 4px">Κυρίως κείμενο</h2>
                     <p style="color:var(--color-ink-400);font-size:.84rem;margin:0 0 16px">
-                        Το κείμενο με τη μορφοποίηση που εμφανίζεται μέσα στη σελίδα,
-                        και οι τίτλοι για τις μηχανές αναζήτησης.
+                        Το κείμενο με τη μορφοποίηση που εμφανίζεται μέσα στη σελίδα.
+                        Ο τίτλος και η περιγραφή για τη Google ορίζονται παραπάνω.
                     </p>
 
-                    <div class="a-field">
+                    <div class="a-field" style="margin-bottom:0">
                         <label class="a-label" for="page-body">Κυρίως κείμενο</label>
                         <x-admin.rich-text name="page[body]" :value="$pageModel->body" id="page-body" />
-                    </div>
-
-                    <div class="a-field">
-                        <label class="a-label" for="page-seo-title">Τίτλος SEO</label>
-                        <input class="a-input" id="page-seo-title" name="page[seo_title]" type="text"
-                               maxlength="200" value="{{ old('page.seo_title', $pageModel->seo_title) }}">
-                    </div>
-
-                    <div class="a-field" style="margin-bottom:0">
-                        <label class="a-label" for="page-seo-description">Περιγραφή SEO</label>
-                        <textarea class="a-textarea" id="page-seo-description" name="page[seo_description]"
-                                  maxlength="300" style="min-height:70px">{{ old('page.seo_description', $pageModel->seo_description) }}</textarea>
                     </div>
                 </section>
             @endif
