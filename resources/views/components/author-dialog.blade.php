@@ -7,7 +7,7 @@
 
 @php
     $bio = trim((string) $author->bio);
-    $hasMore = mb_strlen($bio) > 180;
+    $hasMore = $author->hasLongBio();
 @endphp
 
 @if ($hasMore)

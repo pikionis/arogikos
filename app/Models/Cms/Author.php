@@ -73,6 +73,19 @@ class Author extends Model implements HasMedia
         $this->addMediaConversion('web')->width(1600)->format('webp')->nonQueued();
     }
 
+    /**
+     * Is there more to this bio than a card can hold?
+     *
+     * Below this it fits whole, and offering to open it would promise
+     * something that is not there. The number lives here rather than in the
+     * three templates that ask, so the card, the dialog and the thing you
+     * press can never disagree about whether there is a dialog at all.
+     */
+    public function hasLongBio(): bool
+    {
+        return mb_strlen(trim((string) $this->bio)) > 180;
+    }
+
     /** Initials for the avatar chip, e.g. "Μαρία Κωνσταντίνου" → "ΜΚ". */
     public function initials(): string
     {

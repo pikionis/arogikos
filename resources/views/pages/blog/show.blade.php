@@ -72,19 +72,11 @@
 
     <div class="container column" style="margin-top:var(--s-12)">
       <div class="author-card reveal" style="--profile-tint:{{ $tint }}">
-        <div class="author-card-photo frame-arch">
-          <x-media-image
-            :model="$article->author"
-            collection="photo"
-            motif="one"
-            :tint="$tint"
-            :alt="$article->author->name"
-          />
-        </div>
+        <x-author-portrait :author="$article->author" :id="$authorId" :tint="$tint" frame="author-card-photo" />
 
         <div class="author-card-text">
           <span class="eyebrow coral">{{ content('blog.author_eyebrow') }}</span>
-          <h3>{{ $article->author->name }}</h3>
+          <h3><x-author-name :author="$article->author" :id="$authorId" /></h3>
           @if (filled($article->author->role_title))
             <p class="role">{{ $article->author->role_title }}</p>
           @endif

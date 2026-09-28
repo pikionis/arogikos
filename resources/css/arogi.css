@@ -684,3 +684,30 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   .author-select-panel { animation: none; }
   .author-select-caret { transition: none; }
 }
+
+/* ---- το προφίλ ως κουμπί ----
+
+   Η φωτογραφία και το όνομα ανοίγουν το ίδιο παράθυρο με το «Περισσότερα».
+   Είναι πραγματικά <button>, όχι div με χειριστή: κάτι που ανοίγει κάτι
+   πρέπει να φτάνεται με Tab και να λέει τι κάνει. */
+
+.profile-portrait {
+  display: block; padding: 0; border: 0; background: none; cursor: pointer;
+  transition: transform .25s var(--ease-out);
+}
+.profile-portrait:hover { transform: translateY(-3px) scale(1.015); }
+.profile-portrait:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; }
+
+.profile-name {
+  padding: 0; border: 0; background: none; cursor: pointer;
+  font: inherit; color: inherit; text-align: inherit;
+  border-bottom: 2px solid transparent;
+  transition: border-color .2s var(--ease-out), color .2s var(--ease-out);
+}
+.profile-name:hover { color: var(--green-700); border-bottom-color: var(--green-300); }
+.profile-name:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .profile-portrait { transition: none; }
+  .profile-portrait:hover { transform: none; }
+}

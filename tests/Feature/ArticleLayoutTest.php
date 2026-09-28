@@ -153,3 +153,29 @@ it('drops the stylesheet rules that dressed it', function () {
 
     expect($css)->not->toContain('lang-switch');
 });
+
+it('opens the author from the photo and the name on an article too', function () {
+    $article = articleWithAuthor(str_repeat('Κείμενο βιογραφικού. ', 20));
+
+    $html = $this->get(route('blog.show', $article->slug))->getContent();
+
+    expect(substr_count($html, 'data-profile-open="author-'.$article->author_id.'"'))->toBe(3)
+        ->and($html)->toContain('class="profile-portrait author-card-photo frame-arch"')
+        ->and($html)->toContain('aria-label="Περισσότερα για Μαρία Παπαδοπούλου"');
+});
+
+it('keeps the bio-length rule in one place', function () {
+    $short = Author::factory()->create(['bio' => str_repeat('α', 180)]);
+    $long = Author::factory()->create(['bio' => str_repeat('α', 181)]);
+
+    // Three templates ask this question; only the model answers it.
+    expect($short->hasLongBio())->toBeFalse()
+        ->and($long->hasLongBio())->toBeTrue();
+
+    foreach (['author-bio', 'author-dialog', 'author-portrait', 'author-name'] as $component) {
+        $src = file_get_contents(resource_path("views/components/$component.blade.php"));
+
+        expect($src)->toContain('hasLongBio()')
+            ->and($src)->not->toContain('180');
+    }
+});

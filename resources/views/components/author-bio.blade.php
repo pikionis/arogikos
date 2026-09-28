@@ -9,8 +9,7 @@
 
 @php
     $bio = trim((string) $author->bio);
-    // Under this the whole thing fits, and a "more" button would be a lie.
-    $hasMore = mb_strlen($bio) > 180;
+    $hasMore = $author->hasLongBio();
 @endphp
 
 @if (filled($bio))

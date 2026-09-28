@@ -120,3 +120,37 @@ it('does not show a withdrawn author at all', function () {
         ->assertOk()
         ->assertDontSee('Αποσυρμένος');
 });
+
+/* ------------------------------------------- the whole profile is the door */
+
+it('opens the profile from the photo and the name, not just the button', function () {
+    $author = Author::factory()->create(['is_active' => true, 'bio' => longBio()]);
+
+    $html = $this->get(route('about'))->assertOk()->getContent();
+
+    // Three ways in, one dialog: portrait, name, and Περισσότερα.
+    expect(substr_count($html, 'data-profile-open="team-'.$author->id.'"'))->toBe(3)
+        ->and($html)->toContain('class="profile-portrait team-photo frame-arch"')
+        ->and($html)->toContain('class="profile-name"');
+});
+
+it('makes those doors reachable by keyboard and says what they do', function () {
+    $author = Author::factory()->create(['is_active' => true, 'name' => 'Μαρία Παπαδοπούλου', 'bio' => longBio()]);
+
+    $html = $this->get(route('about'))->getContent();
+
+    // A picture with a click handler is invisible to Tab and silent to a
+    // screen reader; a button with a label is neither.
+    expect($html)->toContain('aria-label="Περισσότερα για Μαρία Παπαδοπούλου"')
+        ->and(substr_count($html, 'aria-haspopup="dialog"'))->toBe(3);
+});
+
+it('leaves the photo and name inert when there is nothing to open', function () {
+    Author::factory()->create(['is_active' => true, 'bio' => 'Λογοθεραπεύτρια στην Κω.']);
+
+    $html = $this->get(route('about'))->getContent();
+
+    expect($html)->not->toContain('profile-portrait')
+        ->and($html)->not->toContain('profile-name')
+        ->and($html)->not->toContain('aria-haspopup');
+});

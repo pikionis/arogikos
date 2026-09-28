@@ -7,17 +7,9 @@
 @php $id = 'team-'.$author->id; @endphp
 
 <div class="team-card reveal {{ $delay }}">
-    <div class="team-photo frame-arch">
-        <x-media-image
-            :model="$author"
-            collection="photo"
-            motif="one"
-            :tint="$tint"
-            :alt="$author->name"
-        />
-    </div>
+    <x-author-portrait :author="$author" :id="$id" :tint="$tint" frame="team-photo" />
 
-    <h3>{{ $author->name }}</h3>
+    <h3><x-author-name :author="$author" :id="$id" /></h3>
     @if (filled($author->role_title))
         <p class="role">{{ $author->role_title }}</p>
     @endif
