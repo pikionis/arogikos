@@ -25,7 +25,10 @@ enum Role: string
     public function label(): string
     {
         return match ($this) {
-            self::Owner => 'Ιδιοκτήτης',
+            // "Ιδιοκτήτης" reads as the centre's owner, which is not who holds
+            // this account. It is never offered in a role picker — only shown
+            // back to the person who already has it — so the plain word does.
+            self::Owner => 'Admin',
             self::Admin => 'Διαχειριστής',
             self::Editor => 'Συντάκτης',
         };

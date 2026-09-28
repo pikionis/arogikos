@@ -232,3 +232,32 @@ it('lets an owner delete an editor and keeps their author profile for the byline
     expect($author->refresh()->user_id)->toBeNull()
         ->and($author->name)->toBe('Ο Συντάκτης');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Πώς λέγεται ο ρόλος
+|--------------------------------------------------------------------------
+*/
+
+it('calls the top role Admin, not the owner of the centre', function () {
+    $boss = userWithRole(Role::Owner, ['name' => 'Petros Pikionis']);
+
+    $html = $this->actingAs($boss)->get(route('admin.users.index'))->assertOk()->getContent();
+
+    expect($html)->toContain('Admin')
+        ->and($html)->not->toContain('Ιδιοκτήτης');
+
+    // Wherever the panel names your role back to you.
+    $this->actingAs($boss)->get(route('admin.profile.edit'))
+        ->assertOk()
+        ->assertSee('Admin')
+        ->assertDontSee('Ιδιοκτήτης');
+});
+
+it('never offers that role when someone hands one out', function () {
+    // Owner is not in anyone's assignable list, so "Admin" and "Διαχειριστής"
+    // can never sit in the same dropdown looking like the same word.
+    foreach (Role::cases() as $role) {
+        expect($role->assignableRoles())->not->toContain(Role::Owner);
+    }
+});
