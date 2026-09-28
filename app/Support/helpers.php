@@ -6,6 +6,7 @@ use App\Support\Content;
 use App\Support\Settings;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 if (! function_exists('el_date')) {
     /**
@@ -131,5 +132,42 @@ if (! function_exists('home_label')) {
         $nav = content_items('shared.nav');
 
         return trim((string) ($nav[0]['label'] ?? '')) ?: 'Αρχική';
+    }
+}
+
+if (! function_exists('service_list')) {
+    /**
+     * The services, each carrying the anchor its own section will use.
+     *
+     * The links in the hero and the ids further down the page have to agree,
+     * and they are written in two different places in the template. Deriving
+     * both from one list is what keeps them in step the day a service is
+     * renamed or dragged somewhere else in the panel.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    function service_list(): array
+    {
+        $seen = [];
+        $services = [];
+
+        foreach (content_items('services.services') as $service) {
+            // Greek transliterates, so Λογοθεραπεία becomes a link a parent can
+            // recognise in the address bar and send to someone else.
+            $anchor = Str::slug((string) ($service['name'] ?? ''), '-', 'el') ?: 'ypiresia';
+
+            // Two services share a name for as long as it takes to rename one
+            // of them; duplicate ids would send both links to the first.
+            $seen[$anchor] = ($seen[$anchor] ?? 0) + 1;
+
+            if ($seen[$anchor] > 1) {
+                $anchor .= '-'.$seen[$anchor];
+            }
+
+            $service['anchor'] = $anchor;
+            $services[] = $service;
+        }
+
+        return $services;
     }
 }

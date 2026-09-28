@@ -12,11 +12,28 @@
 @endsection
 
 @section('content')
+@php
+  // One list for the whole page: the links below and the section ids further
+  // down both read the anchor from here, so they cannot drift apart.
+  $services = service_list();
+  $named = array_values(array_filter($services, fn (array $s) => filled($s['name'] ?? null)));
+@endphp
+
 <x-page-hero bg="bg-green" :crumb="content('services.hero.crumb')" :title="content('services.hero.title')"
   :lead="content('services.hero.lead')">
   <x-slot:deco>
     <div class="deco deco-ring" style="width:130px;height:130px;top:24px;right:10%"></div>
   </x-slot:deco>
+
+  {{-- A parent arrives for one thing. Naming them all here means they land on
+       it, instead of scrolling past everything else to find out we do it. --}}
+  @if (count($named) > 1)
+    <nav class="jump-list reveal reveal-d2" aria-label="{{ content('services.hero.crumb') }}">
+      @foreach ($named as $service)
+        <a href="#{{ $service['anchor'] }}">{{ $service['name'] }}</a>
+      @endforeach
+    </nav>
+  @endif
 </x-page-hero>
 
 @php
@@ -31,10 +48,10 @@
   ];
 @endphp
 
-@foreach (content_items('services.services') as $i => $service)
+@foreach ($services as $i => $service)
   @php $layout = $layouts[$i % 3]; @endphp
 
-  <section class="section {{ $layout['section'] }}" data-play>
+  <section id="{{ $service['anchor'] }}" class="section {{ $layout['section'] }}" data-play>
     <div class="container">
       <div class="zig {{ $layout['rev'] ? 'rev' : '' }} reveal">
         <div class="zig-media frame-soft" style="background:{{ $layout['media'] }};overflow:hidden">

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Models\Cms\ContentBlock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -68,4 +69,38 @@ function shippedServices(): array
     }
 
     return [];
+}
+
+/**
+ * Put a list of services in the database, as the panel would.
+ *
+ * @param  array<int, array<string, mixed>>  $services
+ */
+function storeServices(array $services): void
+{
+    ContentBlock::updateOrCreate(
+        ['page_key' => 'services', 'field_key' => 'services', 'locale' => 'el'],
+        ['value' => json_encode($services, JSON_UNESCAPED_UNICODE)]
+    );
+}
+
+/**
+ * One service, filled in the way the panel fills one.
+ *
+ * @param  array<string, mixed>  $extra
+ * @return array<string, mixed>
+ */
+function aService(string $name, array $extra = []): array
+{
+    return $extra + [
+        'icon' => 'network',
+        'name' => $name,
+        'lead' => "Εισαγωγή για $name.",
+        'signs' => ["Σημάδι για $name"],
+        'bullets' => ["Περιλαμβάνει για $name"],
+        'process' => ["Βήμα για $name"],
+        'note' => '',
+        'card_body' => "Κάρτα για $name.",
+        'on_home' => true,
+    ];
 }

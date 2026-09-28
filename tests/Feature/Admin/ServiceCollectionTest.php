@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Enums\Role;
-use App\Models\Cms\ContentBlock;
 use App\Models\User;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\SettingsSeeder;
@@ -28,32 +27,6 @@ function boss(): User
     $user->forceFill(['role' => Role::Owner, 'is_active' => true])->save();
 
     return $user->refresh();
-}
-
-/**
- * @param  array<int, array<string, mixed>>  $services
- */
-function storeServices(array $services): void
-{
-    ContentBlock::updateOrCreate(
-        ['page_key' => 'services', 'field_key' => 'services', 'locale' => 'el'],
-        ['value' => json_encode($services, JSON_UNESCAPED_UNICODE)]
-    );
-}
-
-function aService(string $name, array $extra = []): array
-{
-    return $extra + [
-        'icon' => 'network',
-        'name' => $name,
-        'lead' => "Εισαγωγή για $name.",
-        'signs' => ["Σημάδι για $name"],
-        'bullets' => ["Περιλαμβάνει για $name"],
-        'process' => ["Βήμα για $name"],
-        'note' => '',
-        'card_body' => "Κάρτα για $name.",
-        'on_home' => true,
-    ];
 }
 
 /* ------------------------------------------------------------ the page */
