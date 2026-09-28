@@ -390,7 +390,28 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 
 /* ---- article ---- */
 .article-body { max-width: none; }
-.article-body p { margin-block: var(--s-5); line-height: 1.8; font-size: 1.12rem; color: #3a352f; }
+.article-body p {
+  margin-block: var(--s-5); line-height: 1.8; font-size: 1.12rem; color: #3a352f;
+  /* Ίσιο και από τις δύο πλευρές. Με συλλαβισμό: χωρίς αυτόν, το justify
+     ανοίγει μεγάλα κενά ανάμεσα στις λέξεις και το μάτι χάνει τη γραμμή. */
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+/* Σε στενή οθόνη η γραμμή χωράει λίγες λέξεις, οπότε το justify βγάζει
+   ποτάμια κενού αντί για ίσια άκρη. Εκεί μένει στοιχισμένο αριστερά. */
+@media (max-width: 560px) {
+  .article-body p,
+  .profile-bio-text,
+  .profile-modal-bio { text-align: start; hyphens: manual; }
+}
+
+/* Ο αναγνώστης που έχει ζητήσει τα πάντα πιο απλά τα παίρνει πιο απλά. */
+@media (prefers-reduced-motion: reduce) {
+  .article-body p, .profile-bio-text, .profile-modal-bio { hyphens: manual; }
+}
 .article-body h2 { margin-top: var(--s-10); margin-bottom: var(--s-3); }
 .article-body h3 { margin-top: var(--s-8); margin-bottom: var(--s-2); }
 .article-body blockquote { border-left: 4px solid var(--coral); padding: var(--s-2) var(--s-6); margin-block: var(--s-8); font-family: var(--font-head); font-weight: 700; font-size: 1.3rem; color: var(--ink); font-style: italic; }
@@ -445,7 +466,7 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   border-radius: var(--r-md);
   text-align: left;
 }
-.profile-bio-text { margin: 0; }
+.profile-bio-text { margin: 0; text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
 .profile-bio-text.is-clamped {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -500,7 +521,10 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 
 .profile-modal-text h3 { font-size: 1.6rem; margin-bottom: 4px; }
 .profile-modal-text .role { color: var(--coral-700); font-family: var(--font-head); font-weight: 700; margin-bottom: var(--s-4); }
-.profile-modal-bio { color: var(--ink-600); line-height: 1.7; max-height: 46vh; overflow-y: auto; }
+.profile-modal-bio {
+  color: var(--ink-600); line-height: 1.7; max-height: 46vh; overflow-y: auto;
+  text-align: justify; hyphens: auto; -webkit-hyphens: auto;
+}
 
 .profile-modal-close {
   position: absolute; top: 14px; right: 14px;

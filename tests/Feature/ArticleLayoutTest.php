@@ -179,3 +179,39 @@ it('keeps the bio-length rule in one place', function () {
             ->and($src)->not->toContain('180');
     }
 });
+
+/* ---------------------------------------------------------- justified text */
+
+it('sets the article text flush on both edges', function () {
+    $css = file_get_contents(resource_path('css/arogi.css'));
+
+    preg_match('/\.article-body p \{(.*?)\n\}/s', $css, $m);
+
+    expect($m[1])->toContain('text-align: justify')
+        // Without hyphenation, justified Greek opens rivers of whitespace
+        // between words and the eye loses the line.
+        ->and($m[1])->toContain('hyphens: auto');
+});
+
+it('sets the bios flush on both edges as well', function () {
+    $css = file_get_contents(resource_path('css/arogi.css'));
+
+    // Anchored at the start of a line: the same selectors appear again,
+    // indented, inside the narrow-screen override that undoes this.
+    foreach (['.profile-bio-text', '.profile-modal-bio'] as $selector) {
+        preg_match('/^'.preg_quote($selector, '/').' \{([^}]*)\}/m', $css, $m);
+
+        expect($m[1] ?? '')->toContain('text-align: justify')
+            ->and($m[1] ?? '')->toContain('hyphens: auto');
+    }
+});
+
+it('gives up justifying on a narrow screen', function () {
+    $css = file_get_contents(resource_path('css/arogi.css'));
+
+    // A phone line holds a handful of words; flush edges there cost more in
+    // gaps than the straight edge is worth — for the article and the bios.
+    expect($css)->toContain('.article-body p,
+  .profile-bio-text,
+  .profile-modal-bio { text-align: start; hyphens: manual; }');
+});
