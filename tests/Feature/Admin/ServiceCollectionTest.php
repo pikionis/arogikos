@@ -181,7 +181,7 @@ it('adds a service through the form', function () {
         ];
     }
     $payload[] = [
-        'icon' => 'play', 'name' => 'Εργοθεραπεία', 'lead' => 'Νέα υπηρεσία.',
+        'icon' => 'play', 'name' => 'Μια Ολοκαίνουρια Υπηρεσία', 'lead' => 'Νέα υπηρεσία.',
         'signs' => "Ένα\nΔύο", 'bullets' => 'Κάτι', 'process' => 'Βήμα',
         'note' => '', 'card_body' => 'Κάρτα.', 'on_home' => '0',
     ];
@@ -192,13 +192,15 @@ it('adds a service through the form', function () {
 
     $saved = content_items('services.services');
 
-    expect($saved)->toHaveCount(4)
-        ->and($saved[3]['name'])->toBe('Εργοθεραπεία')
-        ->and($saved[3]['signs'])->toBe(['Ένα', 'Δύο'])
-        ->and($saved[3]['on_home'])->toBeFalse();
+    $last = count($existing);
 
-    $this->get(route('services'))->assertOk()->assertSee('<h2>Εργοθεραπεία</h2>', false);
-    $this->get(route('home'))->assertOk()->assertDontSee('<h3>Εργοθεραπεία</h3>', false);
+    expect($saved)->toHaveCount($last + 1)
+        ->and($saved[$last]['name'])->toBe('Μια Ολοκαίνουρια Υπηρεσία')
+        ->and($saved[$last]['signs'])->toBe(['Ένα', 'Δύο'])
+        ->and($saved[$last]['on_home'])->toBeFalse();
+
+    $this->get(route('services'))->assertOk()->assertSee('<h2>Μια Ολοκαίνουρια Υπηρεσία</h2>', false);
+    $this->get(route('home'))->assertOk()->assertDontSee('<h3>Μια Ολοκαίνουρια Υπηρεσία</h3>', false);
 });
 
 it('removes one by leaving it out of the submit', function () {
@@ -214,7 +216,7 @@ it('removes one by leaving it out of the submit', function () {
     $this->get(route('services'))
         ->assertOk()
         ->assertSee('<h2>Η μόνη που μένει</h2>', false)
-        ->assertDontSee('<h2>Μαθησιακή Υποστήριξη</h2>', false);
+        ->assertDontSee('<h2>'.shippedServices()[0]['name'].'</h2>', false);
 });
 
 it('saves the order the rows arrived in', function () {

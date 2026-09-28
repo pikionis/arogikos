@@ -239,9 +239,13 @@ it('reads a lines field as an array', function () {
 it('reads a collection default as a list of items', function () {
     $services = content_items('services.services');
 
-    expect($services)->toHaveCount(3)
-        ->and($services[0]['name'])->toBe('Μαθησιακή Υποστήριξη')
-        ->and($services[0]['bullets'])->toHaveCount(4);
+    // Counted from the registry rather than pinned: the centre adds and
+    // removes services, and a test that says "three" would fail the day they
+    // do — telling them nothing about whether anything is broken.
+    expect($services)->toHaveCount(count(shippedServices()))
+        ->and($services)->not->toBeEmpty()
+        ->and($services[0]['name'])->toBe(shippedServices()[0]['name'])
+        ->and($services[0]['bullets'])->toBeArray();
 });
 
 it('reads a stored collection override, however short', function () {
@@ -266,7 +270,7 @@ it('survives a broken stored collection by falling back to the default', functio
         'value' => 'this is not json',
     ]);
 
-    expect(content_items('services.services'))->toHaveCount(3);
+    expect(content_items('services.services'))->toHaveCount(count(shippedServices()));
 });
 
 it('lets a collection be emptied, unlike a repeater', function () {

@@ -40,9 +40,9 @@ it('carries enough content to stand as a page', function () {
 it('tells a parent when to get in touch, for every service', function () {
     $html = $this->get(route('services'))->assertOk()->getContent();
 
-    expect(substr_count($html, 'Πότε να απευθυνθείτε'))->toBe(3);
+    expect(substr_count($html, 'Πότε να απευθυνθείτε'))->toBe(count(content_items('services.services')));
 
-    foreach (content_items('shared.services') as $service) {
+    foreach (content_items('services.services') as $service) {
         foreach ($service['signs'] as $sign) {
             expect($html)->toContain(e($sign));
         }
@@ -52,9 +52,9 @@ it('tells a parent when to get in touch, for every service', function () {
 it('explains what actually happens, for every service', function () {
     $html = $this->get(route('services'))->assertOk()->getContent();
 
-    expect(substr_count($html, 'Πώς δουλεύουμε'))->toBe(3);
+    expect(substr_count($html, 'Πώς δουλεύουμε'))->toBe(count(content_items('services.services')));
 
-    foreach (content_items('shared.services') as $service) {
+    foreach (content_items('services.services') as $service) {
         foreach ($service['process'] as $step) {
             expect($html)->toContain(e($step));
         }

@@ -65,7 +65,8 @@ it('renders the service names on home, services and the footer', function () {
         $html = $this->get(route($routeName))->assertOk()->getContent();
 
         // The footer column appears on every page.
-        expect($html)->toContain('Μαθησιακή Υποστήριξη');
+        // Whatever the first service is called today.
+        expect($html)->toContain(e(content_items('services.services')[0]['name']));
     }
 });
 

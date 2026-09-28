@@ -47,3 +47,25 @@ function conditionalKeys(): array
         'blog.empty', 'blog.empty_link',
     ];
 }
+
+/**
+ * The services as the registry ships them.
+ *
+ * Tests count from here rather than from a number written in the test: the
+ * centre adds and removes services, and a pinned count would fail on the day
+ * they do while telling nobody whether anything actually broke.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function shippedServices(): array
+{
+    foreach (config('cms-content.services.groups', []) as $group) {
+        foreach ($group['fields'] ?? [] as $field) {
+            if (($field['key'] ?? '') === 'services') {
+                return array_values((array) ($field['default'] ?? []));
+            }
+        }
+    }
+
+    return [];
+}

@@ -135,8 +135,10 @@ it('publishes each service the centre offers', function () {
         fn (array $n) => in_array('Service', (array) ($n['@type'] ?? []), true)
     ));
 
-    expect($services)->toHaveCount(3)
-        ->and(array_column($services, 'name'))->toContain('Μαθησιακή Υποστήριξη');
+    // Every service the centre lists, whatever they are called today.
+    expect($services)->toHaveCount(count(content_items('services.services')))
+        ->and(array_column($services, 'name'))
+        ->toBe(array_column(content_items('services.services'), 'name'));
 });
 
 it('follows a service renamed in the panel', function () {
