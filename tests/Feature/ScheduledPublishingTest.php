@@ -170,3 +170,47 @@ it('does not lose events that were public before this existed', function () {
 
     expect(Event::published()->pluck('id'))->toContain($existing->id);
 });
+
+/* ------------------------------------------ a date already past publishes */
+
+it('publishes an article at once when the date has already passed, keeping that date', function () {
+    $user = User::factory()->create();
+    $user->forceFill(['role' => Role::Owner, 'is_active' => true])->save();
+
+    $backdated = now()->subMonths(2)->startOfMinute();
+
+    $this->actingAs($user->refresh())->post(route('admin.articles.store'), [
+        'title' => 'Γράφτηκε τώρα, χρονολογείται πίσω',
+        'body' => '<p>Κείμενο.</p>',
+        'category' => 'learning',
+        'is_published' => 1,
+        'published_at' => $backdated->format('Y-m-d H:i'),
+    ])->assertRedirect();
+
+    $article = Article::latest('id')->first();
+
+    // Visible straight away, and dated as the author asked — not stamped now.
+    expect($article->published_at->format('Y-m-d H:i'))->toBe($backdated->format('Y-m-d H:i'));
+
+    $this->get(route('blog.show', $article->slug))->assertOk();
+    $this->get(route('blog.index'))->assertOk()->assertSeeText('Γράφτηκε τώρα, χρονολογείται πίσω');
+});
+
+it('publishes an event at once when its publish date has already passed', function () {
+    $user = User::factory()->create();
+    $user->forceFill(['role' => Role::Owner, 'is_active' => true])->save();
+
+    $backdated = now()->subWeek()->startOfMinute();
+
+    $this->actingAs($user->refresh())->post(route('admin.events.store'), [
+        'title' => 'Ανακοινώθηκε την περασμένη βδομάδα',
+        'starts_at' => now()->addMonth()->format('Y-m-d H:i'),
+        'is_published' => 1,
+        'published_at' => $backdated->format('Y-m-d H:i'),
+    ])->assertRedirect();
+
+    expect(Event::latest('id')->first()->published_at->format('Y-m-d H:i'))
+        ->toBe($backdated->format('Y-m-d H:i'));
+
+    $this->get(route('events'))->assertOk()->assertSeeText('Ανακοινώθηκε την περασμένη βδομάδα');
+});

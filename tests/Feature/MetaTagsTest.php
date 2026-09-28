@@ -110,3 +110,65 @@ it('offers the SEO fields for every page in the panel', function () {
         expect($keys)->toContain('seo.title', 'seo.description');
     }
 });
+
+/* --------------------------------------- an article with nothing written in */
+
+it('still describes an article that has neither summary nor SEO text', function () {
+    $article = Article::factory()->create([
+        'seo_description' => null,
+        'excerpt' => null,
+        'body' => '<p>Η δυσλεξία δεν είναι θέμα ευφυΐας, αλλά διαφορετικός τρόπος επεξεργασίας της γραπτής γλώσσας.</p>',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    [, $description] = metaOf($this->get(route('blog.show', $article->slug))->assertOk()->getContent());
+
+    // Falling back to the opening of the piece beats an empty tag.
+    expect($description)->toContain('Η δυσλεξία δεν είναι θέμα ευφυΐας');
+});
+
+it('does not leak an output buffer while rendering that article', function () {
+    // @section($name, null) makes Blade open a buffer and wait for an
+    // @endsection an inline section never has. The description came out
+    // empty and the buffer stayed open for the rest of the process.
+    $article = Article::factory()->create([
+        'seo_description' => null,
+        'excerpt' => null,
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    $before = ob_get_level();
+
+    $this->get(route('blog.show', $article->slug))->assertOk();
+
+    expect(ob_get_level())->toBe($before);
+});
+
+it('keeps the description within what a results list shows', function () {
+    $article = Article::factory()->create([
+        'seo_description' => null,
+        'excerpt' => null,
+        'body' => '<p>'.str_repeat('Μια πολύ μεγάλη πρόταση που συνεχίζει. ', 30).'</p>',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    expect(mb_strlen($article->metaDescription()))->toBeLessThanOrEqual(158);
+});
+
+it('prefers what the author actually wrote', function () {
+    $article = Article::factory()->create([
+        'seo_description' => 'Η περιγραφή για τη Google.',
+        'excerpt' => 'Η περίληψη στην κάρτα.',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    expect($article->metaDescription())->toBe('Η περιγραφή για τη Google.');
+
+    $article->seo_description = null;
+
+    expect($article->metaDescription())->toBe('Η περίληψη στην κάρτα.');
+});

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -142,6 +143,30 @@ class Article extends Model implements HasMedia
             'color' => $meta['color'],
             'motif' => $meta['motif'],
         ];
+    }
+
+    /**
+     * What Google and a shared link show under the title.
+     *
+     * Never null. Passing null to @section makes Blade open an output buffer
+     * and wait for an @endsection that an inline section never has — the
+     * buffer leaks and the description silently comes out empty, which is
+     * the one thing this field exists to prevent.
+     *
+     * Falls through to the opening of the article itself, so a piece written
+     * in a hurry still says something in the results list.
+     */
+    public function metaDescription(): string
+    {
+        foreach ([$this->seo_description, $this->excerpt] as $candidate) {
+            if (filled($candidate)) {
+                return trim((string) $candidate);
+            }
+        }
+
+        $opening = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $this->body)));
+
+        return $opening === '' ? '' : Str::limit($opening, 155);
     }
 
     public function getCategoryLabelAttribute(): string

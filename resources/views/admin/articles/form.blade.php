@@ -104,7 +104,7 @@
                         <input class="a-input" id="published_at" name="published_at" type="datetime-local"
                                value="{{ old('published_at', $article->published_at?->format('Y-m-d\TH:i')) }}">
                         <span class="a-hint">
-                            Ώρα Ελλάδας. Μελλοντική ημερομηνία κρατά το άρθρο κρυφό μέχρι τότε.
+                            Ώρα Ελλάδας. <strong>Μελλοντική</strong> ημερομηνία κρατά το άρθρο κρυφό μέχρι τότε και ανεβαίνει μόνο του. <strong>Σημερινή ή περασμένη</strong> το δημοσιεύει αμέσως, με την ημερομηνία που γράψατε.
                         </span>
                         @error('published_at')<span class="a-error">{{ $message }}</span>@enderror
                     </div>

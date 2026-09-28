@@ -77,9 +77,10 @@
                         <input class="a-input" id="published_at" name="published_at" type="datetime-local"
                                value="{{ old('published_at', $event->published_at?->format('Y-m-d\TH:i')) }}">
                         <span class="a-hint">
-                            Πότε θα <strong>φανεί</strong> η ανακοίνωση στο site. Αφήστε το κενό για
-                            «μόλις πατήσετε αποθήκευση». Βάλτε μελλοντική ημερομηνία για να γραφτεί
-                            τώρα και να ανέβει μόνη της τότε.
+                            Πότε θα <strong>φανεί</strong> η ανακοίνωση στο site. Κενό σημαίνει
+                            «μόλις πατήσετε αποθήκευση». <strong>Μελλοντική</strong> ημερομηνία την
+                            κρατά κρυφή και την ανεβάζει μόνη της τότε· <strong>σημερινή ή
+                            περασμένη</strong> τη δημοσιεύει αμέσως, με την ημερομηνία που γράψατε.
                         </span>
                         @error('published_at')<span class="a-error">{{ $message }}</span>@enderror
                     </div>

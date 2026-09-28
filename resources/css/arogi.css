@@ -342,7 +342,15 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .event-date .d { font-family: var(--font-head); font-weight: 900; font-size: 2rem; color: var(--yellow-700); }
 .event-date .m { font-family: var(--font-head); font-weight: 800; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-600); margin-top: 2px; }
 .event-info h3 { font-size: 1.25rem; margin-bottom: 4px; }
-.event-info .meta { color: var(--ink-400); font-size: .92rem; display: flex; gap: var(--s-3); flex-wrap: wrap; margin-bottom: 6px; }
+.event-info .meta { color: var(--ink-400); font-size: .92rem; display: flex; gap: var(--s-4); flex-wrap: wrap; margin-bottom: 6px; }
+.event-meta { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+
+/* Το εικονίδιο είναι διακοσμητικό· ο αναγνώστης οθόνης ακούει τη λέξη. */
+.sr {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
 .event-info p { color: var(--ink-600); }
 
 /* ---- forms ---- */
