@@ -5,7 +5,7 @@
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([
-        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => home_label(), 'url' => route('home')],
         ['name' => content('events.hero.crumb'), 'url' => route('events')],
     ])" />
 @endsection
@@ -22,6 +22,17 @@
     <g class="gather-fig gf4" transform="translate(305,128)"><circle cx="0" cy="-40" r="13" fill="#1E9E58"/><path d="M-14 0 C-14 -30 14 -30 14 0 Z" fill="#1E9E58"/></g>
     <g class="gather-fig gf5" transform="translate(340,128)"><circle cx="0" cy="-40" r="13" fill="#F4B62A"/><path d="M-14 0 C-14 -30 14 -30 14 0 Z" fill="#F4B62A"/></g>
   </svg>
+
+  {{-- Εμφανίζεται μόνο όταν υπάρχει κάτι να διαλέξει κανείς: με μία χρονιά
+       το φίλτρο δεν φιλτράρει τίποτα και απλώς προσθέτει θόρυβο. --}}
+  @if ($years->count() > 1)
+    <div class="filters reveal reveal-d2">
+      <a class="chip {{ $year === null ? 'active' : '' }}" href="{{ route('events') }}">{{ content('events.filter_year_all') }}</a>
+      @foreach ($years as $y)
+        <a class="chip {{ $year === $y ? 'active' : '' }}" href="{{ route('events', ['year' => $y]) }}">{{ $y }}</a>
+      @endforeach
+    </div>
+  @endif
 </x-page-hero>
 
 <!-- UPCOMING -->

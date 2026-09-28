@@ -10,7 +10,7 @@
     {{ $deco ?? '' }}
     <div class="container" style="position:relative;z-index:1">
         @if ($crumb)
-            <p class="breadcrumb reveal"><a href="{{ route('home') }}">Αρχική</a> · {{ $crumb }}</p>
+            <p class="breadcrumb reveal"><a href="{{ route('home') }}">{{ home_label() }}</a> · {{ $crumb }}</p>
         @endif
         @if ($title)
             <h1 class="reveal">{{ $title }}</h1>

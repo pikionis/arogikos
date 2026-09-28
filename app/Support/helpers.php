@@ -116,3 +116,20 @@ if (! function_exists('content_image')) {
         return app(Content::class)->image($key, $conversion);
     }
 }
+
+if (! function_exists('home_label')) {
+    /**
+     * What the site calls its own front page.
+     *
+     * Every breadcrumb opens with this word, in six templates and in the
+     * structured data. It already has an editable home — the first item of
+     * the navigation menu — so it reads from there rather than becoming a
+     * seventh copy that would drift the first time someone renamed the menu.
+     */
+    function home_label(): string
+    {
+        $nav = content_items('shared.nav');
+
+        return trim((string) ($nav[0]['label'] ?? '')) ?: 'Αρχική';
+    }
+}

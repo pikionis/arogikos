@@ -563,3 +563,32 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .faq-item[open] summary::after { transform: rotate(45deg); }
 .faq-item summary:hover { color: var(--green-700); }
 .faq-item p { padding: 0 var(--s-5) var(--s-5); color: var(--ink-600); margin: 0; }
+
+/* ---- μπάρα προεπισκόπησης ----
+
+   Φαίνεται μόνο όταν το περιεχόμενο δεν είναι ακόμη δημόσιο. Κάθεται πάνω
+   από όλα και σπρώχνει τη σελίδα κάτω αντί να την καλύπτει — μια μπάρα που
+   κρύβει το πρώτο πράγμα που ήρθες να δεις είναι χειρότερη από καμία. */
+
+.preview-bar {
+  position: sticky; top: 0; z-index: 200;
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4);
+  padding: 12px var(--s-6);
+  font-family: var(--font-head); font-size: .94rem; color: var(--white);
+  background: var(--ink);
+}
+.preview-bar strong { letter-spacing: .02em; }
+.preview-bar span { flex-grow: 1; font-family: var(--font-body); opacity: .92; }
+.preview-bar a { color: var(--white); text-decoration: underline; text-underline-offset: 3px; }
+
+.preview-draft { background: var(--coral-700); }
+.preview-scheduled { background: var(--yellow-700); color: var(--ink); }
+.preview-scheduled a { color: var(--ink); }
+.preview-live { background: var(--green-700); }
+
+/* Το sticky header του site δεν πρέπει να καθίσει πάνω στη μπάρα. */
+.is-preview #site-header { top: 0; }
+
+@media (max-width: 560px) {
+  .preview-bar { font-size: .86rem; padding: 10px var(--s-4); }
+}

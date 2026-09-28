@@ -49,7 +49,17 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body data-page="@yield('body_page', '')">
+<body data-page="@yield('body_page', '')" @class(['is-preview' => isset($preview)])>
+    @isset($preview)
+        {{-- Μόνο σε προεπισκόπηση: τυπώνεται από τον PreviewController, ποτέ
+             από δημόσιο controller, οπότε δεν μπορεί να διαρρεύσει. --}}
+        <div class="preview-bar preview-{{ $preview['state'] }}" role="status">
+            <strong>Προεπισκόπηση</strong>
+            <span>{{ $preview['note'] }}</span>
+            <a href="{{ url()->previous() }}">Επιστροφή στη διαχείριση</a>
+        </div>
+    @endisset
+
     <x-site-header />
 
     <main>

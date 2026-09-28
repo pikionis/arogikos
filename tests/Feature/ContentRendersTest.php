@@ -20,6 +20,28 @@ use Database\Seeders\SettingsSeeder;
 beforeEach(fn () => $this->seed(DatabaseSeeder::class));
 
 /**
+ * Keys that legitimately do not render on a bare page load. Each has its own
+ * test below rather than being silently tolerated.
+ *
+ * @return array<int, string>
+ */
+function conditionalKeys(): array
+{
+    return [
+        // The home "upcoming events" band is hidden when nothing is scheduled.
+        'home.events.eyebrow', 'home.events.title', 'home.events.link',
+        // Related articles live on the article page, not the blog index.
+        'blog.related_eyebrow', 'blog.related_title',
+        // Only shown after a failed submit.
+        'contact.form.error',
+        // These belong to a single article, not to the list of them.
+        'blog.article_crumb', 'blog.read_suffix',
+        // Shown only when a filter comes back with nothing.
+        'blog.empty', 'blog.empty_link',
+    ];
+}
+
+/**
  * Every scalar default declared for a page must appear on that page.
  *
  * This is the regression net for pulling ~90 Greek literals out of the Blade
@@ -27,17 +49,6 @@ beforeEach(fn () => $this->seed(DatabaseSeeder::class));
  */
 it('renders every declared default on its page', function (string $pageKey, string $routeName) {
     $html = $this->get(route($routeName))->assertOk()->getContent();
-
-    // Keys that legitimately do not render on a bare page load. Each is
-    // covered by its own test below instead of being silently tolerated.
-    $conditional = [
-        // The home "upcoming events" band is hidden when nothing is scheduled.
-        'home.events.eyebrow', 'home.events.title', 'home.events.link',
-        // Related articles live on the article page, not the blog index.
-        'blog.related_eyebrow', 'blog.related_title',
-        // Only shown after a failed submit.
-        'contact.form.error',
-    ];
 
     $missing = [];
 
@@ -47,7 +58,7 @@ it('renders every declared default on its page', function (string $pageKey, stri
                 continue;
             }
 
-            if (in_array("{$pageKey}.{$field['key']}", $conditional, true)) {
+            if (in_array("{$pageKey}.{$field['key']}", conditionalKeys(), true)) {
                 continue;
             }
 
@@ -118,6 +129,24 @@ it('renders the related-articles heading on an article page', function () {
         ->assertOk()
         ->assertSeeText('Σχετικά άρθρα')
         ->assertSeeText('Διαβάστε επίσης');
+});
+
+it('renders the article breadcrumb and reading time on an article page', function () {
+    $article = Article::published()->firstOrFail();
+
+    $this->get(route('blog.show', $article->slug))
+        ->assertOk()
+        ->assertSeeText('Άρθρο')
+        ->assertSeeText('ανάγνωση');
+});
+
+it('renders the empty-list copy when a filter finds nothing', function () {
+    Article::query()->update(['category' => 'learning']);
+
+    $this->get(route('blog.index', ['category' => 'career']))
+        ->assertOk()
+        ->assertSeeText('Δεν βρέθηκαν άρθρα σε αυτή την κατηγορία.')
+        ->assertSeeText('Δείτε όλα τα άρθρα');
 });
 
 it('renders the contact form error message after a failed submit', function () {
@@ -192,4 +221,99 @@ it('shows edited 404 copy on the branded error page', function () {
     $this->get('/mia-diadromi-pou-den-yparxei')
         ->assertNotFound()
         ->assertSeeText('Ουπς, χαθήκαμε');
+});
+
+/* ------------------------------------------------- every field, every page */
+
+/**
+ * The promise the panel makes: change a word, see it on the site.
+ *
+ * The test above proves the defaults arrive. This proves the wiring runs the
+ * other way too — that each field is actually read from the database and not
+ * quietly pinned to its default by a template that forgot to ask. Every
+ * scalar on a page is overwritten with its own sentinel and the page is
+ * fetched once, so a field that is declared but never rendered cannot hide.
+ */
+it('puts an edit to any field straight onto the page', function (string $pageKey, string $routeName) {
+    $sentinels = [];
+
+    foreach (config("cms-content.{$pageKey}.groups", []) as $group) {
+        foreach ($group['fields'] ?? [] as $field) {
+            if (! in_array($field['type'], ['text', 'textarea'], true)) {
+                continue;
+            }
+
+            if (in_array("{$pageKey}.{$field['key']}", conditionalKeys(), true)) {
+                continue;
+            }
+
+            $mark = 'ΑΛΛΑΓΜΕΝΟ'.count($sentinels).'ΤΕΛΟΣ';
+            $sentinels["{$pageKey}.{$field['key']}"] = $mark;
+
+            ContentBlock::create([
+                'page_key' => $pageKey,
+                'field_key' => $field['key'],
+                'locale' => 'el',
+                'value' => $mark,
+            ]);
+        }
+    }
+
+    expect($sentinels)->not->toBeEmpty("{$pageKey} declares no editable text at all");
+
+    $html = $this->get(route($routeName))->assertOk()->getContent();
+
+    $stuck = [];
+    foreach ($sentinels as $key => $mark) {
+        if (! str_contains($html, $mark)) {
+            $stuck[] = $key;
+        }
+    }
+
+    expect($stuck)->toBe([]);
+})->with([
+    'home' => ['home', 'home'],
+    'about' => ['about', 'about'],
+    'services' => ['services', 'services'],
+    'blog' => ['blog', 'blog.index'],
+    'events' => ['events', 'events'],
+    'gallery' => ['gallery', 'gallery'],
+    'contact' => ['contact', 'contact'],
+]);
+
+it('puts an edit to the shared header and footer onto every page', function () {
+    $sentinels = [];
+
+    foreach (config('cms-content.shared.groups', []) as $group) {
+        foreach ($group['fields'] ?? [] as $field) {
+            if (! in_array($field['type'], ['text', 'textarea'], true)) {
+                continue;
+            }
+
+            $mark = 'ΚΟΙΝΟ'.count($sentinels).'ΤΕΛΟΣ';
+            $sentinels[$field['key']] = $mark;
+
+            ContentBlock::create([
+                'page_key' => 'shared',
+                'field_key' => $field['key'],
+                'locale' => 'el',
+                'value' => $mark,
+            ]);
+        }
+    }
+
+    // Whatever is shared must be shared everywhere, not just on the home page.
+    $stuck = [];
+
+    foreach (['home', 'services', 'gallery', 'contact'] as $routeName) {
+        $html = $this->get(route($routeName))->assertOk()->getContent();
+
+        foreach ($sentinels as $key => $mark) {
+            if (! str_contains($html, $mark)) {
+                $stuck[] = "shared.$key on $routeName";
+            }
+        }
+    }
+
+    expect($stuck)->toBe([]);
 });

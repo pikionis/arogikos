@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Cms\Article;
+use App\Models\Cms\Author;
 use App\Support\Categories;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
@@ -25,14 +26,28 @@ class BlogController extends Controller
             $category = null;
         }
 
+        // Only authors who actually have something published: a chip that
+        // leads to an empty list is a dead end, and an author who has written
+        // nothing yet is not news to a reader.
+        $authors = Author::query()
+            ->whereHas('articles', fn ($q) => $q->published())
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        $author = $request->integer('author') ?: null;
+        if ($author !== null && ! $authors->contains('id', $author)) {
+            $author = null;
+        }
+
         $articles = $articleModel::published()
             ->inCategory($category)
+            ->when($author, fn ($q, $id) => $q->where('author_id', $id))
             ->with(['author', 'media'])
             ->latest('published_at')
             ->paginate(9)
             ->withQueryString();
 
-        return view('pages.blog.index', compact('articles', 'categories', 'category'));
+        return view('pages.blog.index', compact('articles', 'categories', 'category', 'authors', 'author'));
     }
 
     public function show(string $slug): View

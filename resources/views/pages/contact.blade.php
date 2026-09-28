@@ -5,7 +5,7 @@
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([
-        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => home_label(), 'url' => route('home')],
         ['name' => content('contact.hero.crumb'), 'url' => route('contact')],
     ])" />
 @endsection

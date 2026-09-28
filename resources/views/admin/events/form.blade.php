@@ -74,6 +74,23 @@
                     <button class="a-btn a-btn-primary" type="submit" style="width:100%">
                         {{ $isNew ? 'Δημιουργία' : 'Αποθήκευση' }}
                     </button>
+
+                    @unless ($isNew)
+                        {{-- Οι εκδηλώσεις δεν έχουν δική τους σελίδα: η
+                             προεπισκόπηση δείχνει τη λίστα με την εκδήλωση
+                             στη θέση που θα πάρει μόλις δημοσιευτεί. --}}
+                        <a class="a-btn a-btn-ghost a-btn-sm" style="width:100%;margin-top:8px"
+                           href="{{ route('admin.preview.event', $event) }}" target="_blank" rel="noopener">
+                            Προεπισκόπηση ↗
+                        </a>
+
+                        @if ($event->is_published)
+                            <a class="a-btn a-btn-ghost a-btn-sm" style="width:100%;margin-top:8px"
+                               href="{{ route('events') }}" target="_blank" rel="noopener">
+                                Προβολή στο site ↗
+                            </a>
+                        @endif
+                    @endunless
                 </section>
 
                 <section class="a-card">

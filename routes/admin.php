@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\GalleryController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\PageContentController;
+use App\Http\Controllers\Admin\PreviewController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
@@ -73,6 +74,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+        /* -------------------------------------------------------- preview */
+
+        // The public templates, rendered for staff only, so a draft can be
+        // read the way a visitor will read it before anyone else can.
+        Route::get('preview/arthro/{article:id}', [PreviewController::class, 'article'])->name('preview.article');
+        Route::get('preview/ekdilosi/{event:id}', [PreviewController::class, 'event'])->name('preview.event');
 
         /* ------------------------------------------------------- articles */
 

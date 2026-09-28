@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('meta_title', $article->seo_title ?? $article->title.' — Αρωγή')
+@section('meta_title', $article->seo_title ?? $article->title.' — '.setting('org_name', 'Αρωγή'))
 @section('meta_description', $article->seo_description ?? $article->excerpt)
 @section('og_type', 'article')
 @section('og_image', $article->getFirstMediaUrl('cover', 'web'))
@@ -33,7 +33,7 @@
 @section('schema')
     <x-schema :data="App\Support\StructuredData::article($article)" />
     <x-schema :data="App\Support\StructuredData::breadcrumbs([
-        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => home_label(), 'url' => route('home')],
         ['name' => content('blog.hero.crumb'), 'url' => route('blog.index')],
         ['name' => $article->title, 'url' => route('blog.show', $article->slug)],
     ])" />
@@ -43,13 +43,13 @@
 <article>
   <div class="container" style="max-width:820px">
     <div style="padding-top:var(--s-12)" class="reveal">
-      <p class="breadcrumb"><a href="{{ route('home') }}">Αρχική</a> · <a href="{{ route('blog.index') }}">Blog</a> · Άρθρο</p>
+      <p class="breadcrumb"><a href="{{ route('home') }}">{{ home_label() }}</a> · <a href="{{ route('blog.index') }}">{{ content('blog.hero.crumb') }}</a> · {{ content('blog.article_crumb') }}</p>
       <span class="cat-pill {{ $color }}" style="margin-bottom:var(--s-4);display:inline-block">{{ $article->category_label }}</span>
       <h1 style="font-size:clamp(2rem,4.5vw,3rem)">{{ $article->title }}</h1>
       @if ($article->author)
       <div class="post-meta" style="margin-top:var(--s-6);font-size:1rem">
         <x-author-avatar :author="$article->author" :color="$color" size="46px" />
-        <span><strong style="color:var(--ink);font-family:var(--font-head)">{{ $article->author->name }}</strong><br>{{ $article->author->role_title }} · {{ el_date($article->published_at) }} · {{ $readMinutes }}′ ανάγνωση</span>
+        <span><strong style="color:var(--ink);font-family:var(--font-head)">{{ $article->author->name }}</strong><br>{{ $article->author->role_title }} · {{ el_date($article->published_at) }} · {{ $readMinutes }}′ {{ content('blog.read_suffix') }}</span>
       </div>
       @endif
     </div>

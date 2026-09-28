@@ -114,6 +114,14 @@
                     </button>
 
                     @unless ($isNew)
+                        {{-- Η προεπισκόπηση δουλεύει και σε πρόχειρο — αυτή είναι
+                             όλη η ουσία της. Η «προβολή στο site» μόνο όταν
+                             υπάρχει πράγματι σελίδα να δει κανείς. --}}
+                        <a class="a-btn a-btn-ghost a-btn-sm" style="width:100%;margin-top:8px"
+                           href="{{ route('admin.preview.article', $article) }}" target="_blank" rel="noopener">
+                            Προεπισκόπηση ↗
+                        </a>
+
                         @if ($article->is_published)
                             <a class="a-btn a-btn-ghost a-btn-sm" style="width:100%;margin-top:8px"
                                href="{{ route('blog.show', $article->slug) }}" target="_blank" rel="noopener">

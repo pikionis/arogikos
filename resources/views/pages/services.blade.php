@@ -5,7 +5,7 @@
 
 @section('schema')
     <x-schema :data="App\Support\StructuredData::breadcrumbs([
-        ['name' => 'Αρχική', 'url' => route('home')],
+        ['name' => home_label(), 'url' => route('home')],
         ['name' => content('services.hero.crumb'), 'url' => route('services')],
     ])" />
     <x-schema :data="App\Support\StructuredData::faq()" />
@@ -44,8 +44,8 @@
           <span class="zig-tag" style="background:{{ $layout['tagBg'] }};color:{{ $layout['tagColor'] }}">{{ content('services.tag_prefix') }} {{ str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) }}</span>
           <h2>{{ $service['name'] ?? '' }}</h2>
           <p class="lead" style="margin:var(--s-4) 0 var(--s-5)">{{ $service['lead'] ?? '' }}</p>
-          @if (filled($service['signs'] ?? []))
-            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">Πότε να απευθυνθείτε</h3>
+          @if (filled($service['signs'] ?? []) && filled(content('services.signs_heading')))
+            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">{{ content('services.signs_heading') }}</h3>
             <ul class="tri-list" style="margin-bottom:var(--s-5)">
               @foreach ((array) $service['signs'] as $sign)
                 <li>{{ $sign }}</li>
@@ -53,8 +53,8 @@
             </ul>
           @endif
 
-          @if (filled($service['bullets'] ?? []))
-            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">Τι περιλαμβάνει</h3>
+          @if (filled($service['bullets'] ?? []) && filled(content('services.bullets_heading')))
+            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">{{ content('services.bullets_heading') }}</h3>
             <ul class="tri-list" style="margin-bottom:var(--s-5)">
               @foreach ((array) $service['bullets'] as $bullet)
                 <li>{{ $bullet }}</li>
@@ -62,8 +62,8 @@
             </ul>
           @endif
 
-          @if (filled($service['process'] ?? []))
-            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">Πώς δουλεύουμε</h3>
+          @if (filled($service['process'] ?? []) && filled(content('services.process_heading')))
+            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">{{ content('services.process_heading') }}</h3>
             <ol class="step-list" style="margin-bottom:var(--s-6)">
               @foreach ((array) $service['process'] as $step)
                 <li>{{ $step }}</li>
