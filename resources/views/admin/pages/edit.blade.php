@@ -112,22 +112,6 @@
                 </section>
             @endforeach
 
-            {{-- The two pages that also own a `pages` row. --}}
-            @if ($pageModel)
-                <section class="a-card">
-                    <h2 style="font-size:1rem;margin:0 0 4px">Κυρίως κείμενο</h2>
-                    <p style="color:var(--color-ink-400);font-size:.84rem;margin:0 0 16px">
-                        Το κείμενο με τη μορφοποίηση που εμφανίζεται μέσα στη σελίδα.
-                        Ο τίτλος και η περιγραφή για τη Google ορίζονται παραπάνω.
-                    </p>
-
-                    <div class="a-field" style="margin-bottom:0">
-                        <label class="a-label" for="page-body">Κυρίως κείμενο</label>
-                        <x-admin.rich-text name="page[body]" :value="$pageModel->body" id="page-body" />
-                    </div>
-                </section>
-            @endif
-
             <div>
                 <button class="a-btn a-btn-primary" type="submit">Αποθήκευση κειμένων</button>
             </div>

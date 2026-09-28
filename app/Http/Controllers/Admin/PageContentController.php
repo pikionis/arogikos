@@ -6,7 +6,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cms\ContentBlock;
-use App\Models\Cms\Page;
 use App\Support\Content;
 use App\Support\HtmlSanitizer;
 use Illuminate\Contracts\View\View;
@@ -28,12 +27,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class PageContentController extends Controller
 {
-    /** Pages that also own a `pages` row (prose body + SEO fields). */
-    private const PAGE_SLUGS = [
-        'about' => 'sxetika-me-emas',
-        'services' => 'ypiresies',
-    ];
-
     public function index(): View
     {
         $this->authorize('manage-pages');
@@ -62,7 +55,6 @@ class PageContentController extends Controller
             'pageKey' => $pageKey,
             'page' => $page,
             'values' => $this->currentValues($pageKey, $page),
-            'pageModel' => $this->pageModel($pageKey),
         ]);
     }
 
@@ -81,8 +73,6 @@ class PageContentController extends Controller
         foreach ($this->fieldsOf($page) as $field) {
             $this->saveField($pageKey, $field, $submitted, $request);
         }
-
-        $this->savePageModel($pageKey, $request);
 
         Content::flush();
 
@@ -331,47 +321,7 @@ class PageContentController extends Controller
         }
     }
 
-    /**
-     * The About and Services pages keep their prose body in the `pages` table,
-     * which the public templates already read.
-     */
-    private function savePageModel(string $pageKey, Request $request): void
-    {
-        $model = $this->pageModel($pageKey);
-
-        if (! $model) {
-            return;
-        }
-
-        $validated = $request->validate([
-            'page.body' => ['nullable', 'string', 'max:500000'],
-        ]);
-
-        // SEO title and description live in the content registry now, one
-        // field per page, so there is a single place to edit them rather than
-        // two that can disagree.
-        $model->body = HtmlSanitizer::clean($validated['page']['body'] ?? null);
-        $model->save();
-    }
-
     /* ------------------------------------------------------------ reading */
-
-    private function pageModel(string $pageKey): ?Page
-    {
-        $slug = self::PAGE_SLUGS[$pageKey] ?? null;
-
-        if (! $slug) {
-            return null;
-        }
-
-        /** @var class-string<Page> $pageModel */
-        $pageModel = cms_model('page');
-
-        return $pageModel::firstOrCreate(
-            ['slug' => $slug],
-            ['title' => config("cms-content.{$pageKey}.label", $slug), 'is_published' => true],
-        );
-    }
 
     /** Current value per field key — the override if any, else the default. */
     private function currentValues(string $pageKey, array $page): array

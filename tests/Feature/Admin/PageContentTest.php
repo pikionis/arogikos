@@ -306,21 +306,29 @@ it('restores every original text for a page', function () {
 
 it('strips scripts from the About page prose body', function () {
     $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'about'), [
-        'fields' => [],
-        'page' => [
-            'body' => '<p>Η ιστορία μας</p><script>alert(1)</script>',
-            'seo_title' => 'Σχετικά',
-            'seo_description' => 'Περιγραφή',
-        ],
+        'fields' => ['story.body' => '<p>Η δική μας ιστορία</p><script>alert(1)</script>'],
     ]);
 
-    $page = Page::where('slug', 'sxetika-me-emas')->firstOrFail();
-
-    expect($page->body)->toContain('Η ιστορία μας')
-        ->and($page->body)->not->toContain('<script>');
+    expect(content('about.story.body'))->toContain('Η δική μας ιστορία')
+        ->and(content('about.story.body'))->not->toContain('<script>');
 
     // And the public page renders it unescaped, so this must stay clean.
-    $this->get(route('about'))->assertOk()->assertDontSee('alert(1)', false);
+    $this->get(route('about'))
+        ->assertOk()
+        ->assertSeeText('Η δική μας ιστορία')
+        ->assertDontSee('alert(1)', false);
+});
+
+it('ships a story rather than an empty space under the heading', function () {
+    // The page shipped with nothing below "Ξεκινήσαμε με μια απλή πεποίθηση",
+    // because the text lived in a database row nobody had filled in.
+    $html = $this->get(route('about'))->assertOk()->getContent();
+
+    preg_match('/<div class="story-prose.*?<\/div>/s', $html, $prose);
+
+    expect(strip_tags($prose[0] ?? ''))->not->toBe('')
+        ->and($prose[0])->toContain('<p>')
+        ->and($html)->toContain(e(content('about.story.title')));
 });
 
 it('edits the About page SEO from the one place that owns it', function () {
@@ -331,12 +339,10 @@ it('edits the About page SEO from the one place that owns it', function () {
             'seo.title' => 'Ο τίτλος SEO μας για τη Google',
             'seo.description' => 'Η περιγραφή SEO μας για τη Google.',
         ],
-        'page' => ['body' => '<p>Η ιστορία μας</p>'],
     ])->assertRedirect();
 
     $this->get(route('about'))
         ->assertOk()
         ->assertSee('Ο τίτλος SEO μας για τη Google', false)
-        ->assertSee('Η περιγραφή SEO μας για τη Google.', false)
-        ->assertSeeText('Η ιστορία μας');
+        ->assertSee('Η περιγραφή SEO μας για τη Google.', false);
 });

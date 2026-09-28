@@ -388,6 +388,13 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .zig-media { aspect-ratio: 4/3; }
 .zig-tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-weight: 800; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; padding: 6px 14px; border-radius: var(--r-pill); margin-bottom: var(--s-4); }
 
+/* ---- the story on the About page ---- */
+/* Written in the panel as several paragraphs; preflight strips the browser's
+   own margins, so without this they run together into one block. */
+.story-prose p { margin-block: var(--s-4); line-height: 1.75; }
+.story-prose p:first-child { margin-top: 0; }
+.story-prose p:last-child { margin-bottom: 0; }
+
 /* ---- article ---- */
 .article-body { max-width: none; }
 .article-body p {

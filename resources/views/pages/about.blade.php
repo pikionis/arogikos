@@ -27,7 +27,7 @@
         <span class="eyebrow">{{ content('about.story.eyebrow') }}</span>
         <h2 style="margin:12px 0 var(--s-5)">{{ content('about.story.title') }}</h2>
         <div class="story-prose" style="color:var(--ink-600);font-size:1.08rem">
-          {!! $page?->body !!}
+          {!! content('about.story.body') !!}
         </div>
       </div>
       <div class="sunrise-stage frame-soft" style="aspect-ratio:1/1;position:relative;background:linear-gradient(180deg,#FFF7E6 0%,#FCEEE9 100%);overflow:hidden">
