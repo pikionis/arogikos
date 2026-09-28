@@ -123,6 +123,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::prefix('authors')->name('authors.')->group(function () {
             Route::get('/', [AuthorController::class, 'index'])->name('index');
+            // Before {author}: "order" is a word, not an id.
+            Route::patch('order', [AuthorController::class, 'order'])->name('order');
             Route::get('create', [AuthorController::class, 'create'])->name('create');
             Route::post('/', [AuthorController::class, 'store'])->name('store');
             Route::get('{author}/edit', [AuthorController::class, 'edit'])->name('edit');

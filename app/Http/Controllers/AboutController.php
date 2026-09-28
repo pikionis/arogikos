@@ -19,7 +19,7 @@ class AboutController extends Controller
 
         $page = $pageModel::published()->where('slug', 'sxetika-me-emas')->first();
 
-        $authors = $authorModel::active()->with('media')->orderBy('id')->get();
+        $authors = $authorModel::active()->ordered()->with('media')->get();
 
         return view('pages.about', compact('page', 'authors'));
     }

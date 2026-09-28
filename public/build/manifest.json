@@ -420,7 +420,7 @@
     "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-vietnamese-700-normal.woff2"
   },
   "resources/css/admin.css": {
-    "file": "assets/admin-BUbNSlYi.css",
+    "file": "assets/admin-COhz6GF5.css",
     "name": "admin",
     "names": [
       "admin.css"
@@ -650,7 +650,7 @@
     ]
   },
   "resources/js/admin.js": {
-    "file": "assets/admin-D9s7SgH1.js",
+    "file": "assets/admin-M6ZcVGKN.js",
     "name": "admin",
     "src": "resources/js/admin.js",
     "isEntry": true,

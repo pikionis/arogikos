@@ -28,7 +28,7 @@ class AuthorPicker
 
         $authors = $authorModel::query()
             ->with('user')
-            ->orderBy('name')
+            ->ordered()
             ->get();
 
         return array_filter([

@@ -34,8 +34,8 @@ class BlogController extends Controller
             // Photo and role come along: the picker shows who someone is,
             // not just a name they may not recognise.
             ->with('media')
-            ->orderBy('name')
-            ->get(['id', 'name', 'role_title']);
+            ->ordered()
+            ->get(['id', 'name', 'role_title', 'position']);
 
         $author = $request->integer('author') ?: null;
         if ($author !== null && ! $authors->contains('id', $author)) {

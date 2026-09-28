@@ -390,6 +390,112 @@ Alpine.data('collectionField', () => ({
     },
 }));
 
+/* Rows of a table put in order by hand.
+ *
+ * Same drag as the collection field, but the rows are database records rather
+ * than inputs in a form, so nothing is renumbered — the order is read off the
+ * DOM when the save bar is submitted. The bar only appears once the order
+ * actually differs from the one that was loaded, so a stray drag that lands
+ * back where it started does not ask to be saved.
+ */
+Alpine.data('sortableRows', () => ({
+    dragging: null,
+    saved: [],
+    dirty: false,
+
+    init() {
+        this.saved = this.ids();
+    },
+
+    rows() {
+        return Array.from(this.$refs.list.children);
+    },
+
+    ids() {
+        return this.rows().map((row) => row.dataset.id);
+    },
+
+    check() {
+        const now = this.ids();
+        this.dirty = now.length !== this.saved.length || now.some((id, i) => id !== this.saved[i]);
+    },
+
+    reset() {
+        const list = this.$refs.list;
+        const byId = new Map(this.rows().map((row) => [row.dataset.id, row]));
+
+        this.saved.forEach((id) => {
+            const row = byId.get(id);
+            if (row) list.appendChild(row);
+        });
+
+        this.check();
+    },
+
+    /* ---- dragging ---- */
+
+    arm(event) {
+        event.target.closest('tr').setAttribute('draggable', 'true');
+    },
+
+    disarm(event) {
+        const row = event.target.closest('tr');
+        if (row) row.setAttribute('draggable', 'false');
+    },
+
+    dragStart(event) {
+        this.dragging = event.currentTarget;
+        this.dragging.classList.add('is-dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        // Firefox will not start a drag without something on the transfer.
+        event.dataTransfer.setData('text/plain', '');
+    },
+
+    dragOver(event) {
+        if (!this.dragging) return;
+
+        const over = event.currentTarget;
+        if (over === this.dragging) return;
+
+        const box = over.getBoundingClientRect();
+        const below = event.clientY > box.top + box.height / 2;
+
+        this.$refs.list.insertBefore(this.dragging, below ? over.nextSibling : over);
+    },
+
+    drop() {
+        this.check();
+    },
+
+    dragEnd() {
+        if (!this.dragging) return;
+
+        this.dragging.classList.remove('is-dragging');
+        this.dragging.setAttribute('draggable', 'false');
+        this.dragging = null;
+        this.check();
+    },
+
+    /* Keyboard: the handle takes the arrow keys, so ordering does not need a
+       mouse. */
+    move(event, by) {
+        const row = event.target.closest('tr');
+        const rows = this.rows();
+        const to = rows.indexOf(row) + by;
+
+        if (to < 0 || to >= rows.length) return;
+
+        if (by < 0) {
+            this.$refs.list.insertBefore(row, rows[to]);
+        } else {
+            this.$refs.list.insertBefore(row, rows[to].nextSibling);
+        }
+
+        this.check();
+        event.target.focus();
+    },
+}));
+
 Alpine.start();
 
 /* ------------------------------------------------------------------ Trix */

@@ -7,21 +7,31 @@
 @section('content')
 
     <div class="a-alert a-alert-warn" style="font-weight:500">
-        <strong>Πώς συνδέονται με τους λογαριασμούς:</strong>
-        όποιος προσκληθεί στη διαχείριση αποκτά αυτόματα προφίλ συντάκτη, ώστε να
-        μπορεί να υπογράψει άρθρα. Το προφίλ ξεκινά <em>ανενεργό</em>, δηλαδή
-        <strong>δεν</strong> εμφανίζεται στη σελίδα «Σχετικά με εμάς» μέχρι να το
-        ενεργοποιήσετε εδώ.
+        <p style="margin:0 0 8px">
+            <strong>Η σειρά:</strong> σύρετε έναν συντάκτη από τη λαβή αριστερά.
+            Όποιος είναι ψηλότερα εδώ εμφανίζεται πρώτος στο «Σχετικά με εμάς»,
+            από αριστερά προς τα δεξιά.
+        </p>
+        <p style="margin:0">
+            <strong>Πώς συνδέονται με τους λογαριασμούς:</strong>
+            όποιος προσκληθεί στη διαχείριση αποκτά αυτόματα προφίλ συντάκτη, ώστε να
+            μπορεί να υπογράψει άρθρα. Το προφίλ ξεκινά <em>ανενεργό</em>, δηλαδή
+            <strong>δεν</strong> εμφανίζεται στη σελίδα «Σχετικά με εμάς» μέχρι να το
+            ενεργοποιήσετε εδώ.
+        </p>
     </div>
 
     <div style="display:flex;justify-content:flex-end;margin-bottom:18px">
         <a class="a-btn a-btn-primary" href="{{ route('admin.authors.create') }}">+ Νέος συντάκτης</a>
     </div>
 
+<div x-data="sortableRows()" x-ref="root">
+
     <section class="a-card a-card-pad0">
-        <table class="a-table">
+        <table class="a-table a-table-sortable">
             <thead>
                 <tr>
+                    <th style="width:44px"><span class="a-sr">Σειρά</span></th>
                     <th style="width:56px"></th>
                     <th>Όνομα</th>
                     <th>Λογαριασμός</th>
@@ -30,10 +40,25 @@
                     <th style="text-align:right">Ενέργειες</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody x-ref="list">
                 @foreach ($authors as $author)
                     @php $photo = $author->getFirstMediaUrl('photo', 'thumb'); @endphp
-                    <tr>
+                    <tr data-id="{{ $author->id }}" draggable="false"
+                        @dragstart="dragStart($event)" @dragover.prevent="dragOver($event)"
+                        @drop.prevent="drop()" @dragend="dragEnd()">
+                        <td>
+                            {{-- The handle carries the drag, not the row: a row
+                                 you cannot select text in is a row you cannot
+                                 read properly. Arrow keys do the same job
+                                 without a mouse. --}}
+                            <button type="button" class="a-drag" title="Μετακίνηση"
+                                    aria-label="Μετακίνηση: {{ $author->name }}"
+                                    @mousedown="arm($event)" @mouseup="disarm($event)"
+                                    @keydown.arrow-up.prevent="move($event, -1)"
+                                    @keydown.arrow-down.prevent="move($event, 1)">
+                                <span aria-hidden="true">⠿</span>
+                            </button>
+                        </td>
                         <td>
                             <div style="width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--color-soft-green);display:grid;place-items:center;font-family:var(--font-head);font-weight:700;color:var(--color-green-700)">
                                 @if ($photo)
@@ -81,5 +106,17 @@
             </tbody>
         </table>
     </section>
+
+    {{-- Shown by Alpine only once something has actually moved. --}}
+    <form method="POST" action="{{ route('admin.authors.order') }}" class="a-sortbar"
+          x-show="dirty" x-cloak @submit="$refs.order.value = ids().join(',')">
+        @csrf @method('PATCH')
+        <input type="hidden" name="order" x-ref="order">
+        <span>Η σειρά άλλαξε.</span>
+        <button class="a-btn a-btn-ghost a-btn-sm" type="button" @click="reset()">Αναίρεση</button>
+        <button class="a-btn a-btn-primary a-btn-sm" type="submit">Αποθήκευση σειράς</button>
+    </form>
+
+</div>
 
 @endsection

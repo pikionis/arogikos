@@ -26,9 +26,21 @@ class Author extends Model implements HasMedia
     use HasInitials;
     use InteractsWithMedia;
 
-    protected $fillable = ['name', 'role_title', 'bio', 'is_active', 'user_id'];
+    protected $fillable = ['name', 'role_title', 'bio', 'is_active', 'user_id', 'position'];
 
     protected $casts = ['is_active' => 'boolean'];
+
+    protected static function booted(): void
+    {
+        // Someone who has just been invited belongs at the end of the team,
+        // not silently in front of it. Every path that makes a profile — the
+        // form, an accepted invitation, the seeders — goes through here.
+        static::creating(function (self $author) {
+            if ((int) $author->position === 0) {
+                $author->position = ((int) static::query()->max('position')) + 1;
+            }
+        });
+    }
 
     public function articles(): HasMany
     {
@@ -51,6 +63,19 @@ class Author extends Model implements HasMedia
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    /**
+     * The order the panel put them in.
+     *
+     * Top of the list in the panel is first on the page, which reads
+     * left-to-right across the team grid. The name is the tie-breaker so two
+     * profiles that were never dragged still come out in a stable order
+     * rather than in whatever order the database felt like.
+     */
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('position')->orderBy('name');
     }
 
     /** Profiles backed by a panel account. */

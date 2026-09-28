@@ -10,6 +10,8 @@ use App\Models\Cms\Author;
 use App\Support\MediaUpload;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AuthorController extends Controller
 {
@@ -23,9 +25,52 @@ class AuthorController extends Controller
         return view('admin.authors.index', [
             'authors' => $authorModel::with(['user', 'media'])
                 ->withCount('articles')
-                ->orderBy('name')
+                ->ordered()
                 ->get(),
         ]);
+    }
+
+    /**
+     * Save the order the rows were dragged into.
+     *
+     * Arrives as one comma-separated list of ids rather than an array of
+     * inputs, because each row already carries its own delete form and a
+     * form cannot be nested inside another one.
+     */
+    public function order(Request $request): RedirectResponse
+    {
+        $this->authorize('manage-users');
+
+        /** @var class-string<Author> $authorModel */
+        $authorModel = cms_model('author');
+
+        $ids = collect(explode(',', (string) $request->input('order')))
+            ->map(fn (string $id) => (int) trim($id))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($ids->isEmpty()) {
+            return back();
+        }
+
+        // Only ids that are still there: a tab left open since yesterday must
+        // not write a position for a profile someone has deleted since.
+        $known = $authorModel::query()->whereIn('id', $ids)->pluck('id')->flip();
+
+        DB::transaction(function () use ($ids, $known, $authorModel) {
+            $position = 0;
+
+            foreach ($ids as $id) {
+                if (! $known->has($id)) {
+                    continue;
+                }
+
+                $authorModel::query()->whereKey($id)->update(['position' => ++$position]);
+            }
+        });
+
+        return back()->with('status', 'Η σειρά αποθηκεύτηκε.');
     }
 
     public function create(): View
