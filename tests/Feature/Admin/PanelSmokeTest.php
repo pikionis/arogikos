@@ -86,7 +86,42 @@ it('renders every admin screen an editor is allowed to see', function (string $r
     'articles.index' => 'admin.articles.index',
     'articles.create' => 'admin.articles.create',
     'events.index' => 'admin.events.index',
-    'authors.index' => 'admin.authors.index',
     'messages.index' => 'admin.messages.index',
     'profile.edit' => 'admin.profile.edit',
 ]);
+
+/* ------------------------------------------------- whose profile is whose */
+
+it('keeps an editor out of everybody else\'s profile', function () {
+    $this->seed(DatabaseSeeder::class);
+
+    $user = User::factory()->create();
+    $user->forceFill(['role' => Role::Editor, 'is_active' => true])->save();
+    $editor = $user->refresh();
+
+    $someoneElse = Author::firstOrFail();
+
+    // Writing a colleague's bio and photo is not an editor's business, and
+    // the list is also where authors get deleted.
+    $this->actingAs($editor)->get(route('admin.authors.index'))->assertForbidden();
+    $this->actingAs($editor)->get(route('admin.authors.edit', $someoneElse))->assertForbidden();
+    $this->actingAs($editor)->delete(route('admin.authors.destroy', $someoneElse))->assertForbidden();
+});
+
+it('hides the authors link from an editor sidebar', function () {
+    $this->seed(DatabaseSeeder::class);
+
+    $user = User::factory()->create();
+    $user->forceFill(['role' => Role::Editor, 'is_active' => true])->save();
+
+    $this->actingAs($user->refresh())
+        ->get(route('admin.dashboard'))
+        ->assertOk()
+        ->assertDontSee(route('admin.authors.index'));
+});
+
+it('still lets an owner reach the authors list', function () {
+    $this->seed(DatabaseSeeder::class);
+
+    $this->actingAs(panelOwner())->get(route('admin.authors.index'))->assertOk();
+});

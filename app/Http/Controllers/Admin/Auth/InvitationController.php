@@ -13,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -64,15 +65,34 @@ class InvitationController extends Controller
             $user->email_verified_at = now();
             $user->save();
 
-            // A display profile so they can be picked as an article author.
-            // INACTIVE on purpose: Author::active() drives the public About
-            // page team grid, and inviting a colleague must never publish them
-            // on the site by itself.
-            Author::create([
-                'user_id' => $user->getKey(),
-                'name' => $user->name,
-                'is_active' => false,
-            ]);
+            // Most invitees already exist as authors: the centre wrote their
+            // profile, with photo and role, before anyone had an account, and
+            // their articles point at it. Adopt that profile instead of
+            // opening a second, empty one beside it — otherwise the person
+            // ends up with two, and the one the site shows is the wrong one.
+            // Compared in PHP, not in SQL: SQLite's LOWER() is ASCII-only and
+            // leaves Greek untouched, so "Ζέτα" would never have matched
+            // itself and every invitee would have quietly got a second
+            // profile.
+            $wanted = Str::lower(trim($user->name));
+
+            $existing = Author::query()
+                ->whereNull('user_id')
+                ->get()
+                ->first(fn (Author $a) => Str::lower(trim($a->name)) === $wanted);
+
+            if ($existing) {
+                $existing->forceFill(['user_id' => $user->getKey()])->save();
+            } else {
+                // Nobody to adopt, so a fresh one. INACTIVE on purpose:
+                // Author::active() drives the public team grid, and inviting a
+                // colleague must never publish them on the site by itself.
+                Author::create([
+                    'user_id' => $user->getKey(),
+                    'name' => $user->name,
+                    'is_active' => false,
+                ]);
+            }
 
             $invitation->forceFill(['accepted_at' => now()])->save();
 

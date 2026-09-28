@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\MediaUpload;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,58 @@ class ProfileController extends Controller
 {
     public function edit(): View
     {
-        return view('admin.profile.edit', ['user' => Auth::user()]);
+        $user = Auth::user();
+
+        return view('admin.profile.edit', [
+            'user' => $user,
+            // The public half of the same person: photo, role and bio, as the
+            // blog byline and the team page show them.
+            'author' => $user->author,
+        ]);
+    }
+
+    /**
+     * The public profile — photo, role title, bio.
+     *
+     * Their own and only their own: a colleague's profile is theirs to write,
+     * and until now an editor could open anyone's from Συντάκτες.
+     *
+     * `is_active` is not here on purpose. Whether someone appears on the
+     * public team page is the centre's call, not the colleague's, and a
+     * self-service form must never be the way onto the website.
+     */
+    public function updateAuthor(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $author = $user->author;
+
+        if (! $author) {
+            return back()->with('status', 'Δεν υπάρχει προφίλ συντάκτη για αυτόν τον λογαριασμό.');
+        }
+
+        $validated = $request->validate([
+            'role_title' => ['nullable', 'string', 'max:120'],
+            'bio' => ['nullable', 'string', 'max:2000'],
+            'photo' => [
+                'nullable', 'image',
+                'mimes:jpg,jpeg,png,webp',
+                'mimetypes:image/jpeg,image/png,image/webp',
+                'max:4096',
+                'dimensions:max_width=5000,max_height=5000',
+            ],
+            'remove_photo' => ['boolean'],
+        ]);
+
+        // The display name follows the account, so there is one name for this
+        // person rather than two that can disagree.
+        $author->name = $user->name;
+        $author->role_title = $validated['role_title'] ?? null;
+        $author->bio = $validated['bio'] ?? null;
+        $author->save();
+
+        MediaUpload::sync($author, $request, 'photo');
+
+        return back()->with('status', 'Το προφίλ σας ενημερώθηκε.');
     }
 
     public function update(Request $request): RedirectResponse
@@ -42,6 +94,9 @@ class ProfileController extends Controller
         $user->name = $validated['name'];
         $user->email = Str::lower($validated['email']);
         $user->save();
+
+        // One person, one name: the byline on their articles follows.
+        $user->author?->forceFill(['name' => $user->name])->save();
 
         return back()->with('status', 'Τα στοιχεία σας ενημερώθηκαν.');
     }

@@ -36,8 +36,10 @@
                           :active="request()->routeIs('admin.events.*')" icon="calendar">Εκδηλώσεις</x-admin.nav-link>
         <x-admin.nav-link :href="route('admin.gallery.index')"
                           :active="request()->routeIs('admin.gallery.*')" icon="image">Gallery</x-admin.nav-link>
-        <x-admin.nav-link :href="route('admin.authors.index')"
-                          :active="request()->routeIs('admin.authors.*')" icon="users">Συντάκτες</x-admin.nav-link>
+        @can('manage-users')
+            <x-admin.nav-link :href="route('admin.authors.index')"
+                              :active="request()->routeIs('admin.authors.*')" icon="users">Συντάκτες</x-admin.nav-link>
+        @endcan
 
         @can('manage-pages')
             <span class="a-navlabel">Σελίδες</span>

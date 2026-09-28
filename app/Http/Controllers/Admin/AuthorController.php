@@ -15,7 +15,7 @@ class AuthorController extends Controller
 {
     public function index(): View
     {
-        $this->authorize('manage-content');
+        $this->authorize('manage-users');
 
         /** @var class-string<Author> $authorModel */
         $authorModel = cms_model('author');
@@ -30,7 +30,7 @@ class AuthorController extends Controller
 
     public function create(): View
     {
-        $this->authorize('manage-content');
+        $this->authorize('manage-users');
 
         /** @var class-string<Author> $authorModel */
         $authorModel = cms_model('author');
@@ -56,7 +56,7 @@ class AuthorController extends Controller
 
     public function edit(Author $author): View
     {
-        $this->authorize('manage-content');
+        $this->authorize('manage-users');
 
         return view('admin.authors.form', compact('author'));
     }
@@ -73,7 +73,7 @@ class AuthorController extends Controller
 
     public function destroy(Author $author): RedirectResponse
     {
-        $this->authorize('manage-content');
+        $this->authorize('manage-users');
 
         // articles.author_id is nullOnDelete, so articles survive without a
         // byline rather than disappearing — but say so plainly.
