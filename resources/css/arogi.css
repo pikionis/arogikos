@@ -629,7 +629,7 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
    άνθρωπο. Το <details> ανοίγει με πληκτρολόγιο και αναγγέλλεται σωστά
    χωρίς μια γραμμή script. */
 
-.author-select { position: relative; margin-top: var(--s-4); display: inline-block; text-align: left; }
+.author-select { position: relative; display: inline-block; text-align: left; }
 
 .author-select > summary {
   display: inline-flex; align-items: center; gap: var(--s-3);
@@ -650,8 +650,7 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .author-select[open] .author-select-caret { transform: rotate(180deg); }
 
 .author-select-panel {
-  position: absolute; z-index: 60; top: calc(100% + 10px); left: 50%;
-  transform: translateX(-50%);
+  position: absolute; z-index: 60; top: calc(100% + 10px); left: 0;
   width: min(340px, calc(100vw - var(--s-8)));
   max-height: min(60vh, 420px); overflow-y: auto;
   padding: var(--s-2);
@@ -660,8 +659,8 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   animation: author-drop .22s var(--ease-out);
 }
 @keyframes author-drop {
-  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
 }
 
 .author-option {
@@ -710,4 +709,27 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .profile-portrait { transition: none; }
   .profile-portrait:hover { transform: none; }
+}
+
+/* ---- γραμμή εργαλείων πάνω από μια λίστα ----
+
+   Το φίλτρο στέκεται δίπλα σε αυτό που φιλτράρει. Στο hero δεν μπορούσε:
+   εκείνο κόβει ό,τι βγαίνει έξω του, ώστε τα διακοσμητικά σχήματα να μην
+   ξεχειλίζουν — και μαζί τους έκοβε και το ανοιγμένο πτυσσόμενο. */
+
+.list-toolbar {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--s-3);
+  margin-bottom: var(--s-8);
+  padding-bottom: var(--s-5);
+  border-bottom: 1px solid var(--hair-soft);
+}
+.list-toolbar-label {
+  font-family: var(--font-head); font-weight: 700; font-size: .92rem;
+  color: var(--ink-400); text-transform: uppercase; letter-spacing: .04em;
+}
+
+@media (max-width: 560px) {
+  .list-toolbar { justify-content: space-between; }
+  /* Σε στενή οθόνη το πτυσσόμενο δεν χωράει αριστερά· ευθυγραμμίζεται δεξιά. */
+  .author-select-panel { left: auto; right: 0; }
 }

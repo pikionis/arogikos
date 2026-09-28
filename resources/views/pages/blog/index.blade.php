@@ -26,13 +26,21 @@
     @endforeach
   </div>
 
-  @if ($authors->count() > 1)
-    <x-author-filter :authors="$authors" :selected="$author" :category="$category" />
-  @endif
 </x-page-hero>
 
 <section class="section bg-white">
   <div class="container">
+    {{-- Ο επιλογέας συντάκτη κάθεται εδώ και όχι στο hero: το hero κόβει ό,τι
+         βγαίνει έξω του (overflow:hidden για τα διακοσμητικά), οπότε το
+         πτυσσόμενο άνοιγε κρυμμένο. Εδώ ανοίγει ελεύθερα, και στέκεται
+         δίπλα στη λίστα που φιλτράρει. --}}
+    @if ($authors->count() > 1)
+      <div class="list-toolbar reveal">
+        <span class="list-toolbar-label">{{ content('blog.filter_author_label') }}</span>
+        <x-author-filter :authors="$authors" :selected="$author" :category="$category" />
+      </div>
+    @endif
+
     @if ($articles->isNotEmpty())
       <div class="grid-3" style="gap:var(--s-8)">
         @foreach ($articles as $article)

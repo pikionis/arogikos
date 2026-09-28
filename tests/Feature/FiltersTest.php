@@ -229,3 +229,46 @@ it('never offers a year that only a draft event falls in', function () {
     expect($html)->not->toContain('year='.$draft->starts_at->year)
         ->and($html)->toContain('year='.now()->subYear()->year);
 });
+
+/* ------------------------------------------------ where the picker stands */
+
+it('keeps the picker out of the hero, which clips what opens inside it', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    postBy($maria, 'Άρθρο της Μαρίας');
+    $kostas = writer('Κώστας Δημητρίου');
+    postBy($kostas, 'Άρθρο του Κώστα');
+
+    $html = $this->get(route('blog.index'))->assertOk()->getContent();
+
+    // .page-hero carries overflow:hidden so its decorative shapes stay put.
+    // Anything that opens downward from inside it opens invisible.
+    $hero = mb_substr($html, mb_strpos($html, 'page-hero'));
+    $hero = mb_substr($hero, 0, mb_strpos($hero, '</section>'));
+
+    expect($hero)->not->toContain('author-select')
+        // It lives with the list it filters instead.
+        ->and($html)->toContain('list-toolbar')
+        ->and($html)->toContain('author-select');
+});
+
+it('still keeps the category chips in the hero', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    postBy($maria, 'Άρθρο της Μαρίας');
+
+    $html = $this->get(route('blog.index'))->getContent();
+
+    // Chips do not open anything, so clipping cannot hurt them.
+    $hero = mb_substr($html, mb_strpos($html, 'page-hero'));
+    $hero = mb_substr($hero, 0, mb_strpos($hero, '</section>'));
+
+    expect($hero)->toContain('class="chip');
+});
+
+it('opens the panel below its own button, not centred on the page', function () {
+    $css = file_get_contents(resource_path('css/arogi.css'));
+
+    preg_match('/\.author-select-panel \{(.*?)\}/s', $css, $m);
+
+    expect($m[1])->toContain('left: 0')
+        ->and($m[1])->not->toContain('translateX(-50%)');
+});
