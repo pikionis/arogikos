@@ -26,7 +26,15 @@ class EventFactory extends Factory
             'location' => $this->faker->randomElement(['Αίθουσα Αρωγής', 'Αρωγή, Κως']),
             'body' => $this->faker->paragraph(),
             'is_published' => true,
+            // Announced already; a test that wants a scheduled one sets it.
+            'published_at' => now()->subDay(),
         ];
+    }
+
+    /** Written, but the announcement has not gone live yet. */
+    public function scheduled(): static
+    {
+        return $this->state(['is_published' => true, 'published_at' => now()->addWeek()]);
     }
 
     public function upcoming(): static

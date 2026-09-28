@@ -32,6 +32,7 @@ class EventRequest extends FormRequest
             'location' => ['nullable', 'string', 'max:200'],
             'body' => ['nullable', 'string', 'max:500000'],
             'is_published' => ['boolean'],
+            'published_at' => ['nullable', 'date'],
             'cover' => [
                 'nullable', 'image',
                 'mimes:jpg,jpeg,png,webp',

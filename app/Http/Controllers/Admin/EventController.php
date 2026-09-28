@@ -91,6 +91,15 @@ class EventController extends Controller
         $event->body = $data['body'] ?? null;
         $event->is_published = $data['is_published'] ?? false;
 
+        // Same rule as articles: publishing without a date would hide the
+        // event, because the scope wants a date that has arrived.
+        $publishAt = $data['published_at'] ?? null;
+        if ($publishAt) {
+            $event->published_at = $publishAt;
+        } elseif ($event->is_published && ! $event->published_at) {
+            $event->published_at = now();
+        }
+
         $slug = trim((string) ($data['slug'] ?? ''));
         if ($slug !== '') {
             $event->slug = Str::slug($slug, '-', 'el');

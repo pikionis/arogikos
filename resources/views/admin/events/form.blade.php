@@ -49,7 +49,7 @@
                         <label class="a-label" for="starts_at">Ημερομηνία &amp; ώρα</label>
                         <input class="a-input" id="starts_at" name="starts_at" type="datetime-local"
                                value="{{ old('starts_at', $event->starts_at?->format('Y-m-d\TH:i')) }}">
-                        <span class="a-hint">Ώρα Ελλάδας. Καθορίζει αν εμφανίζεται ως επερχόμενη.</span>
+                        <span class="a-hint">Πότε <strong>γίνεται</strong> η εκδήλωση. Ώρα Ελλάδας. Καθορίζει αν εμφανίζεται στις επερχόμενες ή στις περασμένες, και σε ποια χρονιά.</span>
                         @error('starts_at')<span class="a-error">{{ $message }}</span>@enderror
                     </div>
 
@@ -70,6 +70,18 @@
                                    @checked(old('is_published', $event->is_published))>
                             <span>Δημοσιευμένη</span>
                         </label>
+                    </div>
+
+                    <div class="a-field">
+                        <label class="a-label" for="published_at">Να εμφανιστεί στις</label>
+                        <input class="a-input" id="published_at" name="published_at" type="datetime-local"
+                               value="{{ old('published_at', $event->published_at?->format('Y-m-d\TH:i')) }}">
+                        <span class="a-hint">
+                            Πότε θα <strong>φανεί</strong> η ανακοίνωση στο site. Αφήστε το κενό για
+                            «μόλις πατήσετε αποθήκευση». Βάλτε μελλοντική ημερομηνία για να γραφτεί
+                            τώρα και να ανέβει μόνη της τότε.
+                        </span>
+                        @error('published_at')<span class="a-error">{{ $message }}</span>@enderror
                     </div>
                     <button class="a-btn a-btn-primary" type="submit" style="width:100%">
                         {{ $isNew ? 'Δημιουργία' : 'Αποθήκευση' }}

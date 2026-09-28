@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -85,6 +86,26 @@ class Author extends Model implements HasMedia
     public function hasLongBio(): bool
     {
         return mb_strlen(trim((string) $this->bio)) > 180;
+    }
+
+    /**
+     * A name reduced to what two spellings of the same person share.
+     *
+     * Greek uppercase drops the tonos, so "ΡΑΦΑΕΛΑ" and "Ραφαέλα" are the same
+     * name written twice — lowercasing alone leaves them different and a
+     * duplicate profile gets created. Final sigma goes the same way, since
+     * "Γιάννης"/"ΓΙΑΝΝΗΣ" differ in it too.
+     */
+    public static function normaliseName(?string $name): string
+    {
+        $lower = Str::lower(trim((string) $name));
+
+        $folded = strtr($lower, [
+            'ά' => 'α', 'έ' => 'ε', 'ή' => 'η', 'ί' => 'ι', 'ΐ' => 'ι', 'ϊ' => 'ι',
+            'ό' => 'ο', 'ύ' => 'υ', 'ΰ' => 'υ', 'ϋ' => 'υ', 'ώ' => 'ω', 'ς' => 'σ',
+        ]);
+
+        return (string) preg_replace('/\s+/u', ' ', $folded);
     }
 
     public function photoUrl(string $conversion = 'web'): ?string

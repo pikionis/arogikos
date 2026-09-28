@@ -75,7 +75,7 @@ class PreviewController extends Controller
             'past' => $past,
             'years' => $years,
             'year' => null,
-            'preview' => $this->banner($event->is_published, $event->starts_at?->isFuture() ?? false),
+            'preview' => $this->banner($event->is_published, $event->published_at?->isFuture() ?? false),
         ]);
     }
 

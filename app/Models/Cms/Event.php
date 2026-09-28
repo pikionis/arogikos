@@ -29,12 +29,13 @@ class Event extends Model implements HasMedia
     ];
 
     protected $fillable = [
-        'title', 'slug', 'starts_at', 'location', 'body', 'is_published',
+        'title', 'slug', 'starts_at', 'location', 'body', 'is_published', 'published_at',
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
         'starts_at' => 'datetime',
+        'published_at' => 'datetime',
     ];
 
     public function getSlugOptions(): SlugOptions
@@ -56,9 +57,18 @@ class Event extends Model implements HasMedia
         $this->addMediaConversion('web')->width(1600)->format('webp')->nonQueued();
     }
 
+    /**
+     * Announced, and the announcement's date has arrived.
+     *
+     * published_at is when the announcement goes live; starts_at is when the
+     * event happens. A talk written in September for November is announced in
+     * October and listed under November.
+     */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('is_published', true);
+        return $query->where('is_published', true)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function scopeUpcoming(Builder $query): Builder

@@ -76,6 +76,9 @@ class EventSeeder extends Seeder
                     'location' => $event['location'],
                     'body' => $event['body'],
                     'is_published' => true,
+                    // Already announced. Without a date the published() scope
+                    // hides it, since that is now what "published" means.
+                    'published_at' => Carbon::parse($event['starts_at'])->subWeeks(3),
                 ]
             );
         }

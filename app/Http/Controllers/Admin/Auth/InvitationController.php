@@ -13,7 +13,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -74,12 +73,12 @@ class InvitationController extends Controller
             // leaves Greek untouched, so "Ζέτα" would never have matched
             // itself and every invitee would have quietly got a second
             // profile.
-            $wanted = Str::lower(trim($user->name));
+            $wanted = Author::normaliseName($user->name);
 
             $existing = Author::query()
                 ->whereNull('user_id')
                 ->get()
-                ->first(fn (Author $a) => Str::lower(trim($a->name)) === $wanted);
+                ->first(fn (Author $a) => Author::normaliseName($a->name) === $wanted);
 
             if ($existing) {
                 $existing->forceFill(['user_id' => $user->getKey()])->save();
