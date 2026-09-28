@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Support\Brand\Canvas;
+use App\Support\Brand\SvgRaster;
 use App\Support\Brand\Woff;
 use Illuminate\Console\Command;
 use RuntimeException;
@@ -66,6 +67,7 @@ class BuildBrandImages extends Command
         $this->info("  wrote $out/images/share-default.png  (1200x630)");
 
         $this->favicons($out);
+        $this->coverCards($out);
 
         return self::SUCCESS;
     }
@@ -121,6 +123,56 @@ class BuildBrandImages extends Command
         $c->roundedBar($x + $u(29), $y + $u(47), $u(42), $u(5.5), self::GREEN);
         // d="M31 76 A19 19 0 0 1 69 76" — the top half of a circle at (50,76).
         $c->arc($x + $u(50), $y + $u(76), $u(19), 180, 360, $u(5.5), self::CORAL);
+    }
+
+    /* --------------------------------------------------------- cover cards
+
+       The twenty scenes an author can pick, as PNGs. Facebook and the rest
+       will not read an SVG, so without these every article shares the same
+       generic card however carefully its cover was chosen. Read from the very
+       files the site renders, so the picture posted to a timeline cannot
+       drift from the one on the page. */
+
+    private function coverCards(string $out): void
+    {
+        $palette = [
+            '--green' => self::GREEN,
+            '--coral' => self::CORAL,
+            '--yellow' => self::YELLOW,
+            '--off-white' => self::OFF_WHITE,
+            '--soft-green' => self::SOFT_GREEN,
+            '--soft-coral' => '#FCEEE9',
+            '--soft-yellow' => '#FFF7E6',
+            '--white' => '#FFFFFF',
+        ];
+
+        $raster = new SvgRaster($palette);
+        @mkdir("$out/images/covers", 0755, true);
+
+        $scenes = array_keys(config('cms-covers', []));
+
+        foreach ($scenes as $key) {
+            $source = resource_path("views/covers/$key.blade.php");
+
+            if (! is_file($source)) {
+                $this->warn("  missing scene: $key");
+
+                continue;
+            }
+
+            // 1600x1000 is the scene's own frame; social wants 1.91:1, so the
+            // card is that frame with the top and bottom trimmed evenly —
+            // which is also what Facebook would crop to anyway.
+            $canvas = new Canvas(1200, 630, 2);
+            $canvas->fill(self::OFF_WHITE);
+            $canvas->viewBox(1600, 1000, 838);
+
+            $raster->render((string) file_get_contents($source), $canvas);
+
+            $canvas->save("$out/images/covers/$key.png");
+        }
+
+        $this->info('  wrote '.count($scenes)." cover cards to $out/images/covers/");
     }
 
     /* ------------------------------------------------------------ favicons */

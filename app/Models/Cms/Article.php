@@ -156,6 +156,32 @@ class Article extends Model implements HasMedia
      * Falls through to the opening of the article itself, so a piece written
      * in a hurry still says something in the results list.
      */
+    /**
+     * The picture a social platform shows when this article's link is posted.
+     *
+     * An uploaded cover first. Otherwise the chosen scene, as the PNG drawn
+     * by `php artisan brand:images` — the scenes themselves are SVG, which
+     * Facebook, WhatsApp and LinkedIn all refuse to read, so without the
+     * raster copy every article would share the same generic card however
+     * carefully its cover was picked.
+     */
+    public function shareImageUrl(): ?string
+    {
+        if (filled($cover = $this->getFirstMediaUrl('cover', 'web'))) {
+            return $cover;
+        }
+
+        $scene = $this->cover_scene;
+
+        if ($scene === null) {
+            return null;
+        }
+
+        $path = "images/covers/{$scene}.png";
+
+        return is_file(public_path($path)) ? asset($path) : null;
+    }
+
     public function metaDescription(): string
     {
         foreach ([$this->seo_description, $this->excerpt] as $candidate) {

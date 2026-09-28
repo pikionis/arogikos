@@ -22,6 +22,12 @@ final class Canvas
     /** @var array<string, int> */
     private array $allocated = [];
 
+    /* How a scene's own coordinates land on this canvas; identity until
+       viewBox() says otherwise, so everything drawn by hand is unaffected. */
+    private float $vbScale = 1.0;
+
+    private float $vbShiftY = 0.0;
+
     public function __construct(
         private readonly int $width,
         private readonly int $height,
@@ -40,6 +46,22 @@ final class Canvas
     }
 
     /* --------------------------------------------------------------- paint */
+
+    /**
+     * Fits a drawing's own coordinate space onto this canvas.
+     *
+     * The cover scenes are 1600x1000; a social card is 1.91:1. The width
+     * fills, and the height is trimmed evenly top and bottom — which is what
+     * Facebook would crop to anyway, so better to choose the crop than to
+     * let it happen.
+     */
+    public function viewBox(float $sourceWidth, float $sourceHeight, float $cropHeight): self
+    {
+        $this->vbScale = $this->width / $sourceWidth;
+        $this->vbShiftY = -(($sourceHeight - $cropHeight) / 2);
+
+        return $this;
+    }
 
     public function fill(string $hex): self
     {
@@ -93,6 +115,33 @@ final class Canvas
         imagefilledrectangle($this->im, $this->px($x + $r), $this->px($y), $this->px($x + $w - $r), $this->px($y + $h), $this->color($hex));
         $this->disc($x + $r, $y + $r, $r, $hex);
         $this->disc($x + $w - $r, $y + $r, $r, $hex);
+
+        return $this;
+    }
+
+    /**
+     * One polygon, drawn once.
+     *
+     * Everything the SVG rasteriser draws comes through here — fills and
+     * strokes alike — because GD blends a single polygon against what is
+     * beneath it correctly, while a shape built from overlapping pieces
+     * blends itself twice wherever they meet.
+     *
+     * @param  array<int, array{0: float, 1: float}>  $points
+     */
+    public function fillPolygon(array $points, string $hex, float $opacity = 1.0): self
+    {
+        if (count($points) < 3) {
+            return $this;
+        }
+
+        $flat = [];
+        foreach ($points as [$x, $y]) {
+            $flat[] = $this->px($x * $this->vbScale);
+            $flat[] = $this->px(($y + $this->vbShiftY) * $this->vbScale);
+        }
+
+        imagefilledpolygon($this->im, $flat, $this->color($hex, $opacity));
 
         return $this;
     }
@@ -162,12 +211,20 @@ final class Canvas
         return (int) round($v * $this->scale);
     }
 
-    private function color(string $hex): int
+    private function color(string $hex, float $opacity = 1.0): int
     {
-        return $this->allocated[$hex] ??= (function () use ($hex): int {
+        $opacity = max(0.0, min(1.0, $opacity));
+        $key = $hex.'|'.round($opacity, 3);
+
+        return $this->allocated[$key] ??= (function () use ($hex, $opacity): int {
             [$r, $g, $b] = sscanf(ltrim($hex, '#'), '%2x%2x%2x');
 
-            return imagecolorallocate($this->im, $r, $g, $b);
+            // GD counts alpha the other way round: 0 opaque, 127 invisible.
+            $alpha = (int) round((1 - $opacity) * 127);
+
+            return $alpha === 0
+                ? imagecolorallocate($this->im, $r, $g, $b)
+                : imagecolorallocatealpha($this->im, $r, $g, $b, $alpha);
         })();
     }
 }

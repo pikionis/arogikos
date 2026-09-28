@@ -204,3 +204,53 @@ it('refuses something that is not a woff', function () {
     expect(fn () => Woff::convert('definitely not a font'))
         ->toThrow(RuntimeException::class);
 });
+
+/* ------------------------------------------------- the article's own scene */
+
+it('shares an article with a raster copy of the scene its author chose', function () {
+    $article = Article::factory()->create([
+        'cover_preset' => 'september',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    $html = $this->get(route('blog.show', $article->slug))->assertOk()->getContent();
+
+    // Not the SVG the page shows: no platform reads one.
+    expect(metaContent($html, 'og:image'))->toEndWith('images/covers/september.png')
+        ->and(metaContent($html, 'og:image'))->not->toContain('.svg');
+});
+
+it('ships a PNG for every scene an author can pick', function () {
+    foreach (array_keys(config('cms-covers')) as $key) {
+        $path = public_path("images/covers/$key.png");
+
+        expect($path)->toBeFile();
+
+        [$width, $height] = getimagesize($path);
+
+        expect($width)->toBe(1200)->and($height)->toBe(630);
+    }
+});
+
+it('falls back to the brand card when the scene has no picture yet', function () {
+    // A scene added to the registry but not yet drawn must not produce a
+    // link to a file that is not there.
+    $article = Article::factory()->create([
+        'cover_preset' => 'september',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    $renamed = public_path('images/covers/september.png');
+    $hidden = $renamed.'.hidden';
+    rename($renamed, $hidden);
+
+    try {
+        $html = $this->get(route('blog.show', $article->slug))->getContent();
+
+        expect(metaContent($html, 'og:image'))->toEndWith(ShareImage::DEFAULT_PATH);
+    } finally {
+        rename($hidden, $renamed);
+    }
+});

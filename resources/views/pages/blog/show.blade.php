@@ -3,7 +3,7 @@
 @section('meta_title', $article->seo_title ?? $article->title.' — '.setting('org_name', 'Αρωγή'))
 @section('meta_description', $article->metaDescription())
 @section('og_type', 'article')
-@section('og_image', $article->getFirstMediaUrl('cover', 'web'))
+@section('og_image', $article->shareImageUrl() ?? '')
 @section('og_image_alt', $article->title)
 
 {{-- What Facebook and LinkedIn read to date and attribute a post. Without
