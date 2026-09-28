@@ -140,7 +140,7 @@ import { motif } from './motifs.js';
   });
 
 
-  /* ---- team profiles ----
+  /* ---- προφίλ ανθρώπων (ομάδα + συντάκτης άρθρου) ----
 
      Το βιογραφικό ζει κομμένο μέσα στην κάρτα και ολόκληρο μέσα σε ένα
      <dialog>. Το native dialog φέρνει Esc, παγίδευση εστίασης και inert
@@ -148,8 +148,8 @@ import { motif } from './motifs.js';
      συγχρονισμός της κίνησης: η κλάση μπαίνει στο επόμενο καρέ ώστε το
      transition να έχει από πού να ξεκινήσει, και το κλείσιμο περιμένει
      να τελειώσει πριν αποσυρθεί το dialog. */
-  function initTeam() {
-    var openers = document.querySelectorAll('[data-team-open]');
+  function initProfiles() {
+    var openers = document.querySelectorAll('[data-profile-open]');
     if (!openers.length) return;
 
     var quick = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -161,7 +161,7 @@ import { motif } from './motifs.js';
     }
 
     openers.forEach(function (btn) {
-      var dlg = document.getElementById(btn.dataset.teamOpen);
+      var dlg = document.getElementById(btn.dataset.profileOpen);
       if (!dlg) return;
 
       btn.addEventListener('click', function () {
@@ -174,7 +174,7 @@ import { motif } from './motifs.js';
         if (e.target === dlg) close(dlg);
       });
 
-      dlg.querySelectorAll('[data-team-close]').forEach(function (x) {
+      dlg.querySelectorAll('[data-profile-close]').forEach(function (x) {
         x.addEventListener('click', function () { close(dlg); });
       });
 
@@ -188,5 +188,27 @@ import { motif } from './motifs.js';
 
   initLightbox();
   initFilters();
-  initTeam();
+
+  /* ---- επιλογέας συντάκτη ----
+
+     Το <details> ανοίγει και κλείνει μόνο του με το πληκτρολόγιο· αυτό που
+     δεν κάνει είναι να κλείνει όταν ο αναγνώστης κοιτάξει αλλού. */
+  function initAuthorSelect() {
+    var picker = document.querySelector('.author-select');
+    if (!picker) return;
+
+    document.addEventListener('click', function (e) {
+      if (picker.open && !picker.contains(e.target)) picker.open = false;
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && picker.open) {
+        picker.open = false;
+        picker.querySelector('summary').focus();
+      }
+    });
+  }
+
+  initProfiles();
+  initAuthorSelect();
 })();

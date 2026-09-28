@@ -90,8 +90,11 @@ it('shows the author photo on the article page', function () {
     $html = $this->get(route('blog.show', $article->slug))->assertOk()->getContent();
 
     expect($html)->toContain($author->photoUrl('thumb'))
-        // The header avatar and the bio box at the foot.
-        ->and(substr_count($html, 'class="avatar g has-photo"'))->toBeGreaterThanOrEqual(2);
+        // Twice, at two sizes: the small avatar beside the byline, and the
+        // framed photo in the author card at the foot of the article.
+        ->and($html)->toContain('class="avatar g has-photo"')
+        ->and($html)->toContain('author-card-photo')
+        ->and($html)->toContain($author->photoUrl('web'));
 });
 
 it('shows the author photo on the blog listing card', function () {

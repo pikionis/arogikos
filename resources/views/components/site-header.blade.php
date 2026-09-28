@@ -30,7 +30,6 @@
                 @endforeach
             </div>
 
-            <span class="lang-switch desk" title="Γλώσσα" aria-hidden="true">🌐 <span class="on">ΕΛ</span> · EN</span>
             <a class="btn btn-coral nav-cta desk" href="{{ route('contact') }}">{{ content('shared.nav_cta') }}</a>
 
             <button class="burger" id="burger" aria-label="Μενού" aria-expanded="false">
@@ -44,6 +43,5 @@
             <a href="{{ route($item['route']) }}" @class(['active' => request()->routeIs($item['pattern'])])>{{ $item['label'] }}</a>
         @endforeach
         <a class="btn btn-coral" href="{{ route('contact') }}">{{ content('shared.nav_cta') }}</a>
-        <p style="margin-top:24px;color:var(--ink-400);font-weight:700;font-family:var(--font-head)" aria-hidden="true">🌐 ΕΛ · EN</p>
     </div>
 </header>

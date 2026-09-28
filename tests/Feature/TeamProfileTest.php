@@ -30,7 +30,7 @@ it('puts every bio in a box under the photo', function () {
 
     $this->get(route('about'))
         ->assertOk()
-        ->assertSee('team-bio', false);
+        ->assertSee('profile-bio', false);
 });
 
 it('clamps a long bio and offers to open it', function () {
@@ -39,7 +39,7 @@ it('clamps a long bio and offers to open it', function () {
     $html = $this->get(route('about'))->assertOk()->getContent();
 
     expect($html)->toContain('is-clamped')
-        ->and($html)->toContain('data-team-open="team-'.$author->id.'"')
+        ->and($html)->toContain('data-profile-open="team-'.$author->id.'"')
         ->and($html)->toContain('Περισσότερα');
 });
 
@@ -68,7 +68,7 @@ it('shows the photo again inside the dialog', function () {
 
     $html = $this->get(route('about'))->getContent();
 
-    expect($html)->toContain('team-modal-photo');
+    expect($html)->toContain('profile-modal-photo');
 });
 
 /* --------------------------------------------------------- accessibility */
@@ -81,7 +81,7 @@ it('uses a real dialog and a real button', function () {
     expect($html)->toContain('<dialog id="team-'.$author->id.'"')
         ->and($html)->toContain('aria-haspopup="dialog"')
         // A div with a click handler is invisible to the keyboard.
-        ->and($html)->toContain('<button type="button" class="team-more"');
+        ->and($html)->toContain('<button type="button" class="profile-more"');
 });
 
 it('names the dialog after the person it is about', function () {
@@ -110,7 +110,7 @@ it('keeps the motion out of the way when the reader asked it to stop', function 
 
     preg_match_all('/@media \(prefers-reduced-motion: reduce\)\s*\{(.*?)\n\}/s', $css, $m);
 
-    expect(implode("\n", $m[1]))->toContain('.team-modal-panel');
+    expect(implode("\n", $m[1]))->toContain('.profile-modal-panel');
 });
 
 it('does not show a withdrawn author at all', function () {

@@ -52,6 +52,10 @@
 
   /* Layout */
   --maxw: 1180px;
+  /* Το πλάτος κάθε στήλης κειμένου: άρθρο, εξώφυλλο, συντάκτης. Ένας
+     αριθμός, ώστε οι στήλες να πέφτουν ακριβώς η μία κάτω από την άλλη
+     και τα περιθώρια δεξιά να είναι ίδια με αριστερά. */
+  --measure: 820px;
   --header-h: 76px;
 
   /* Soft shadow — kept very gentle, never harsh */
@@ -95,6 +99,7 @@ p { text-wrap: pretty; }
 
 /* ---------- Layout ---------- */
 .container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--s-5); }
+.container.column { max-width: calc(var(--measure) + var(--s-5) * 2); }
 .section { padding-block: clamp(var(--s-16), 9vw, var(--s-24)); position: relative; }
 .section-sm { padding-block: clamp(var(--s-12), 7vw, var(--s-20)); }
 .center { text-align: center; }
@@ -214,8 +219,6 @@ image-slot { display: block; width: 100%; height: 100%; }
 .mobile-menu a { display: block; font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; padding: var(--s-4) 0; border-bottom: 1px solid var(--hair-soft); color: var(--ink); }
 .mobile-menu a.active { color: var(--green-700); }
 .mobile-menu .btn { margin-top: var(--s-6); width: 100%; }
-.lang-switch { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-head); font-weight: 700; font-size: 0.85rem; color: var(--ink-400); padding: 6px 10px; border-radius: var(--r-pill); border: 1px solid var(--hair); }
-.lang-switch .on { color: var(--green-700); }
 
 /* ---------- Footer ---------- */
 #site-footer { background: var(--ink); color: rgba(255,255,255,0.82); }
@@ -258,7 +261,6 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1080px) {
-  .lang-switch.desk { display: none; }
   .nav-links a { padding: 8px 10px; font-size: 0.94rem; }
 }
 @media (max-width: 900px) {
@@ -379,7 +381,7 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .zig-tag { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-head); font-weight: 800; font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; padding: 6px 14px; border-radius: var(--r-pill); margin-bottom: var(--s-4); }
 
 /* ---- article ---- */
-.article-body { max-width: 720px; margin-inline: auto; }
+.article-body { max-width: none; }
 .article-body p { margin-block: var(--s-5); line-height: 1.8; font-size: 1.12rem; color: #3a352f; }
 .article-body h2 { margin-top: var(--s-10); margin-bottom: var(--s-3); }
 .article-body h3 { margin-top: var(--s-8); margin-bottom: var(--s-2); }
@@ -428,39 +430,39 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 
 /* Τα βιογραφικά είναι από δύο γραμμές έως χίλιους χαρακτήρες. Χωρίς κουτί
    σταθερού ύψους, η μία στήλη γίνεται τοίχος κειμένου και η διπλανή κενή. */
-.team-bio {
+.profile-bio {
   margin-top: auto;
   padding: var(--s-4) var(--s-5) var(--s-3);
-  background: var(--team-tint, var(--soft-green));
+  background: var(--profile-tint, var(--soft-green));
   border-radius: var(--r-md);
   text-align: left;
 }
-.team-bio-text { margin: 0; }
-.team-bio-text.is-clamped {
+.profile-bio-text { margin: 0; }
+.profile-bio-text.is-clamped {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  -webkit-line-clamp: var(--profile-lines, 4);
+  line-clamp: var(--profile-lines, 4);
   overflow: hidden;
 }
-.team-more {
+.profile-more {
   display: inline-flex; align-items: center; gap: 6px;
   margin-top: var(--s-3); padding: 0;
   background: none; border: 0; cursor: pointer;
   font-family: var(--font-head); font-weight: 700; font-size: .92rem;
   color: var(--green-700);
 }
-.team-more span { transition: transform .18s ease; }
-.team-more:hover span { transform: translateX(4px); }
-.team-more:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; border-radius: var(--r-sm); }
+.profile-more span { transition: transform .18s ease; }
+.profile-more:hover span { transform: translateX(4px); }
+.profile-more:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; border-radius: var(--r-sm); }
 
 /* ---- το πρόσωπο σε πρώτο πλάνο ---- */
 
-.team-modal { border: 0; padding: 0; background: transparent; max-width: min(860px, 92vw); }
-.team-modal::backdrop { background: rgba(43, 43, 43, .5); opacity: 0; transition: opacity .28s ease; }
-.team-modal.is-open::backdrop { opacity: 1; }
+.profile-modal { border: 0; padding: 0; background: transparent; max-width: min(860px, 92vw); }
+.profile-modal::backdrop { background: rgba(43, 43, 43, .5); opacity: 0; transition: opacity .28s ease; }
+.profile-modal.is-open::backdrop { opacity: 1; }
 
-.team-modal-panel {
+.profile-modal-panel {
   position: relative;
   display: grid;
   grid-template-columns: 260px 1fr;
@@ -474,43 +476,43 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   transform: translateY(18px) scale(.94);
   transition: opacity .26s ease, transform .38s cubic-bezier(.2, .9, .25, 1.1);
 }
-.team-modal.is-open .team-modal-panel { opacity: 1; transform: none; }
+.profile-modal.is-open .profile-modal-panel { opacity: 1; transform: none; }
 
-.team-modal-photo { width: 260px; height: 300px; }
+.profile-modal-photo { width: 260px; height: 300px; }
 
-.team-modal-text > * {
+.profile-modal-text > * {
   opacity: 0;
   transform: translateY(12px);
   transition: opacity .3s ease, transform .3s ease;
 }
-.team-modal.is-open .team-modal-text > * { opacity: 1; transform: none; }
-.team-modal.is-open .team-modal-text > *:nth-child(1) { transition-delay: .1s; }
-.team-modal.is-open .team-modal-text > *:nth-child(2) { transition-delay: .16s; }
-.team-modal.is-open .team-modal-text > *:nth-child(3) { transition-delay: .22s; }
+.profile-modal.is-open .profile-modal-text > * { opacity: 1; transform: none; }
+.profile-modal.is-open .profile-modal-text > *:nth-child(1) { transition-delay: .1s; }
+.profile-modal.is-open .profile-modal-text > *:nth-child(2) { transition-delay: .16s; }
+.profile-modal.is-open .profile-modal-text > *:nth-child(3) { transition-delay: .22s; }
 
-.team-modal-text h3 { font-size: 1.6rem; margin-bottom: 4px; }
-.team-modal-text .role { color: var(--coral-700); font-family: var(--font-head); font-weight: 700; margin-bottom: var(--s-4); }
-.team-modal-bio { color: var(--ink-600); line-height: 1.7; max-height: 46vh; overflow-y: auto; }
+.profile-modal-text h3 { font-size: 1.6rem; margin-bottom: 4px; }
+.profile-modal-text .role { color: var(--coral-700); font-family: var(--font-head); font-weight: 700; margin-bottom: var(--s-4); }
+.profile-modal-bio { color: var(--ink-600); line-height: 1.7; max-height: 46vh; overflow-y: auto; }
 
-.team-modal-close {
+.profile-modal-close {
   position: absolute; top: 14px; right: 14px;
   width: 44px; height: 44px; border-radius: var(--r-pill);
-  background: var(--team-tint, var(--soft-green)); border: 0; cursor: pointer;
+  background: var(--profile-tint, var(--soft-green)); border: 0; cursor: pointer;
   font-size: 1rem; color: var(--ink);
 }
-.team-modal-close:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.profile-modal-close:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
 
 @media (max-width: 760px) {
-  .team-modal-panel { grid-template-columns: 1fr; padding: var(--s-8) var(--s-5) var(--s-6); text-align: center; }
-  .team-modal-photo { width: 200px; height: 230px; margin: 0 auto; }
-  .team-modal-bio { text-align: left; max-height: 40vh; }
+  .profile-modal-panel { grid-template-columns: 1fr; padding: var(--s-8) var(--s-5) var(--s-6); text-align: center; }
+  .profile-modal-photo { width: 200px; height: 230px; margin: 0 auto; }
+  .profile-modal-bio { text-align: left; max-height: 40vh; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .team-modal-panel, .team-modal::backdrop, .team-modal-text > *, .team-more span {
+  .profile-modal-panel, .profile-modal::backdrop, .profile-modal-text > *, .profile-more span {
     transition: none !important;
   }
-  .team-modal-panel, .team-modal-text > * { opacity: 1; transform: none; }
+  .profile-modal-panel, .profile-modal-text > * { opacity: 1; transform: none; }
 }
 
 /* ---- responsive components ---- */
@@ -591,4 +593,94 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 
 @media (max-width: 560px) {
   .preview-bar { font-size: .86rem; padding: 10px var(--s-4); }
+}
+
+/* ---- κάρτα συντάκτη στο τέλος του άρθρου ----
+
+   Ίδιο πλαίσιο και ίδιο άνοιγμα με την ομάδα στο «Σχετικά με εμάς»: ο ίδιος
+   άνθρωπος δεν πρέπει να παρουσιάζεται με δύο διαφορετικούς τρόπους. */
+
+.author-card {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: var(--s-6);
+  align-items: start;
+  padding: var(--s-6);
+  background: var(--profile-tint, var(--soft-green));
+  border-radius: var(--r-xl);
+}
+.author-card-photo { width: 150px; height: 170px; }
+.author-card-text h3 { font-size: 1.3rem; margin-top: 4px; }
+.author-card-text .role { color: var(--coral-700); font-family: var(--font-head); font-weight: 700; font-size: .95rem; margin-bottom: var(--s-3); }
+
+/* Μέσα στην κάρτα το πλαίσιο του βιογραφικού είναι λευκό: πράσινο σε
+   πράσινο δεν διαβάζεται ως ξεχωριστό κουτί. */
+.author-card .profile-bio { background: var(--white); margin-top: 0; }
+
+@media (max-width: 620px) {
+  .author-card { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .author-card-photo { width: 130px; height: 150px; }
+  .author-card .profile-bio { text-align: left; }
+}
+
+/* ---- επιλογέας συντάκτη ----
+
+   Έξι ονόματα στη σειρά είναι τοίχος, και ο αναγνώστης ψάχνει έναν
+   άνθρωπο. Το <details> ανοίγει με πληκτρολόγιο και αναγγέλλεται σωστά
+   χωρίς μια γραμμή script. */
+
+.author-select { position: relative; margin-top: var(--s-4); display: inline-block; text-align: left; }
+
+.author-select > summary {
+  display: inline-flex; align-items: center; gap: var(--s-3);
+  padding: 8px 16px 8px 10px;
+  border-radius: var(--r-pill);
+  background: #fff; border: 1.5px solid var(--hair);
+  font-family: var(--font-head); font-weight: 700; font-size: .95rem; color: var(--ink-600);
+  cursor: pointer; list-style: none;
+  transition: border-color .2s var(--ease-out), box-shadow .2s var(--ease-out);
+}
+.author-select > summary::-webkit-details-marker { display: none; }
+.author-select > summary:hover { border-color: var(--green-300); }
+.author-select > summary:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.author-select[open] > summary { border-color: var(--green); box-shadow: var(--shadow-card); }
+
+.author-select-label { padding-left: 6px; }
+.author-select-caret { transition: transform .2s var(--ease-out); }
+.author-select[open] .author-select-caret { transform: rotate(180deg); }
+
+.author-select-panel {
+  position: absolute; z-index: 60; top: calc(100% + 10px); left: 50%;
+  transform: translateX(-50%);
+  width: min(340px, calc(100vw - var(--s-8)));
+  max-height: min(60vh, 420px); overflow-y: auto;
+  padding: var(--s-2);
+  background: #fff; border-radius: var(--r-lg);
+  border: 1px solid var(--hair); box-shadow: var(--shadow-lift);
+  animation: author-drop .22s var(--ease-out);
+}
+@keyframes author-drop {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.author-option {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: 9px 10px; border-radius: var(--r-md);
+  color: var(--ink); text-decoration: none;
+}
+.author-option:hover { background: var(--soft-green); }
+.author-option.is-on { background: var(--soft-green); }
+.author-option strong { display: block; font-family: var(--font-head); font-size: .98rem; }
+.author-option em { display: block; font-style: normal; font-size: .84rem; color: var(--ink-400); margin-top: 1px; }
+
+.author-option-all {
+  flex: none; width: 42px; height: 42px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--soft-yellow); color: var(--yellow-700); font-size: 1.1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .author-select-panel { animation: none; }
+  .author-select-caret { transition: none; }
 }

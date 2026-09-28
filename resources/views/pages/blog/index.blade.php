@@ -27,12 +27,7 @@
   </div>
 
   @if ($authors->count() > 1)
-    <div class="filters filters-authors reveal reveal-d2" aria-label="{{ content('blog.filter_author_all') }}">
-      <a class="chip {{ $author === null ? 'active' : '' }}" href="{{ route('blog.index', array_filter(['category' => $category])) }}">{{ content('blog.filter_author_all') }}</a>
-      @foreach ($authors as $person)
-        <a class="chip {{ $author === $person->id ? 'active' : '' }}" href="{{ route('blog.index', array_filter(['category' => $category, 'author' => $person->id])) }}">{{ $person->name }}</a>
-      @endforeach
-    </div>
+    <x-author-filter :authors="$authors" :selected="$author" :category="$category" />
   @endif
 </x-page-hero>
 

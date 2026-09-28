@@ -40,7 +40,7 @@ function postBy(Author $author, string $title, string $category = 'learning'): A
 
 /* ------------------------------------------------------- blog · συντάκτης */
 
-it('offers a chip for each author who has published', function () {
+it('offers a row for each author who has published', function () {
     $maria = writer('Μαρία Παπαδοπούλου');
     postBy($maria, 'Άρθρο της Μαρίας');
     $kostas = writer('Κώστας Δημητρίου');
@@ -48,9 +48,46 @@ it('offers a chip for each author who has published', function () {
 
     $this->get(route('blog.index'))
         ->assertOk()
+        ->assertSee('author-select', false)
         ->assertSeeText('Μαρία Παπαδοπούλου')
         ->assertSeeText('Κώστας Δημητρίου')
         ->assertSeeText('Όλοι οι συντάκτες');
+});
+
+it('shows each author with a face and what they do', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    $maria->forceFill(['role_title' => 'Ειδική Παιδαγωγός'])->save();
+    postBy($maria, 'Άρθρο της Μαρίας');
+    $kostas = writer('Κώστας Δημητρίου');
+    $kostas->forceFill(['role_title' => 'Ψυχολόγος'])->save();
+    postBy($kostas, 'Άρθρο του Κώστα');
+
+    $html = $this->get(route('blog.index'))->assertOk()->getContent();
+
+    // A name alone tells a reader nothing; the role is how they recognise
+    // the person whose articles they came back for.
+    expect($html)->toContain(e('Ειδική Παιδαγωγός'))
+        ->and($html)->toContain(e('Ψυχολόγος'))
+        // One row per author plus the "all" row. Counted on the anchor, not
+        // the bare class: author-option-all is a substring of it.
+        ->and(substr_count($html, '<a class="author-option'))->toBe(3);
+});
+
+it('names the chosen author on the closed picker', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    postBy($maria, 'Άρθρο της Μαρίας');
+    $kostas = writer('Κώστας Δημητρίου');
+    postBy($kostas, 'Άρθρο του Κώστα');
+
+    $html = $this->get(route('blog.index', ['author' => $maria->id]))->getContent();
+
+    // Closed, it must say who is selected rather than "all authors".
+    expect($html)->toContain('author-select-label');
+
+    preg_match('/<summary>(.*?)<\/summary>/s', $html, $m);
+
+    expect($m[1])->toContain(e('Μαρία Παπαδοπούλου'))
+        ->and($m[1])->not->toContain(e('Όλοι οι συντάκτες'));
 });
 
 it('leaves out an author with nothing published', function () {
@@ -109,7 +146,7 @@ it('ignores an author id that means nothing', function () {
     }
 });
 
-it('hides the author row when there is only one writer', function () {
+it('hides the picker when there is only one writer', function () {
     $maria = writer('Μαρία Παπαδοπούλου');
     postBy($maria, 'Άρθρο της Μαρίας');
 

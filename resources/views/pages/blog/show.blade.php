@@ -41,7 +41,7 @@
 
 @section('content')
 <article>
-  <div class="container" style="max-width:820px">
+  <div class="container column">
     <div style="padding-top:var(--s-12)" class="reveal">
       <p class="breadcrumb"><a href="{{ route('home') }}">{{ home_label() }}</a> · <a href="{{ route('blog.index') }}">{{ content('blog.hero.crumb') }}</a> · {{ content('blog.article_crumb') }}</p>
       <span class="cat-pill {{ $color }}" style="margin-bottom:var(--s-4);display:inline-block">{{ $article->category_label }}</span>
@@ -55,25 +55,46 @@
     </div>
   </div>
 
-  <div class="container" style="max-width:960px;margin-top:var(--s-10)">
+  <div class="container column" style="margin-top:var(--s-10)">
     <div class="frame-soft reveal" style="aspect-ratio:21/9">
       <x-media-image :model="$article" collection="cover" :motif="$article->cover_motif" :scene="$article->cover_scene" live :tint="$tint" :alt="$article->title" />
     </div>
   </div>
 
-  <div class="container">
+  <div class="container column">
     <div class="article-body reveal">
       {!! $article->body !!}
     </div>
   </div>
 
   @if ($article->author && filled($article->author->bio))
-  <div class="container" style="max-width:820px;margin-top:var(--s-10)">
-    <div class="reveal" style="display:flex;align-items:center;gap:var(--s-4);padding:var(--s-6);background:{{ $tint }};border-radius:var(--r-xl)">
-      <x-author-avatar :author="$article->author" :color="$color" size="64px" style="flex:none" />
-      <div><h3 style="font-size:1.2rem">{{ $article->author->name }}</h3><p style="color:var(--ink-600)">{{ $article->author->bio }}</p></div>
+    @php $authorId = 'author-'.$article->author->id; @endphp
+
+    <div class="container column" style="margin-top:var(--s-12)">
+      <div class="author-card reveal" style="--profile-tint:{{ $tint }}">
+        <div class="author-card-photo frame-arch">
+          <x-media-image
+            :model="$article->author"
+            collection="photo"
+            motif="one"
+            :tint="$tint"
+            :alt="$article->author->name"
+          />
+        </div>
+
+        <div class="author-card-text">
+          <span class="eyebrow coral">{{ content('blog.author_eyebrow') }}</span>
+          <h3>{{ $article->author->name }}</h3>
+          @if (filled($article->author->role_title))
+            <p class="role">{{ $article->author->role_title }}</p>
+          @endif
+
+          <x-author-bio :author="$article->author" :id="$authorId" :tint="$tint" :lines="3" />
+        </div>
+      </div>
     </div>
-  </div>
+
+    <x-author-dialog :author="$article->author" :id="$authorId" :tint="$tint" />
   @endif
 </article>
 

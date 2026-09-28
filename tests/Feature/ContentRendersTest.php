@@ -35,7 +35,7 @@ function conditionalKeys(): array
         // Only shown after a failed submit.
         'contact.form.error',
         // These belong to a single article, not to the list of them.
-        'blog.article_crumb', 'blog.read_suffix',
+        'blog.article_crumb', 'blog.read_suffix', 'blog.author_eyebrow',
         // Shown only when a filter comes back with nothing.
         'blog.empty', 'blog.empty_link',
     ];
@@ -137,7 +137,8 @@ it('renders the article breadcrumb and reading time on an article page', functio
     $this->get(route('blog.show', $article->slug))
         ->assertOk()
         ->assertSeeText('Άρθρο')
-        ->assertSeeText('ανάγνωση');
+        ->assertSeeText('ανάγνωση')
+        ->assertSeeText('Το άρθρο έγραψε');
 });
 
 it('renders the empty-list copy when a filter finds nothing', function () {

@@ -31,8 +31,11 @@ class BlogController extends Controller
         // nothing yet is not news to a reader.
         $authors = Author::query()
             ->whereHas('articles', fn ($q) => $q->published())
+            // Photo and role come along: the picker shows who someone is,
+            // not just a name they may not recognise.
+            ->with('media')
             ->orderBy('name')
-            ->get(['id', 'name']);
+            ->get(['id', 'name', 'role_title']);
 
         $author = $request->integer('author') ?: null;
         if ($author !== null && ! $authors->contains('id', $author)) {
