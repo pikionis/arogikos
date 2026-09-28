@@ -52,24 +52,13 @@
             <form method="POST" action="{{ route('admin.profile.password') }}">
                 @csrf @method('PUT')
 
-                <div class="a-field">
-                    <label class="a-label" for="current_password">Τρέχων κωδικός</label>
-                    <input class="a-input" id="current_password" name="current_password" type="password"
-                           required autocomplete="current-password">
-                </div>
+                <x-admin.password-field name="current_password" label="Τρέχων κωδικός"
+                                        autocomplete="current-password" />
 
-                <div class="a-field">
-                    <label class="a-label" for="password">Νέος κωδικός</label>
-                    <input class="a-input" id="password" name="password" type="password"
-                           required autocomplete="new-password">
-                    <span class="a-hint">Τουλάχιστον 8 χαρακτήρες.</span>
-                </div>
+                <x-admin.password-field name="password" label="Νέος κωδικός"
+                                        hint="Τουλάχιστον 8 χαρακτήρες." />
 
-                <div class="a-field">
-                    <label class="a-label" for="password_confirmation">Επιβεβαίωση νέου κωδικού</label>
-                    <input class="a-input" id="password_confirmation" name="password_confirmation" type="password"
-                           required autocomplete="new-password">
-                </div>
+                <x-admin.password-field name="password_confirmation" label="Επιβεβαίωση νέου κωδικού" />
 
                 <button class="a-btn a-btn-primary" type="submit">Αλλαγή κωδικού</button>
             </form>

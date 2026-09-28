@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Models\Cms;
 
+use App\Models\Concerns\HasInitials;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -22,6 +22,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class Author extends Model implements HasMedia
 {
     use HasFactory;
+    use HasInitials;
     use InteractsWithMedia;
 
     protected $fillable = ['name', 'role_title', 'bio', 'is_active', 'user_id'];
@@ -84,23 +85,6 @@ class Author extends Model implements HasMedia
     public function hasLongBio(): bool
     {
         return mb_strlen(trim((string) $this->bio)) > 180;
-    }
-
-    /** Initials for the avatar chip, e.g. "Μαρία Κωνσταντίνου" → "ΜΚ". */
-    public function initials(): string
-    {
-        $initials = Str::of($this->name)
-            ->explode(' ')
-            ->filter()
-            ->take(2)
-            ->map(fn (string $part) => Str::upper(Str::substr($part, 0, 1)))
-            ->implode('');
-
-        // Greek uppercase drops the tonos (e.g. "Άννα" → "Α", not "Ά").
-        return strtr($initials, [
-            'Ά' => 'Α', 'Έ' => 'Ε', 'Ή' => 'Η', 'Ί' => 'Ι',
-            'Ό' => 'Ο', 'Ύ' => 'Υ', 'Ώ' => 'Ω', 'Ϊ' => 'Ι', 'Ϋ' => 'Υ',
-        ]);
     }
 
     public function photoUrl(string $conversion = 'web'): ?string

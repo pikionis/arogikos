@@ -24,12 +24,8 @@
                    @error('email') aria-invalid="true" @enderror>
         </div>
 
-        <div class="a-field">
-            <label class="a-label" for="password">Κωδικός πρόσβασης</label>
-            <input class="a-input" id="password" name="password" type="password" required
-                   autocomplete="current-password"
-                   @error('password') aria-invalid="true" @enderror>
-        </div>
+        <x-admin.password-field name="password" label="Κωδικός πρόσβασης"
+                                autocomplete="current-password" />
 
         <div class="a-field" style="display:flex;align-items:center;justify-content:space-between;gap:12px">
             <label class="a-check">

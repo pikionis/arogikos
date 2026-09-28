@@ -635,3 +635,67 @@
 
 .a-scene-name { font-size: .88rem; font-weight: 600; color: var(--color-ink); }
 .a-scene-for { font-size: .78rem; line-height: 1.35; color: var(--color-ink-600); }
+
+/* ------------------------------------------------------- πεδίο κωδικού
+
+   Ένα κουμπί «Εμφάνιση / Απόκρυψη» μέσα στο πεδίο. Λέξη και όχι ματάκι:
+   το εικονίδιο του ματιού είναι αμφίσημο ακόμη και για όσους το ξέρουν —
+   δείχνει την τρέχουσα κατάσταση ή αυτό που θα συμβεί; Η λέξη δεν είναι. */
+
+.a-password { position: relative; display: block; }
+.a-password .a-input { padding-right: 92px; }
+
+.a-password-toggle {
+    position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+    padding: 6px 10px; border: 0; border-radius: 8px;
+    background: transparent; cursor: pointer;
+    font-family: var(--font-head); font-weight: 700; font-size: .8rem;
+    color: var(--color-green-700);
+}
+.a-password-toggle:hover { background: var(--color-soft-green); }
+.a-password-toggle:focus-visible { outline: 3px solid var(--color-green); outline-offset: 2px; }
+
+/* --------------------------------------------------- το προφίλ στο topbar
+
+   Ήταν δύο γραμμές κειμένου με ένα tooltip. Τίποτα δεν έλεγε ότι πατιούνται,
+   και στο κινητό ούτε το tooltip υπάρχει. Τώρα είναι κουμπί: περίγραμμα,
+   αρχικά, βελάκι, και ορατή αντίδραση στο πέρασμα και στο πληκτρολόγιο. */
+
+.a-sr {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip-path: inset(50%); white-space: nowrap;
+}
+
+.a-profile-link {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 10px 6px 6px;
+    border: 1.5px solid var(--color-soft-green);
+    border-radius: 999px;
+    background: #fff;
+    text-decoration: none;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+.a-profile-link:hover { border-color: var(--color-green-300); background: var(--color-soft-green); }
+.a-profile-link:focus-visible { outline: 3px solid var(--color-green); outline-offset: 2px; }
+.a-profile-link[aria-current="page"] { border-color: var(--color-green); background: var(--color-soft-green); }
+
+.a-profile-avatar {
+    flex: none; width: 34px; height: 34px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--color-green); color: #fff;
+    font-family: var(--font-head); font-weight: 800; font-size: .82rem;
+}
+
+.a-profile-who { display: block; line-height: 1.25; text-align: left; }
+.a-profile-who strong { display: block; font-size: .86rem; color: var(--color-ink); }
+.a-profile-who em { display: block; font-style: normal; font-size: .76rem; color: var(--color-ink-400); }
+
+.a-profile-go { color: var(--color-ink-400); font-size: 1.1rem; line-height: 1; }
+.a-profile-link:hover .a-profile-go { color: var(--color-green-700); }
+
+@media (max-width: 720px) {
+    /* Σε στενό topbar μένουν τα αρχικά: το βελάκι και ο ρόλος φεύγουν πρώτα. */
+    .a-profile-who, .a-profile-go { display: none; }
+    .a-profile-link { padding: 5px; }
+}

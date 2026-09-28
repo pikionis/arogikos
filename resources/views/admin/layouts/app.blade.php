@@ -75,11 +75,18 @@
                 <a href="{{ route('home') }}" target="_blank" rel="noopener"
                    class="a-btn a-btn-ghost a-btn-sm">Προβολή site ↗</a>
 
-                <a href="{{ route('admin.profile.edit') }}"
-                   style="text-align:right;line-height:1.3;text-decoration:none"
-                   title="Το προφίλ μου">
-                    <div style="font-weight:700;font-size:.88rem;color:var(--color-ink)">{{ $user->name }}</div>
-                    <div style="color:var(--color-ink-400);font-size:.78rem">{{ $user->role->label() }}</div>
+                {{-- Ήταν δύο γραμμές κείμενο χωρίς κανένα σημάδι ότι πατιούνται:
+                     μόνο ένα tooltip, που δεν υπάρχει καν στο κινητό. Τώρα
+                     είναι κουμπί με περίγραμμα, αρχικά και βελάκι. --}}
+                <a class="a-profile-link" href="{{ route('admin.profile.edit') }}"
+                   @if (request()->routeIs('admin.profile.*')) aria-current="page" @endif>
+                    <span class="a-profile-avatar" aria-hidden="true">{{ $user->initials() }}</span>
+                    <span class="a-profile-who">
+                        <strong>{{ $user->name }}</strong>
+                        <em>{{ $user->role->label() }}</em>
+                    </span>
+                    <span class="a-profile-go" aria-hidden="true">›</span>
+                    <span class="a-sr">Το προφίλ μου</span>
                 </a>
 
                 <form method="POST" action="{{ route('admin.logout') }}">

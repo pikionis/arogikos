@@ -23,19 +23,10 @@
                    @error('email') aria-invalid="true" @enderror>
         </div>
 
-        <div class="a-field">
-            <label class="a-label" for="password">Νέος κωδικός</label>
-            <input class="a-input" id="password" name="password" type="password" required autofocus
-                   autocomplete="new-password"
-                   @error('password') aria-invalid="true" @enderror>
-            <span class="a-hint">Τουλάχιστον 8 χαρακτήρες.</span>
-        </div>
+        <x-admin.password-field name="password" label="Νέος κωδικός" autofocus
+                                hint="Τουλάχιστον 8 χαρακτήρες." />
 
-        <div class="a-field">
-            <label class="a-label" for="password_confirmation">Επιβεβαίωση κωδικού</label>
-            <input class="a-input" id="password_confirmation" name="password_confirmation"
-                   type="password" required autocomplete="new-password">
-        </div>
+        <x-admin.password-field name="password_confirmation" label="Επιβεβαίωση κωδικού" />
 
         <button type="submit" class="a-btn a-btn-primary" style="width:100%">
             Αποθήκευση κωδικού
