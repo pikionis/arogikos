@@ -93,14 +93,17 @@ it('lists the fields in the order the page shows them', function (string $pageKe
 it('lists each service the way the services page reads it', function () {
     $html = $this->get(route('services'))->assertOk()->getContent();
 
-    $sub = collect(config('cms-content.shared.groups'))
+    $sub = collect(config('cms-content.services.groups'))
         ->pluck('fields')
         ->flatten(1)
-        ->firstWhere('key', 'services')['fields'] ?? [];
+        ->firstWhere('key', 'services')['item'] ?? [];
 
-    $service = content_items('shared.services')[0];
+    $service = content_items('services.services')[0];
 
-    $positions = [];
+    // Forward scan, for the same reason as above: a service's name also
+    // appears in the structured data in <head>, long before its section.
+    $cursor = 0;
+    $stragglers = [];
 
     foreach ($sub as $field) {
         $value = $service[$field['key']] ?? null;
@@ -110,20 +113,19 @@ it('lists each service the way the services page reads it', function () {
             continue;
         }
 
-        $at = mb_strpos($html, e($needle));
+        $at = mb_strpos($html, e($needle), $cursor);
 
         if ($at !== false) {
-            $positions[] = ['key' => $field['key'], 'at' => $at];
+            $cursor = $at;
+
+            continue;
+        }
+
+        // Fields that belong to the home page are not on this one at all.
+        if (mb_strpos($html, e($needle)) !== false) {
+            $stragglers[] = $field['key'];
         }
     }
 
-    $outOfOrder = [];
-
-    for ($i = 1; $i < count($positions); $i++) {
-        if ($positions[$i]['at'] < $positions[$i - 1]['at']) {
-            $outOfOrder[] = $positions[$i]['key'].' comes before '.$positions[$i - 1]['key'];
-        }
-    }
-
-    expect($outOfOrder)->toBe([]);
+    expect($stragglers)->toBe([]);
 });

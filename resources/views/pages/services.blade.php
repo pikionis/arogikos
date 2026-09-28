@@ -20,10 +20,10 @@
 </x-page-hero>
 
 @php
-  // The zig-zag rhythm is positional design: section background, which side
-  // the media sits on, and the tint behind the icon all alternate. Only the
-  // copy of each service is editable — shared.services, the same three items
-  // the home page cards and the footer column read.
+  // The zig-zag rhythm is positional: section background, which side the
+  // media sits on, and the tint behind the illustration all alternate, so it
+  // keeps working however many services there are and in whatever order the
+  // panel puts them.
   $layouts = [
     ['section' => 'bg-white', 'rev' => false, 'media' => 'var(--soft-green)', 'tagBg' => 'var(--soft-green)', 'tagColor' => 'var(--green-700)'],
     ['section' => 'bg-coral', 'rev' => true,  'media' => '#fff',              'tagBg' => '#fff',              'tagColor' => 'var(--coral-700)'],
@@ -31,14 +31,20 @@
   ];
 @endphp
 
-@foreach (content_items('shared.services') as $i => $service)
+@foreach (content_items('services.services') as $i => $service)
   @php $layout = $layouts[$i % 3]; @endphp
 
   <section class="section {{ $layout['section'] }}" data-play>
     <div class="container">
       <div class="zig {{ $layout['rev'] ? 'rev' : '' }} reveal">
-        <div class="zig-media frame-soft" style="background:{{ $layout['media'] }};display:flex;align-items:center;justify-content:center">
-          <x-service-icon :index="$i" size="200px" />
+        <div class="zig-media frame-soft" style="background:{{ $layout['media'] }};overflow:hidden">
+          @if (filled($service['icon'] ?? null))
+            <x-article-cover :scene="$service['icon']" live />
+          @else
+            <div style="display:flex;align-items:center;justify-content:center;height:100%">
+              <x-service-icon :index="$i" size="200px" />
+            </div>
+          @endif
         </div>
         <div>
           <span class="zig-tag" style="background:{{ $layout['tagBg'] }};color:{{ $layout['tagColor'] }}">{{ content('services.tag_prefix') }} {{ str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) }}</span>

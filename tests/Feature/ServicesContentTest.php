@@ -161,13 +161,14 @@ it('offers every new field in the panel', function () {
         ])->save())->refresh()
     );
 
-    $this->get(route('admin.pages.edit', 'services'))
-        ->assertOk()
-        ->assertSeeText('Συχνές ερωτήσεις')
-        ->assertSee('fields[faq]', false);
+    // Everything about a service is now managed on its own page, next to the
+    // headings it shares and the questions that follow it.
+    $html = $this->get(route('admin.pages.edit', 'services'))->assertOk()->getContent();
 
-    $this->get(route('admin.pages.edit', 'shared'))
-        ->assertOk()
-        ->assertSee('fields[services]', false)
-        ->assertSeeText('Πότε να απευθυνθείτε (ένα ανά γραμμή)');
+    expect($html)->toContain('fields[faq]')
+        ->and($html)->toContain('fields[services][0][name]')
+        ->and($html)->toContain('fields[services][0][signs]')
+        ->and($html)->toContain('fields[services][0][on_home]')
+        ->and($html)->toContain('fields[services][0][icon]')
+        ->and($html)->toContain(e('Πότε να απευθυνθείτε'));
 });

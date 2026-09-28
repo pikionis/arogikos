@@ -126,6 +126,7 @@ class PageContentController extends Controller
         [$value, $isDefault] = match ($type) {
             'lines' => $this->normaliseLines($raw, $field),
             'repeater' => $this->normaliseRepeater($raw, $field),
+            'collection' => $this->normaliseCollection($raw, $field),
             'html' => $this->normaliseHtml($raw, $field),
             default => $this->normaliseScalar($raw, $field),
         };
@@ -158,6 +159,58 @@ class PageContentController extends Controller
             json_encode($lines, JSON_UNESCAPED_UNICODE),
             $lines === array_values((array) ($field['default'] ?? [])),
         ];
+    }
+
+    /**
+     * A list somebody builds: any length, in the order they left it.
+     *
+     * Unlike a repeater there is no topping up and no clamping — an empty
+     * list means they removed everything, which is theirs to do. The order is
+     * whatever order the rows arrived in, which is the order the page uses.
+     *
+     * @return array{0: ?string, 1: bool}
+     */
+    private function normaliseCollection(mixed $raw, array $field): array
+    {
+        $items = [];
+
+        foreach (array_values((array) $raw) as $row) {
+            $item = $this->normaliseItem((array) $row, $field['item'] ?? []);
+
+            // A row with no name is a leftover blank, not a service.
+            if (trim((string) ($item['name'] ?? '')) === '') {
+                continue;
+            }
+
+            $items[] = $item;
+        }
+
+        return [
+            json_encode($items, JSON_UNESCAPED_UNICODE),
+            $items === array_values((array) ($field['default'] ?? [])),
+        ];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $subFields
+     * @return array<string, mixed>
+     */
+    private function normaliseItem(array $row, array $subFields): array
+    {
+        $item = [];
+
+        foreach ($subFields as $sub) {
+            $value = $row[$sub['key']] ?? null;
+
+            $item[$sub['key']] = match ($sub['type']) {
+                'lines' => Content::splitLines((string) $value),
+                'html' => (string) HtmlSanitizer::clean((string) $value),
+                'toggle' => (bool) $value,
+                default => trim((string) $value),
+            };
+        }
+
+        return $item;
     }
 
     /** @return array{0: ?string, 1: bool} */
@@ -331,7 +384,7 @@ class PageContentController extends Controller
 
             $values[$field['key']] = match ($field['type']) {
                 'lines' => implode("\n", $content->lines($dotted)),
-                'repeater' => $content->items($dotted),
+                'repeater', 'collection' => $content->items($dotted),
                 'image' => $content->image($dotted, 'thumb'),
                 default => $content->get($dotted),
             };

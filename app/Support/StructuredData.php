@@ -187,7 +187,7 @@ class StructuredData
      */
     public static function services(): array
     {
-        return collect(content_items('shared.services'))
+        return collect(content_items('services.services'))
             ->filter(fn (array $s) => filled($s['name'] ?? null))
             ->map(fn (array $s) => array_filter([
                 '@type' => 'Service',

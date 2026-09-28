@@ -123,11 +123,14 @@ class Content
         if ($stored !== null && $stored !== '') {
             $decoded = json_decode($stored, true);
 
-            // An empty list is never a meaningful override for a repeater —
-            // the layouts are built for a fixed number of items — so fall
-            // through to the shipped default rather than blanking the band.
-            if (is_array($decoded) && $decoded !== []) {
-                return array_values($decoded);
+            if (is_array($decoded)) {
+                // A repeater's layouts are built for a fixed number of items,
+                // so an empty list there is a truncated submit rather than an
+                // instruction — fall through to the shipped copy. A collection
+                // is the opposite: emptying it is a decision somebody made.
+                if ($decoded !== [] || (self::field($key)['type'] ?? '') === 'collection') {
+                    return array_values($decoded);
+                }
             }
         }
 

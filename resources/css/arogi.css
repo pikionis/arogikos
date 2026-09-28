@@ -765,3 +765,32 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   /* Σε στενή οθόνη το πτυσσόμενο δεν χωράει αριστερά· ευθυγραμμίζεται δεξιά. */
   .author-select-panel { left: auto; right: 0; }
 }
+
+/* ---- καρουζέλ υπηρεσιών στην αρχική ----
+
+   Με τρεις υπηρεσίες η σειρά τις χωράει. Από την τέταρτη και πάνω θα
+   έπρεπε είτε να μικρύνουν οι κάρτες είτε να σπάσει η σειρά σε δεύτερη
+   μισοάδεια — οπότε κυλούν οριζόντια. Καθαρό CSS: δεν χρειάζεται script
+   για να τραβήξεις ένα scroll. */
+
+.svc-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(300px, 1fr);
+  gap: var(--s-6);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--s-4);
+  /* Τα φουσκώματα του hover δεν πρέπει να κόβονται από το scroll. */
+  padding-inline: 4px;
+  scrollbar-width: thin;
+}
+.svc-carousel > * { scroll-snap-align: start; }
+.svc-carousel:focus-visible { outline: 3px solid var(--green); outline-offset: 6px; border-radius: var(--r-lg); }
+
+@media (max-width: 700px) {
+  .svc-carousel { grid-auto-columns: minmax(260px, 86%); }
+}
+
+/* Η εικονογράφηση της υπηρεσίας μέσα στην κάρτα της αρχικής. */
+.svc-card .ico-wrap .cv { border-radius: var(--r-md); overflow: hidden; }

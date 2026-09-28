@@ -699,3 +699,56 @@
     .a-profile-who, .a-profile-go { display: none; }
     .a-profile-link { padding: 5px; }
 }
+
+/* Ο επιλογέας σχεδίου μέσα σε μια υπηρεσία είναι πιο σφιχτός από αυτόν
+   του άρθρου: κάθεται μέσα σε κάρτα που έχει ήδη πολλά πεδία. */
+.a-scene-grid-sm { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 8px; }
+.a-scene-grid-sm .a-scene { padding: 6px; gap: 4px; }
+.a-scene-grid-sm .a-scene-name { font-size: .76rem; }
+
+/* ----------------------------------------------------- συλλογή (υπηρεσίες)
+
+   Κάρτες που μετακινούνται με τη λαβή, όχι με όλη τη σειρά: μια σειρά
+   γεμάτη πεδία που σέρνεται ολόκληρη δεν επιτρέπει να επιλέξεις κείμενο,
+   κι αυτό κάνει κανείς εδώ τις περισσότερες φορές. */
+
+.a-collection { display: grid; gap: 14px; }
+
+.a-collection-row {
+    border: 1px solid var(--admin-border);
+    border-radius: 12px;
+    padding: 0;
+    margin: 0;
+    background: #fff;
+}
+.a-collection-row.is-dragging { opacity: .45; }
+
+.a-collection-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--admin-border);
+    background: var(--color-soft-green);
+    border-radius: 11px 11px 0 0;
+}
+.a-collection-head strong {
+    flex-grow: 1;
+    font-family: var(--font-head); font-size: .92rem; color: var(--color-ink);
+}
+
+.a-drag {
+    flex: none; width: 32px; height: 32px; border-radius: 8px;
+    border: 0; background: #fff; cursor: grab;
+    color: var(--color-ink-400); font-size: 1rem; line-height: 1;
+}
+.a-drag:active { cursor: grabbing; }
+.a-drag:focus-visible { outline: 3px solid var(--color-green); outline-offset: 2px; }
+
+.a-collection-remove {
+    border: 0; background: none; cursor: pointer; padding: 4px 8px;
+    font-family: var(--font-head); font-weight: 700; font-size: .8rem;
+    color: var(--color-coral-700); border-radius: 8px;
+}
+.a-collection-remove:hover { background: #fff; }
+.a-collection-remove:focus-visible { outline: 3px solid var(--color-coral); outline-offset: 2px; }
+
+.a-collection-body { padding: 16px 14px 4px; }

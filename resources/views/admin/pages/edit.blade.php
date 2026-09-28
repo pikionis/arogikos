@@ -60,7 +60,9 @@
                     @endif
 
                     @foreach ($group['fields'] as $field)
-                        @if ($field['type'] === 'repeater')
+                        @if ($field['type'] === 'collection')
+                            <x-admin.collection-field :field="$field" :items="$values[$field['key']] ?? []" />
+                        @elseif ($field['type'] === 'repeater')
                             @php $items = $values[$field['key']] ?? []; @endphp
 
                             <div class="a-field">

@@ -140,11 +140,11 @@ it('publishes each service the centre offers', function () {
 });
 
 it('follows a service renamed in the panel', function () {
-    $services = content_items('shared.services');
+    $services = content_items('services.services');
     $services[0]['name'] = 'Νέα Ονομασία';
 
     ContentBlock::create([
-        'page_key' => 'shared',
+        'page_key' => 'services',
         'field_key' => 'services',
         'locale' => 'el',
         'value' => json_encode($services, JSON_UNESCAPED_UNICODE),

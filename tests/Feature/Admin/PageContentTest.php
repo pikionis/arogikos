@@ -136,10 +136,10 @@ it('records who made the change', function () {
     ]);
 });
 
-/* ------------------------------------------------------------- repeaters */
+/* ----------------------------------------------------------- collections */
 
 it('saves a repeater and propagates it to every template that reads it', function () {
-    $services = content_items('shared.services');
+    $services = content_items('services.services');
     $services[0]['name'] = 'Νέα Ονομασία Υπηρεσίας';
 
     $payload = [];
@@ -153,7 +153,7 @@ it('saves a repeater and propagates it to every template that reads it', functio
         ];
     }
 
-    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'shared'), [
+    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'services'), [
         'fields' => ['services' => $payload],
     ])->assertRedirect();
 
@@ -161,22 +161,38 @@ it('saves a repeater and propagates it to every template that reads it', functio
     $this->get(route('services'))->assertOk()->assertSeeText('Νέα Ονομασία Υπηρεσίας');
 });
 
-it('keeps a repeater at the length the layout expects', function () {
-    // The zig-zag layouts are hand-built for exactly three services.
+it('takes as many services as somebody adds, in the order given', function () {
+    // The zig-zag rhythm is positional, so it carries on however many there
+    // are — no clamping, unlike a repeater.
     $payload = [];
     foreach (range(0, 5) as $i) {
         $payload[$i] = ['name' => "Υπηρεσία {$i}", 'card_body' => '', 'lead' => '', 'bullets' => '', 'note' => ''];
     }
 
-    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'shared'), [
+    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'services'), [
         'fields' => ['services' => $payload],
     ]);
 
-    expect(content_items('shared.services'))->toHaveCount(3);
+    $saved = content_items('services.services');
+
+    expect($saved)->toHaveCount(6)
+        ->and($saved[0]['name'])->toBe('Υπηρεσία 0')
+        ->and($saved[5]['name'])->toBe('Υπηρεσία 5');
+});
+
+it('drops a row nobody gave a name', function () {
+    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'services'), [
+        'fields' => ['services' => [
+            ['name' => 'Κρατιέται', 'card_body' => '', 'lead' => '', 'bullets' => '', 'note' => ''],
+            ['name' => '  ', 'card_body' => '', 'lead' => '', 'bullets' => '', 'note' => ''],
+        ]],
+    ]);
+
+    expect(content_items('services.services'))->toHaveCount(1);
 });
 
 it('stores a lines sub-field as a real list', function () {
-    $services = content_items('shared.services');
+    $services = content_items('services.services');
 
     $payload = [];
     foreach ($services as $i => $service) {
@@ -189,11 +205,11 @@ it('stores a lines sub-field as a real list', function () {
         ];
     }
 
-    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'shared'), [
+    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'services'), [
         'fields' => ['services' => $payload],
     ]);
 
-    expect(content_items('shared.services')[0]['bullets'])->toBe(['Πρώτο', 'Δεύτερο', 'Τρίτο']);
+    expect(content_items('services.services')[0]['bullets'])->toBe(['Πρώτο', 'Δεύτερο', 'Τρίτο']);
 
     $this->get(route('services'))->assertOk()->assertSeeText('Δεύτερο');
 });
@@ -231,21 +247,22 @@ it('never blanks a repeater band, even on a truncated submit', function () {
 });
 
 it('tops a short repeater submit back up from the shipped copy', function () {
+    // The navigation is still a repeater: its six slots match six routes, so
+    // a truncated submit must not leave the menu half missing.
     $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'shared'), [
-        'fields' => ['services' => [
-            0 => ['name' => 'Μόνο μία', 'card_body' => '', 'lead' => '', 'bullets' => '', 'note' => ''],
+        'fields' => ['nav' => [
+            0 => ['label' => 'Μόνο μία'],
         ]],
     ]);
 
-    $services = content_items('shared.services');
+    $nav = content_items('shared.nav');
 
-    expect($services)->toHaveCount(3)
-        ->and($services[0]['name'])->toBe('Μόνο μία')
-        // Positions 2 and 3 fell back to the shipped services.
-        ->and($services[1]['name'])->toBe('Συμβουλευτική');
+    expect($nav)->toHaveCount(6)
+        ->and($nav[0]['label'])->toBe('Μόνο μία')
+        // The rest fell back to the shipped labels.
+        ->and($nav[1]['label'])->toBe('Σχετικά με εμάς');
 
-    // The services page still renders all three zig-zag bands.
-    $this->get(route('services'))->assertOk()->assertSeeText('Επαγγελματικός Προσανατολισμός');
+    $this->get(route('home'))->assertOk()->assertSeeText('Μόνο μία');
 });
 
 it('survives a repeater row missing a sub-field', function () {

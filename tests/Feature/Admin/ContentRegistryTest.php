@@ -65,7 +65,8 @@ it('gives every default the shape its type implies', function () {
         $id = "{$pageKey}.{$field['key']} ({$field['type']})";
 
         $ok = match ($field['type']) {
-            'lines', 'repeater' => is_array($default),
+            'lines', 'repeater', 'collection' => is_array($default),
+            'toggle' => is_bool($default ?? false),
             'image' => true,
             default => is_string($default),
         };
@@ -221,7 +222,7 @@ it('busts the forever cache on save', function () {
 });
 
 it('reads a lines field as an array', function () {
-    expect(content_lines('shared.services'))->toBeArray();
+    expect(content_lines('shared.nav'))->toBeArray();
 
     ContentBlock::create([
         'page_key' => 'home',
@@ -235,17 +236,17 @@ it('reads a lines field as an array', function () {
         ->toBe(['πρώτο', 'δεύτερο', 'τρίτο']);
 });
 
-it('reads a repeater default as a list of items', function () {
-    $services = content_items('shared.services');
+it('reads a collection default as a list of items', function () {
+    $services = content_items('services.services');
 
     expect($services)->toHaveCount(3)
         ->and($services[0]['name'])->toBe('Μαθησιακή Υποστήριξη')
         ->and($services[0]['bullets'])->toHaveCount(4);
 });
 
-it('reads a stored repeater override', function () {
+it('reads a stored collection override, however short', function () {
     ContentBlock::create([
-        'page_key' => 'shared',
+        'page_key' => 'services',
         'field_key' => 'services',
         'locale' => 'el',
         'value' => json_encode([
@@ -253,17 +254,39 @@ it('reads a stored repeater override', function () {
         ], JSON_UNESCAPED_UNICODE),
     ]);
 
-    expect(content_items('shared.services'))->toHaveCount(1)
-        ->and(content_items('shared.services')[0]['name'])->toBe('Πρώτη');
+    expect(content_items('services.services'))->toHaveCount(1)
+        ->and(content_items('services.services')[0]['name'])->toBe('Πρώτη');
 });
 
-it('survives a broken stored repeater by falling back to the default', function () {
+it('survives a broken stored collection by falling back to the default', function () {
     ContentBlock::create([
-        'page_key' => 'shared',
+        'page_key' => 'services',
         'field_key' => 'services',
         'locale' => 'el',
         'value' => 'this is not json',
     ]);
 
-    expect(content_items('shared.services'))->toHaveCount(3);
+    expect(content_items('services.services'))->toHaveCount(3);
+});
+
+it('lets a collection be emptied, unlike a repeater', function () {
+    // Removing every service is a decision somebody made; a repeater coming
+    // back empty is a truncated submit, and the two must not be confused.
+    ContentBlock::create([
+        'page_key' => 'services',
+        'field_key' => 'services',
+        'locale' => 'el',
+        'value' => '[]',
+    ]);
+
+    expect(content_items('services.services'))->toBe([]);
+
+    ContentBlock::create([
+        'page_key' => 'shared',
+        'field_key' => 'nav',
+        'locale' => 'el',
+        'value' => '[]',
+    ]);
+
+    expect(content_items('shared.nav'))->toHaveCount(6);
 });

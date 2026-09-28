@@ -42,7 +42,7 @@
 
             <div class="footer-col">
                 <h4 role="heading" aria-level="2">{{ content('shared.footer_services_heading') }}</h4>
-                @foreach (content_items('shared.services') as $service)
+                @foreach (content_items('services.services') as $service)
                     <a href="{{ route('services') }}">{{ $service['name'] ?? '' }}</a>
                 @endforeach
             </div>

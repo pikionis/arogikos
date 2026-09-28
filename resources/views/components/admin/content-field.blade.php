@@ -24,6 +24,29 @@
             <x-admin.rich-text :name="$name" :value="$value" :id="$fieldId" />
             @break
 
+        @case('toggle')
+            <label class="a-check" style="margin-top:2px">
+                {{-- The hidden zero keeps an unticked box in the payload;
+                     without it the field looks absent and is left untouched. --}}
+                <input type="hidden" name="{{ $name }}" value="0">
+                <input type="checkbox" id="{{ $fieldId }}" name="{{ $name }}" value="1" @checked($value)>
+                <span>Ναι</span>
+            </label>
+            @break
+
+        @case('scene')
+            @php $scenes = config('cms-covers', []); @endphp
+            <div class="a-scene-grid a-scene-grid-sm">
+                @foreach ($scenes as $sceneKey => $scene)
+                    <label @class(['a-scene', 'is-on' => $value === $sceneKey])>
+                        <input type="radio" name="{{ $name }}" value="{{ $sceneKey }}" @checked($value === $sceneKey)>
+                        <span class="a-scene-art"><x-article-cover :scene="$sceneKey" /></span>
+                        <span class="a-scene-name">{{ $scene['name'] }}</span>
+                    </label>
+                @endforeach
+            </div>
+            @break
+
         @case('lines')
             <textarea class="a-textarea" id="{{ $fieldId }}" name="{{ $name }}"
                       style="min-height:110px;font-family:var(--font-body)">{{ $value }}</textarea>

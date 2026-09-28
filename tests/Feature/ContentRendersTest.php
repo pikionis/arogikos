@@ -59,7 +59,7 @@ it('renders every declared default on its page', function (string $pageKey, stri
     'contact' => ['contact', 'contact'],
 ]);
 
-it('renders the shared service names on home, services and the footer', function () {
+it('renders the service names on home, services and the footer', function () {
     // One repeater, three templates — the drift this was built to prevent.
     foreach (['home', 'services', 'contact'] as $routeName) {
         $html = $this->get(route($routeName))->assertOk()->getContent();
@@ -82,7 +82,7 @@ it('renders the four why-Arogi points on home', function () {
 it('renders the service bullet lists on the services page', function () {
     $html = $this->get(route('services'))->assertOk()->getContent();
 
-    foreach (content_items('shared.services') as $service) {
+    foreach (content_items('services.services') as $service) {
         foreach ($service['bullets'] as $bullet) {
             expect($html)->toContain(e($bullet));
         }
@@ -154,11 +154,11 @@ it('shows an edited hero title on the live home page', function () {
 });
 
 it('propagates an edited service name to home, services and the footer', function () {
-    $services = content_items('shared.services');
+    $services = content_items('services.services');
     $services[0]['name'] = 'Μετονομασμένη Υπηρεσία';
 
     ContentBlock::create([
-        'page_key' => 'shared',
+        'page_key' => 'services',
         'field_key' => 'services',
         'locale' => 'el',
         'value' => json_encode($services, JSON_UNESCAPED_UNICODE),

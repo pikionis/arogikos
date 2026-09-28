@@ -82,25 +82,41 @@
       :lead="content('home.services.lead')"
     />
 
-    <div class="grid-3" style="margin-top:var(--s-12)">
-      @php
-        // Colour and reveal delay are positional design decisions; the text of
-        // each service is editable (shared.services).
-        $tints = ['c-green', 'c-coral', 'c-yellow'];
-        $delays = ['', 'reveal-d1', 'reveal-d2'];
-      @endphp
+    @php
+      // Only the services the panel marked for the home page, in the order it
+      // put them. Colour and reveal delay stay positional.
+      $featured = collect(content_items('services.services'))
+          ->filter(fn (array $s) => ($s['on_home'] ?? false) && filled($s['name'] ?? null))
+          ->values();
 
-      @foreach (content_items('shared.services') as $i => $service)
-        <article class="card card-hover svc-card {{ $tints[$i % 3] }} reveal {{ $delays[$i % 3] }}">
-          <div class="ico-wrap">
-            <x-service-icon :index="$i" />
-          </div>
-          <h3>{{ $service['name'] ?? '' }}</h3>
-          <p>{{ $service['card_body'] ?? '' }}</p>
-          <a class="link-arrow" href="{{ route('services') }}">{{ content('home.services.card_link') }} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        </article>
-      @endforeach
-    </div>
+      $tints = ['c-green', 'c-coral', 'c-yellow'];
+      $delays = ['', 'reveal-d1', 'reveal-d2'];
+
+      // Three fit the row. More than that and the row would either shrink the
+      // cards or wrap into a ragged second line, so they scroll instead.
+      $asCarousel = $featured->count() > 3;
+    @endphp
+
+    @if ($featured->isNotEmpty())
+      <div @class(['grid-3' => ! $asCarousel, 'svc-carousel' => $asCarousel])
+           style="margin-top:var(--s-12)"
+           @if ($asCarousel) role="region" aria-label="{{ content('home.services.title') }}" tabindex="0" @endif>
+        @foreach ($featured as $i => $service)
+          <article class="card card-hover svc-card {{ $tints[$i % 3] }} reveal {{ $delays[$i % 3] }}">
+            <div class="ico-wrap">
+              @if (filled($service['icon'] ?? null))
+                <x-article-cover :scene="$service['icon']" />
+              @else
+                <x-service-icon :index="$i" />
+              @endif
+            </div>
+            <h3>{{ $service['name'] ?? '' }}</h3>
+            <p>{{ $service['card_body'] ?? '' }}</p>
+            <a class="link-arrow" href="{{ route('services') }}">{{ content('home.services.card_link') }} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </article>
+        @endforeach
+      </div>
+    @endif
   </div>
 </section>
 

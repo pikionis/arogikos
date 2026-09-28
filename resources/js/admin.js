@@ -265,6 +265,131 @@ Alpine.data('seoPreview', (config) => ({
     },
 }));
 
+
+/**
+ * A list of things somebody builds: add, remove, and drag into order.
+ *
+ * The row indexes in the field names are renumbered after every change, so
+ * what arrives at the server is a plain 0..n array in the order shown. Any
+ * other scheme — keeping ids, sending a separate order list — puts two
+ * sources of truth in one form.
+ *
+ * Dragging is armed by the handle rather than making the whole row
+ * draggable: a row full of inputs that is itself draggable cannot be
+ * text-selected, and selecting text is most of what happens in here.
+ */
+Alpine.data('collectionField', () => ({
+    dragging: null,
+
+    rows() {
+        return Array.from(this.$refs.list.children);
+    },
+
+    title(el) {
+        const name = el.closest('.a-collection-row').querySelector('input[name$="[name]"]');
+
+        return (name && name.value.trim()) || 'Χωρίς όνομα';
+    },
+
+    /* ---- add / remove ---- */
+
+    add() {
+        const row = this.$refs.blank.content.firstElementChild.cloneNode(true);
+        this.$refs.list.appendChild(row);
+        this.renumber();
+
+        const first = row.querySelector('input, textarea');
+        if (first) first.focus();
+    },
+
+    remove(event) {
+        const row = event.target.closest('.a-collection-row');
+        const name = this.title(row.querySelector('.a-collection-head'));
+
+        if (!window.confirm(`Να αφαιρεθεί «${name}»; Θα φύγει και από το site.`)) return;
+
+        row.remove();
+        this.renumber();
+    },
+
+    /* ---- ordering ---- */
+
+    arm(event) {
+        event.target.closest('.a-collection-row').setAttribute('draggable', 'true');
+    },
+
+    disarm(event) {
+        const row = event.target.closest('.a-collection-row');
+        if (row) row.setAttribute('draggable', 'false');
+    },
+
+    dragStart(event) {
+        this.dragging = event.currentTarget;
+        this.dragging.classList.add('is-dragging');
+        event.dataTransfer.effectAllowed = 'move';
+        // Firefox will not start a drag without something on the transfer.
+        event.dataTransfer.setData('text/plain', '');
+    },
+
+    dragOver(event) {
+        if (!this.dragging) return;
+
+        const over = event.currentTarget;
+        if (over === this.dragging) return;
+
+        const box = over.getBoundingClientRect();
+        const below = event.clientY > box.top + box.height / 2;
+
+        this.$refs.list.insertBefore(this.dragging, below ? over.nextSibling : over);
+    },
+
+    drop() {
+        this.renumber();
+    },
+
+    dragEnd() {
+        if (!this.dragging) return;
+
+        this.dragging.classList.remove('is-dragging');
+        this.dragging.setAttribute('draggable', 'false');
+        this.dragging = null;
+        this.renumber();
+    },
+
+    /* Keyboard: the handle takes the arrow keys, so ordering does not need a
+       mouse. */
+    move(event, by) {
+        const row = event.target.closest('.a-collection-row');
+        const rows = this.rows();
+        const to = rows.indexOf(row) + by;
+
+        if (to < 0 || to >= rows.length) return;
+
+        if (by < 0) {
+            this.$refs.list.insertBefore(row, rows[to]);
+        } else {
+            this.$refs.list.insertBefore(row, rows[to].nextSibling);
+        }
+
+        this.renumber();
+        event.target.focus();
+    },
+
+    renumber() {
+        this.rows().forEach((row, i) => {
+            row.querySelectorAll('[name]').forEach((input) => {
+                input.name = input.name.replace(/\[(?:\d+|__NEW__)\]/, `[${i}]`);
+            });
+            row.querySelectorAll('[id]').forEach((el) => {
+                el.removeAttribute('id');
+            });
+            row.querySelectorAll('label[for]').forEach((el) => {
+                el.removeAttribute('for');
+            });
+        });
+    },
+}));
+
 Alpine.start();
 
 /* ------------------------------------------------------------------ Trix */
