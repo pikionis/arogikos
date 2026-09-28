@@ -20,28 +20,6 @@ use Database\Seeders\SettingsSeeder;
 beforeEach(fn () => $this->seed(DatabaseSeeder::class));
 
 /**
- * Keys that legitimately do not render on a bare page load. Each has its own
- * test below rather than being silently tolerated.
- *
- * @return array<int, string>
- */
-function conditionalKeys(): array
-{
-    return [
-        // The home "upcoming events" band is hidden when nothing is scheduled.
-        'home.events.eyebrow', 'home.events.title', 'home.events.link',
-        // Related articles live on the article page, not the blog index.
-        'blog.related_eyebrow', 'blog.related_title',
-        // Only shown after a failed submit.
-        'contact.form.error',
-        // These belong to a single article, not to the list of them.
-        'blog.article_crumb', 'blog.read_suffix', 'blog.author_eyebrow',
-        // Shown only when a filter comes back with nothing.
-        'blog.empty', 'blog.empty_link',
-    ];
-}
-
-/**
  * Every scalar default declared for a page must appear on that page.
  *
  * This is the regression net for pulling ~90 Greek literals out of the Blade
