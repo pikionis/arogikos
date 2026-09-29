@@ -112,6 +112,39 @@
                 </section>
 
                 <section class="a-card">
+                    <h2 style="font-size:.95rem;margin:0 0 4px">Φωτογραφίες από την εκδήλωση</h2>
+                    <p style="color:var(--color-ink-400);font-size:.84rem;margin:0 0 14px">
+                        Ανεβαίνουν όποτε θέλετε — συνήθως μετά. Εμφανίζονται στη σελίδα
+                        της εκδήλωσης και ανοίγουν σε μεγέθυνση με το πάτημα.
+                    </p>
+
+                    @php $photos = $event->exists ? $event->getMedia('photos') : collect(); @endphp
+
+                    @if ($photos->isNotEmpty())
+                        <div class="a-photo-grid">
+                            @foreach ($photos as $photo)
+                                <label class="a-photo">
+                                    <img src="{{ $photo->getUrl('thumb') }}" alt="" loading="lazy" decoding="async">
+                                    <span class="a-photo-drop">
+                                        <input type="checkbox" name="remove_photos[]" value="{{ $photo->id }}">
+                                        Αφαίρεση
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
+
+                    <div class="a-field" style="margin-bottom:0">
+                        <label class="a-label" for="photos">Προσθήκη φωτογραφιών</label>
+                        <input class="a-input" id="photos" name="photos[]" type="file" multiple
+                               accept="image/jpeg,image/png,image/webp"
+                               style="padding:7px 9px;font-size:.85rem">
+                        <span class="a-hint">Μπορείτε να διαλέξετε πολλές μαζί. Έως 6 MB η καθεμία.</span>
+                        @error('photos.*')<span class="a-error">{{ $message }}</span>@enderror
+                    </div>
+                </section>
+
+                <section class="a-card">
                     <h2 style="font-size:.95rem;margin:0 0 14px">Διεύθυνση (slug)</h2>
                     <div class="a-field" style="margin-bottom:0">
                         <input class="a-input" id="slug" name="slug" type="text" maxlength="200"

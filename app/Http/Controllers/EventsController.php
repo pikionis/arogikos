@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 
 class EventsController extends Controller
 {
-    public function __invoke(Request $request): View
+    public function index(Request $request): View
     {
         /** @var class-string<Event> $eventModel */
         $eventModel = cms_model('event');
@@ -38,5 +38,30 @@ class EventsController extends Controller
         $past = $eventModel::published()->past()->tap($inYear)->with('media')->get();
 
         return view('pages.events', compact('upcoming', 'past', 'years', 'year'));
+    }
+
+    public function show(Event $event): View
+    {
+        // Announced but not yet due is a draft as far as a visitor is
+        // concerned, and a link to it must not resolve either.
+        abort_unless(
+            $event->is_published && $event->published_at !== null && ! $event->published_at->isFuture(),
+            404
+        );
+
+        $event->loadMissing('media');
+
+        /** @var class-string<Event> $eventModel */
+        $eventModel = cms_model('event');
+
+        // What else is coming up, so the page is not a dead end.
+        $more = $eventModel::published()
+            ->upcoming()
+            ->whereKeyNot($event->getKey())
+            ->with('media')
+            ->take(3)
+            ->get();
+
+        return view('pages.event', compact('event', 'more'));
     }
 }

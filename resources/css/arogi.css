@@ -101,7 +101,7 @@ p { text-wrap: pretty; }
 .container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--s-5); }
 .container.column { max-width: calc(var(--measure) + var(--s-5) * 2); }
 .section { padding-block: clamp(var(--s-16), 9vw, var(--s-24)); position: relative; }
-.section-sm { padding-block: clamp(var(--s-12), 7vw, var(--s-20)); }
+.section-sm { padding-block: clamp(var(--s-12), 7vw, var(--s-20)); position: relative; }
 .center { text-align: center; }
 .section-head { max-width: 720px; margin-inline: auto; }
 .section-head.left { margin-inline: 0; }
@@ -250,7 +250,8 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .deco { position: absolute; pointer-events: none; z-index: 0; opacity: .5; }
 .deco-ring { border: 6px solid var(--yellow-300); border-radius: 50%; }
 .deco-dot { background: var(--coral-300); border-radius: 50%; }
-.section > .container { position: relative; z-index: 1; }
+.section > .container,
+.section-sm > .container { position: relative; z-index: 1; }
 
 /* ---- σκηνή για φόντο ---- */
 /* Τα ίδια εξώφυλλα των άρθρων, ξεθωριασμένα σχεδόν στο τίποτα, πίσω από μια
@@ -367,6 +368,33 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .event-info h3 { font-size: 1.25rem; margin-bottom: 4px; }
 .event-info .meta { color: var(--ink-400); font-size: .92rem; display: flex; gap: var(--s-4); flex-wrap: wrap; margin-bottom: 6px; }
 .event-meta { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.event-info p { color: var(--ink-600); font-size: .96rem; }
+
+/* Η κάρτα είναι σύνδεσμος τώρα· ο τίτλος πρέπει να μοιάζει με τίτλο και όχι
+   με link, και η πρόσκληση να διαβάζεται σαν πρόσκληση. */
+.event-card { color: inherit; }
+.event-card h3 { color: var(--ink); }
+.event-card:hover h3 { color: var(--green-700); }
+.event-more {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+  font-family: var(--font-head); font-weight: 700; font-size: .9rem;
+  color: var(--green-700);
+}
+.event-card:hover .event-more span { transform: translateX(3px); }
+.event-more span { transition: transform .2s var(--ease-out); }
+
+/* Πότε και πού, στην κορυφή της σελίδας της εκδήλωσης. */
+.event-facts {
+  display: flex; flex-wrap: wrap; gap: var(--s-3) var(--s-5);
+  margin-top: var(--s-6);
+  font-family: var(--font-head); font-weight: 700; font-size: 1rem;
+  color: var(--ink-600);
+}
+.event-fact {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--soft-coral); color: var(--coral-700);
+  padding: 8px 16px; border-radius: var(--r-pill);
+}
 
 /* Το εικονίδιο είναι διακοσμητικό· ο αναγνώστης οθόνης ακούει τη λέξη. */
 .sr {

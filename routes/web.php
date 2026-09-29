@@ -20,7 +20,8 @@ Route::get('/ypiresies', ServicesController::class)->name('services');
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
-Route::get('/ekdiloseis', EventsController::class)->name('events');
+Route::get('/ekdiloseis', [EventsController::class, 'index'])->name('events');
+Route::get('/ekdiloseis/{event}', [EventsController::class, 'show'])->name('events.show');
 Route::get('/gallery', GalleryController::class)->name('gallery');
 
 Route::get('/epikoinonia', [ContactController::class, 'show'])->name('contact');

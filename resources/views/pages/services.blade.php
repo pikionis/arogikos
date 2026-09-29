@@ -109,7 +109,7 @@
 
 @if ($faqs->isNotEmpty())
 <section class="section bg-white" id="syxnes-erotiseis">
-  <x-scene-backdrop />
+  <x-scene-backdrop for="services.faq" />
   <div class="container" style="max-width:820px">
     <x-section-head :title="content('services.faq_title')" :lead="content('services.faq_lead')" />
 
@@ -126,6 +126,7 @@
 @endif
 
 <section class="section-sm bg-green">
+  <x-scene-backdrop for="services.cta" />
   <div class="container center">
     <div class="reveal" style="max-width:640px;margin-inline:auto">
       <h2>{{ content('services.cta.title') }}</h2>

@@ -37,7 +37,7 @@
 
 <!-- UPCOMING -->
 <section class="section bg-white">
-  <x-scene-backdrop />
+  <x-scene-backdrop for="events.upcoming" />
   <div class="container">
     <div class="section-head left reveal" style="margin-bottom:var(--s-8)"><span class="eyebrow">{{ content('events.upcoming.eyebrow') }}</span><h2>{{ content('events.upcoming.title') }}</h2></div>
     @if ($upcoming->isNotEmpty())
@@ -55,6 +55,7 @@
 <!-- PAST -->
 @if ($past->isNotEmpty())
 <section class="section bg-green arch-top">
+  <x-scene-backdrop for="events.past" />
   <div class="container">
     <div class="section-head left reveal" style="margin-bottom:var(--s-8)"><span class="eyebrow coral">{{ content('events.past.eyebrow') }}</span><h2>{{ content('events.past.title') }}</h2></div>
     <div style="display:grid;gap:var(--s-5);max-width:860px">

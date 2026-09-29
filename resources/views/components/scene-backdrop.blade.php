@@ -1,9 +1,13 @@
 @props([
-    // A specific scene, or nothing for a different one on every visit.
+    // A specific scene, fixed.
     'scene' => null,
+    // Or the band this sits behind: a key in config/cms-backdrops.php, whose
+    // shortlist holds the scenes that suit it. One of them is drawn per
+    // visit, so the page keeps changing without ever being off the subject.
+    'for' => null,
 ])
 
-@php $key = $scene ?? backdrop_scene(); @endphp
+@php $key = $scene ?? backdrop_scene($for); @endphp
 
 @if (filled($key))
     {{-- Decoration only: hidden from screen readers, out of the way of the

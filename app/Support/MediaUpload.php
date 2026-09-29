@@ -17,6 +17,36 @@ use Spatie\MediaLibrary\HasMedia;
  */
 class MediaUpload
 {
+    /**
+     * A collection that holds many files: add whatever was chosen, remove
+     * whatever was ticked.
+     *
+     * Used for the photographs of an event, which arrive in batches days
+     * after it happened rather than all at once.
+     *
+     * @param  string  $field  the file input's name, e.g. "photos[]"
+     */
+    public static function syncMany(HasMedia $model, Request $request, string $collection, string $field): void
+    {
+        // Removals first, so replacing the whole set in one save is possible.
+        foreach ((array) $request->input("remove_{$collection}", []) as $id) {
+            $media = $model->media()->whereKey((int) $id)->first();
+            $media?->delete();
+        }
+
+        foreach ((array) $request->file($field, []) as $file) {
+            if ($file === null) {
+                continue;
+            }
+
+            $model->addMedia($file)
+                ->sanitizingFileName(fn (string $name) => Str::slug(
+                    pathinfo($name, PATHINFO_FILENAME), '-', 'el'
+                ).'.'.pathinfo($name, PATHINFO_EXTENSION))
+                ->toMediaCollection($collection);
+        }
+    }
+
     public static function sync(HasMedia $model, Request $request, string $collection): void
     {
         if ($request->boolean("remove_{$collection}")) {

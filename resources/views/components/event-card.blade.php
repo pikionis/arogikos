@@ -4,7 +4,10 @@
     'past' => false,
 ])
 
-<article class="event-card reveal {{ $delay }}" @if ($past) style="opacity:.92" @endif>
+{{-- The whole card opens the event, the way an article card does: a card
+     where only the title is clickable is a card most people never open. --}}
+<a class="event-card reveal {{ $delay }}" href="{{ route('events.show', $event) }}"
+   @if ($past) style="opacity:.92" @endif>
     <div class="event-date" @if ($past) style="background:#fff;animation:none" @endif>
         <span class="d" @if ($past) style="color:var(--ink-400)" @endif>{{ $event->day }}</span>
         <span class="m">{{ $event->month_short }}</span>
@@ -42,10 +45,21 @@
                     {{ $event->location }}
                 </span>
             @endif
+
+            @if (($photos = $event->getMedia('photos')->count()) > 0)
+                <span class="event-meta">
+                    <span aria-hidden="true">📷</span>
+                    {{ $photos }} {{ $photos === 1 ? 'φωτογραφία' : 'φωτογραφίες' }}
+                </span>
+            @endif
         </div>
 
-        @if (filled($event->body))
-            <p>{{ $event->body }}</p>
+        {{-- Η περιγραφή γράφεται πλέον με μορφοποίηση, οπότε εδώ μπαίνει μόνο
+             η αρχή της σε σκέτο κείμενο — ολόκληρη είναι στη σελίδα της. --}}
+        @if (filled($summary = $event->summary()))
+            <p>{{ $summary }}</p>
         @endif
+
+        <span class="event-more">{{ content('events.card_link') }} <span aria-hidden="true">→</span></span>
     </div>
-</article>
+</a>

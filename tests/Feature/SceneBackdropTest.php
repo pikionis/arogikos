@@ -35,16 +35,51 @@ it('runs a scene behind a band on the home page', function () {
 });
 
 it('gives each band on a page a different scene', function () {
-    // The home page runs two, and the same picture twice on one page reads as
-    // a mistake rather than as a decision.
+    // The same picture twice on one page reads as a mistake rather than as a
+    // decision, even when two bands share a shortlist.
     Event::factory()->create(['starts_at' => now()->addWeek()]);
 
     $html = $this->get(route('home'))->assertOk()->getContent();
 
     preg_match_all('/class="scene-backdrop"[\s\S]*?cv cv-([a-z]+) is-live/', $html, $m);
 
-    expect($m[1])->toHaveCount(2)
-        ->and(array_unique($m[1]))->toHaveCount(2);
+    expect(count($m[1]))->toBeGreaterThan(2)
+        ->and(array_unique($m[1]))->toHaveCount(count($m[1]));
+});
+
+it('keeps each band on its own subject', function () {
+    // A random scene from all twenty-three would put a beach behind the exam
+    // season. Each band draws from a shortlist that suits it.
+    $shortlists = config('cms-backdrops');
+
+    expect($shortlists)->not->toBeEmpty();
+
+    $unknown = [];
+    foreach ($shortlists as $band => $scenes) {
+        foreach ($scenes as $scene) {
+            if (! array_key_exists($scene, config('cms-covers'))) {
+                $unknown[] = "$band → $scene";
+            }
+        }
+    }
+
+    expect($unknown)->toBe([]);
+});
+
+it('draws only from that shortlist', function () {
+    $allowed = config('cms-backdrops')['about.values'];
+
+    $drawn = [];
+    for ($i = 0; $i < 20; $i++) {
+        $drawn[] = (new Backdrop)->next('about.values');
+    }
+
+    expect(array_diff(array_unique($drawn), $allowed))->toBe([]);
+});
+
+it('falls back to the whole collection for a band nobody listed', function () {
+    expect((new Backdrop)->next('band.that.does.not.exist'))
+        ->toBeIn(array_keys(config('cms-covers')));
 });
 
 it('works through every scene before it repeats one', function () {
@@ -77,7 +112,7 @@ it('shuffles, so two visits are not the same page', function () {
 it('can be pinned to one scene', function () {
     $this->instance(Backdrop::class, new class extends Backdrop
     {
-        public function next(): ?string
+        public function next(?string $for = null): ?string
         {
             return 'friends';
         }
@@ -106,7 +141,7 @@ it('keeps it behind the words and out of the way', function () {
         // Behind the container, which already claims z-index 1.
         ->and($css)->toMatch('/\.scene-backdrop \{[^}]*z-index: 0/')
         ->and($css)->toMatch('/\.scene-backdrop \{[^}]*pointer-events: none/')
-        ->and($css)->toContain('.section > .container { position: relative; z-index: 1; }');
+        ->and($css)->toContain('.section-sm > .container { position: relative; z-index: 1; }');
 });
 
 it('stays faint enough to read over', function () {

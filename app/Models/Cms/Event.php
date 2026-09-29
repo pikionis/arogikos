@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models\Cms;
 
+use App\Support\SitemapCache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -38,6 +41,16 @@ class Event extends Model implements HasMedia
         'published_at' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        // Events are in the sitemap now, so writing one has to expire the
+        // cached XML the way an article does. Mass updates skip model events;
+        // a bulk action must call SitemapCache::flush() itself.
+        $bust = fn () => SitemapCache::flush();
+        static::saved($bust);
+        static::deleted($bust);
+    }
+
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
@@ -49,6 +62,46 @@ class Event extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('cover')->singleFile();
+
+        // Not singleFile: these are the photographs from the day, added after
+        // it happened, and there are as many as there are.
+        $this->addMediaCollection('photos');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    /** The photographs from the day, oldest upload first. */
+    public function photos(): Collection
+    {
+        return $this->getMedia('photos');
+    }
+
+    /**
+     * The picture a shared link shows.
+     *
+     * The cover if there is one, otherwise the first photograph from the day,
+     * otherwise nothing — and ShareImage falls back to the brand card.
+     */
+    public function shareImageUrl(): ?string
+    {
+        if (filled($cover = $this->getFirstMediaUrl('cover', 'web'))) {
+            return $cover;
+        }
+
+        $first = $this->getMedia('photos')->first();
+
+        return $first ? $first->getUrl('web') : null;
+    }
+
+    /** Plain-text opening of the description, for a card or a meta tag. */
+    public function summary(int $length = 160): string
+    {
+        $text = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $this->body)) ?? '');
+
+        return $text === '' ? '' : Str::limit($text, $length);
     }
 
     public function registerMediaConversions(?Media $media = null): void

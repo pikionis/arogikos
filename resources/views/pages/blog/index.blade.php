@@ -29,7 +29,7 @@
 </x-page-hero>
 
 <section class="section bg-white">
-  <x-scene-backdrop />
+  <x-scene-backdrop for="blog.index" />
   <div class="container">
     {{-- Ο επιλογέας συντάκτη κάθεται εδώ και όχι στο hero: το hero κόβει ό,τι
          βγαίνει έξω του (overflow:hidden για τα διακοσμητικά), οπότε το

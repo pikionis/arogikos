@@ -104,6 +104,7 @@
 <!-- RELATED -->
 @if ($related->isNotEmpty())
 <section class="section bg-white">
+  <x-scene-backdrop for="blog.related" />
   <div class="container">
     <div class="section-head left reveal" style="margin-bottom:var(--s-8)"><span class="eyebrow coral">{{ content('blog.related_eyebrow') }}</span><h2>{{ content('blog.related_title') }}</h2></div>
     <div class="grid-3">

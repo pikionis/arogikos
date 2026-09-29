@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support;
 
 use App\Models\Cms\Article;
+use App\Models\Cms\Event;
 use Illuminate\Support\Carbon;
 
 /**
@@ -256,6 +257,56 @@ class StructuredData
         if (filled($article->category_label)) {
             $node['articleSection'] = $article->category_label;
         }
+
+        return $node;
+    }
+
+    /* ---------------------------------------------------------------- event */
+
+    /**
+     * Event for a single workshop or talk.
+     *
+     * Google shows these in the events box with the date and the place, which
+     * is exactly what somebody searching for a talk in Κως wants to see
+     * without opening anything.
+     *
+     * @return array<string, mixed>
+     */
+    public static function event(Event $event): array
+    {
+        $node = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Event',
+            'name' => $event->title,
+            'url' => route('events.show', $event),
+            'inLanguage' => 'el',
+            'organizer' => ['@id' => url('/').self::ORG_ID],
+            'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+        ];
+
+        if ($event->starts_at instanceof Carbon) {
+            $node['startDate'] = $event->starts_at->toIso8601String();
+            // Over means over: without this Google keeps showing a talk from
+            // last spring as something you can still come to.
+            $node['eventStatus'] = 'https://schema.org/EventScheduled';
+        }
+
+        if (filled($summary = $event->summary(300))) {
+            $node['description'] = $summary;
+        }
+
+        if (filled($image = $event->shareImageUrl())) {
+            $node['image'] = $image;
+        }
+
+        // The place as written on the event, falling back to the centre.
+        $node['location'] = filled($event->location)
+            ? array_filter([
+                '@type' => 'Place',
+                'name' => $event->location,
+                'address' => self::postalAddress(),
+            ])
+            : ['@id' => url('/').self::ORG_ID];
 
         return $node;
     }

@@ -175,8 +175,8 @@ if (! function_exists('service_list')) {
 
 if (! function_exists('backdrop_scene')) {
     /** The next scene to run faintly behind a band, or null if there are none. */
-    function backdrop_scene(): ?string
+    function backdrop_scene(?string $for = null): ?string
     {
-        return app(Backdrop::class)->next();
+        return app(Backdrop::class)->next($for);
     }
 }

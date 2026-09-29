@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Cms\Article;
+use App\Models\Cms\Event;
 use App\Support\SitemapCache;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
@@ -30,6 +31,18 @@ class SitemapController extends Controller
                 ->each(fn (Article $a) => $sitemap->add(
                     Url::create(route('blog.show', $a->slug))
                         ->setLastModificationDate($a->updated_at)
+                        ->setPriority(0.6)
+                ));
+
+            // Events have pages of their own now, and an event with photos
+            // from the day is exactly the kind of page somebody searches for
+            // months later.
+            /** @var class-string<Event> $eventModel */
+            $eventModel = cms_model('event');
+            $eventModel::published()->whereNotNull('slug')->get()
+                ->each(fn (Event $e) => $sitemap->add(
+                    Url::create(route('events.show', $e))
+                        ->setLastModificationDate($e->updated_at)
                         ->setPriority(0.6)
                 ));
 

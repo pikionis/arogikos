@@ -46,6 +46,9 @@ function conditionalKeys(): array
         'blog.article_crumb', 'blog.read_suffix', 'blog.author_eyebrow',
         // Shown only when a filter comes back with nothing.
         'blog.empty', 'blog.empty_link',
+        // These belong to a single event's own page, not to the list of
+        // them; EventPageTest asserts each one where it does show.
+        'events.event_crumb', 'events.photos_title', 'events.more_title', 'events.back',
     ];
 }
 

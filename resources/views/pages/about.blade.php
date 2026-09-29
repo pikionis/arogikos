@@ -21,6 +21,7 @@
 
 <!-- STORY + SUNRISE -->
 <section class="section bg-white">
+  <x-scene-backdrop for="about.story" />
   <div class="container">
     <div class="grid-2" style="gap:var(--s-12);align-items:center">
       <div class="reveal">
@@ -45,7 +46,7 @@
 
 <!-- MISSION + VALUES -->
 <section class="section bg-green arch-top">
-  <x-scene-backdrop />
+  <x-scene-backdrop for="about.values" />
   <div class="container">
     <x-section-head :eyebrow="content('about.values.eyebrow')" :title="content('about.values.title')"
       :lead="content('about.values.lead')" />
@@ -84,6 +85,7 @@
 <!-- TEAM -->
 @if ($authors->isNotEmpty())
 <section class="section bg-white">
+  <x-scene-backdrop for="about.team" />
   <div class="container">
     <x-section-head :eyebrow="content('about.team.eyebrow')" eyebrow-color="coral" :title="content('about.team.title')"
       :lead="content('about.team.lead')" />
@@ -101,6 +103,7 @@
 @endif
 
 <section class="section-sm bg-white">
+  <x-scene-backdrop for="about.cta" />
   <div class="container">
     <x-cta-band bg="var(--green)">
       <x-slot:deco>

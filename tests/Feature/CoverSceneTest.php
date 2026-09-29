@@ -91,7 +91,7 @@ it('keeps the scene still in the blog list', function () {
     // else: the question here is only whether the cover on the card moves.
     $this->instance(Backdrop::class, new class extends Backdrop
     {
-        public function next(): ?string
+        public function next(?string $for = null): ?string
         {
             return 'calm';
         }

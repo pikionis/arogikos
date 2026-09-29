@@ -75,6 +75,7 @@
 
 <!-- ============ SERVICES ============ -->
 <section class="section bg-white" data-play>
+  <x-scene-backdrop for="home.services" />
   <div class="container">
     <x-section-head
       :eyebrow="content('home.services.eyebrow')"
@@ -122,7 +123,7 @@
 
 <!-- ============ WHY ΑΡΩΓΗ ============ -->
 <section class="section bg-green why-row arch-top">
-  <x-scene-backdrop />
+  <x-scene-backdrop for="home.why" />
   <div class="container">
     <div class="grid-2" style="gap:var(--s-12);align-items:center">
       <div class="section-head left reveal">
@@ -159,6 +160,7 @@
 <!-- ============ LATEST ARTICLES ============ -->
 @if ($articles->isNotEmpty())
 <section class="section bg-white">
+  <x-scene-backdrop for="home.blog" />
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s-6);flex-wrap:wrap" class="reveal">
       <div class="section-head left" style="margin:0">
@@ -180,7 +182,7 @@
 <!-- ============ UPCOMING EVENTS ============ -->
 @if ($events->isNotEmpty())
 <section class="section bg-coral">
-  <x-scene-backdrop />
+  <x-scene-backdrop for="home.events" />
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s-6);flex-wrap:wrap" class="reveal">
       <div class="section-head left" style="margin:0">
@@ -201,6 +203,7 @@
 
 <!-- ============ CTA BAND ============ -->
 <section class="section-sm bg-white">
+  <x-scene-backdrop for="home.cta" />
   <div class="container">
     <x-cta-band>
       <x-slot:deco>

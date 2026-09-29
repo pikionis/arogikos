@@ -46,6 +46,7 @@ class EventController extends Controller
         $event->save();
 
         MediaUpload::sync($event, $request, 'cover');
+        MediaUpload::syncMany($event, $request, 'photos', 'photos');
 
         return redirect()
             ->route('admin.events.edit', $event)
@@ -65,6 +66,7 @@ class EventController extends Controller
         $event->save();
 
         MediaUpload::sync($event, $request, 'cover');
+        MediaUpload::syncMany($event, $request, 'photos', 'photos');
 
         return back()->with('status', 'Οι αλλαγές αποθηκεύτηκαν.');
     }

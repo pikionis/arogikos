@@ -41,6 +41,17 @@ class EventRequest extends FormRequest
                 'dimensions:max_width=5000,max_height=5000',
             ],
             'remove_cover' => ['boolean'],
+            // The photographs from the day, added in batches afterwards.
+            'photos' => ['array', 'max:40'],
+            'photos.*' => [
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'mimetypes:image/jpeg,image/png,image/webp',
+                'max:6144',
+                'dimensions:max_width=6000,max_height=6000',
+            ],
+            'remove_photos' => ['array'],
+            'remove_photos.*' => ['integer'],
         ];
     }
 

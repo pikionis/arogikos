@@ -17,16 +17,51 @@ namespace App\Support;
  */
 class Backdrop
 {
-    /** @var array<int, string>|null */
-    private ?array $left = null;
+    /** @var array<int, string> */
+    private array $used = [];
 
-    public function next(): ?string
+    /**
+     * @param  string|null  $for  a key in config/cms-backdrops.php — the
+     *                            scenes that suit that particular band
+     */
+    public function next(?string $for = null): ?string
     {
-        if ($this->left === null || $this->left === []) {
-            $this->left = array_keys(config('cms-covers', []));
-            shuffle($this->left);
+        $candidates = $this->candidates($for);
+
+        if ($candidates === []) {
+            return null;
         }
 
-        return array_pop($this->left);
+        // The same picture twice on one page reads as a mistake rather than a
+        // decision, so what has already been used goes to the back.
+        $fresh = array_values(array_diff($candidates, $this->used));
+
+        $pool = $fresh !== [] ? $fresh : $candidates;
+        $scene = $pool[array_rand($pool)];
+
+        $this->used[] = $scene;
+
+        return $scene;
+    }
+
+    /** @return array<int, string> */
+    private function candidates(?string $for): array
+    {
+        $all = array_keys(config('cms-covers', []));
+
+        if ($for === null) {
+            return $all;
+        }
+
+        // Indexed straight into the array rather than through config()'s dot
+        // notation: the keys are "about.values", one string with a dot in it,
+        // not a nested array.
+        $shortlist = (array) (config('cms-backdrops', [])[$for] ?? []);
+
+        // A shortlist naming a scene that has since been retired would
+        // otherwise leave the band empty.
+        $shortlist = array_values(array_intersect($shortlist, $all));
+
+        return $shortlist !== [] ? $shortlist : $all;
     }
 }
