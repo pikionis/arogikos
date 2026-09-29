@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\AuthorRequest;
 use App\Models\Cms\Author;
 use App\Models\User;
 use App\Support\MediaUpload;
+use App\Support\PhotoCrop;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -113,6 +114,7 @@ class AuthorController extends Controller
         $author->save();
 
         MediaUpload::sync($author, $request, 'photo');
+        PhotoCrop::sync($author, $request);
 
         return redirect()
             ->route('admin.authors.edit', $author)
@@ -139,6 +141,7 @@ class AuthorController extends Controller
         $author->save();
 
         MediaUpload::sync($author, $request, 'photo');
+        PhotoCrop::sync($author, $request);
 
         return back()->with('status', 'Οι αλλαγές αποθηκεύτηκαν.');
     }

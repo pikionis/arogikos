@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Support\MediaUpload;
+use App\Support\PhotoCrop;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -66,6 +67,11 @@ class ProfileController extends Controller
                 'dimensions:max_width=5000,max_height=5000',
             ],
             'remove_photo' => ['boolean'],
+            // The chosen square; PhotoCrop checks it against the file.
+            'crop_x' => ['nullable', 'integer', 'min:0'],
+            'crop_y' => ['nullable', 'integer', 'min:0'],
+            'crop_w' => ['nullable', 'integer', 'min:0'],
+            'crop_h' => ['nullable', 'integer', 'min:0'],
         ]);
 
         // The display name follows the account, so there is one name for this
@@ -76,6 +82,7 @@ class ProfileController extends Controller
         $author->save();
 
         MediaUpload::sync($author, $request, 'photo');
+        PhotoCrop::sync($author, $request);
 
         return back()->with('status', 'Το προφίλ σας ενημερώθηκε.');
     }

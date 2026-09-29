@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
+use Spatie\MediaLibrary\Conversions\Conversion;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -26,7 +27,10 @@ class Author extends Model implements HasMedia
     use HasInitials;
     use InteractsWithMedia;
 
-    protected $fillable = ['name', 'role_title', 'bio', 'is_active', 'user_id', 'position'];
+    protected $fillable = [
+        'name', 'role_title', 'bio', 'is_active', 'user_id', 'position',
+        'crop_x', 'crop_y', 'crop_w', 'crop_h',
+    ];
 
     protected $casts = ['is_active' => 'boolean'];
 
@@ -94,10 +98,43 @@ class Author extends Model implements HasMedia
         $this->addMediaCollection('photo')->singleFile();
     }
 
+    /**
+     * Build the conversions from THIS author, not from a blank one.
+     *
+     * Medialibrary makes a bare instance of the model to read the
+     * conversions off, and a bare one has no crop on it — so the chosen
+     * square was quietly ignored and every photo came out uncropped. One
+     * extra query, on a screen somebody opens to change a photograph.
+     */
+    public bool $registerMediaConversionsUsingModelInstance = true;
+
     public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('thumb')->width(400)->nonQueued();
-        $this->addMediaConversion('web')->width(1600)->format('webp')->nonQueued();
+        // The crop comes first: cutting the square out of the upload and then
+        // resizing it is what makes the picture on the site the one that was
+        // chosen, at every size it is shown.
+        $this->cropped($this->addMediaConversion('thumb'))->width(400)->nonQueued();
+        $this->cropped($this->addMediaConversion('web'))->width(1600)->format('webp')->nonQueued();
+    }
+
+    /** Has somebody chosen which part of the photograph to keep? */
+    public function hasCrop(): bool
+    {
+        return $this->crop_w > 0 && $this->crop_h > 0;
+    }
+
+    private function cropped(Conversion $conversion): Conversion
+    {
+        if (! $this->hasCrop()) {
+            return $conversion;
+        }
+
+        return $conversion->manualCrop(
+            (int) $this->crop_w,
+            (int) $this->crop_h,
+            (int) $this->crop_x,
+            (int) $this->crop_y,
+        );
     }
 
     /**

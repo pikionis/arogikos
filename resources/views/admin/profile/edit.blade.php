@@ -77,6 +77,7 @@
                     <div class="a-field">
                         <label class="a-label">Φωτογραφία</label>
                         <x-admin.image-field name="photo" :model="$author" collection="photo" />
+                        <x-admin.photo-crop :author="$author" />
                         @error('photo')<span class="a-error">{{ $message }}</span>@enderror
                     </div>
 

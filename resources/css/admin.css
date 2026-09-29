@@ -690,6 +690,41 @@
 .a-photo:has(input:checked) { outline: 3px solid var(--color-coral); outline-offset: -3px; }
 .a-photo:has(input:checked) img { opacity: .4; }
 
+/* --- διαλέγοντας το κομμάτι της φωτογραφίας --- */
+
+.a-crop { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 900px) { .a-crop { grid-template-columns: 1fr; } }
+
+.a-crop-stage {
+    position: relative; aspect-ratio: 1; overflow: hidden;
+    border-radius: 12px; background: var(--color-soft-green);
+    cursor: grab; touch-action: none; user-select: none;
+    border: 1px solid var(--admin-border);
+}
+.a-crop-stage.is-grabbing { cursor: grabbing; }
+.a-crop-stage:focus-visible { outline: 3px solid var(--color-green); outline-offset: 2px; }
+.a-crop-stage img {
+    position: absolute; top: 0; left: 0; max-width: none;
+    transform-origin: 0 0; pointer-events: none; display: block;
+}
+
+.a-crop-side { display: grid; gap: 14px; }
+.a-crop-note { margin: 0; font-size: .82rem; color: var(--color-ink-400); }
+
+.a-crop-zoom { display: grid; gap: 6px; font-size: .82rem; font-weight: 700; color: var(--color-ink-600); }
+.a-crop-zoom input { width: 100%; accent-color: var(--color-green); }
+
+.a-crop-previews { display: flex; gap: 14px; }
+.a-crop-previews figure { margin: 0; text-align: center; }
+.a-crop-previews figcaption { font-size: .72rem; color: var(--color-ink-400); margin-top: 5px; }
+.a-crop-preview {
+    display: block; width: 72px; height: 72px;
+    background: var(--color-soft-coral) center / cover no-repeat;
+}
+.a-crop-preview.is-round { border-radius: 50%; }
+/* Το ίδιο σχήμα με την κάρτα της ομάδας. */
+.a-crop-preview.is-arch { width: 66px; height: 80px; border-radius: 40px 40px 12px 12px; }
+
 /* --- who signs an article --- */
 
 .a-signer {

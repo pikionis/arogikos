@@ -91,6 +91,7 @@
                 <section class="a-card">
                     <h2 style="font-size:.95rem;margin:0 0 14px">Φωτογραφία</h2>
                     <x-admin.image-field name="photo" :model="$author" collection="photo" />
+                    <x-admin.photo-crop :author="$author" />
                 </section>
             </div>
         </div>

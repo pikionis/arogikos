@@ -496,6 +496,199 @@ Alpine.data('sortableRows', () => ({
     },
 }));
 
+/* Διαλέγοντας ποιο κομμάτι της φωτογραφίας κρατάει το site.
+ *
+ * Το παράθυρο μένει ακίνητο και η φωτογραφία κινείται από πίσω — ό,τι
+ * φαίνεται μέσα του είναι ό,τι θα δει ο επισκέπτης. Το αποτέλεσμα γράφεται σε
+ * pixel της ίδιας της φωτογραφίας, γιατί ο server ξανακόβει το πρωτότυπο και
+ * πρέπει να εννοούν και οι δύο το ίδιο τετράγωνο.
+ *
+ * Η φωτογραφία δεν αγγίζεται ποτέ: κρατιούνται τέσσερις αριθμοί, οπότε το
+ * πλαίσιο μετακινείται ξανά αύριο χωρίς να ξαναζητηθεί το αρχείο.
+ */
+Alpine.data('photoCrop', () => ({
+    /* Φυσικές διαστάσεις της φωτογραφίας. */
+    nw: 0,
+    nh: 0,
+    /* Μεγέθυνση σε εκατοστά, με το 100 να σημαίνει «γεμίζει ίσα ίσα». */
+    zoom: 100,
+    /* Πάνω-αριστερή γωνία της φωτογραφίας, σε pixel του παραθύρου. */
+    ox: 0,
+    oy: 0,
+    dragging: false,
+    from: null,
+
+    init() {
+        const image = this.$refs.image;
+        const begin = () => this.measure();
+
+        if (image.complete && image.naturalWidth) {
+            begin();
+        } else {
+            image.addEventListener('load', begin, { once: true });
+        }
+
+        /* Το παράθυρο αλλάζει πλάτος μαζί με τη στήλη του panel. */
+        if (window.ResizeObserver) {
+            new ResizeObserver(() => this.measure()).observe(this.$refs.stage);
+        }
+    },
+
+    /* ---- γεωμετρία ---- */
+
+    stageSize() {
+        return this.$refs.stage.clientWidth;
+    },
+
+    /* Η κλίμακα που γεμίζει ακριβώς το παράθυρο. */
+    baseScale() {
+        const v = this.stageSize();
+
+        return Math.max(v / this.nw, v / this.nh);
+    },
+
+    scale() {
+        return this.baseScale() * (this.zoom / 100);
+    },
+
+    measure() {
+        const image = this.$refs.image;
+
+        if (!image.naturalWidth) return;
+
+        this.nw = image.naturalWidth;
+        this.nh = image.naturalHeight;
+
+        const saved = Number(this.$refs.w.value) || 0;
+
+        if (saved > 0) {
+            /* Ανάποδα από το αποθηκευμένο τετράγωνο: μέγεθος πρώτα, θέση μετά. */
+            const v = this.stageSize();
+            const scale = v / saved;
+            this.zoom = Math.max(100, Math.round((scale / this.baseScale()) * 100));
+            this.ox = -Number(this.$refs.x.value) * this.scale();
+            this.oy = -Number(this.$refs.y.value) * this.scale();
+        } else {
+            this.zoom = 100;
+            this.centre();
+        }
+
+        this.clampAndSync();
+    },
+
+    centre() {
+        const v = this.stageSize();
+        this.ox = (v - this.nw * this.scale()) / 2;
+        this.oy = (v - this.nh * this.scale()) / 2;
+    },
+
+    /* Η φωτογραφία δεν αφήνει ποτέ κενό μέσα στο παράθυρο. */
+    clamp() {
+        const v = this.stageSize();
+        const w = this.nw * this.scale();
+        const h = this.nh * this.scale();
+
+        this.ox = Math.min(0, Math.max(v - w, this.ox));
+        this.oy = Math.min(0, Math.max(v - h, this.oy));
+    },
+
+    /* ---- σύρσιμο ---- */
+
+    grab(event) {
+        if (!this.nw) return;
+
+        this.dragging = true;
+        this.from = { x: event.clientX - this.ox, y: event.clientY - this.oy };
+        this.$refs.stage.setPointerCapture(event.pointerId);
+        this.$refs.stage.classList.add('is-grabbing');
+    },
+
+    drag(event) {
+        if (!this.dragging) return;
+
+        this.ox = event.clientX - this.from.x;
+        this.oy = event.clientY - this.from.y;
+        this.clampAndSync();
+    },
+
+    release(event) {
+        if (!this.dragging) return;
+
+        this.dragging = false;
+        this.$refs.stage.classList.remove('is-grabbing');
+
+        if (this.$refs.stage.hasPointerCapture(event.pointerId)) {
+            this.$refs.stage.releasePointerCapture(event.pointerId);
+        }
+    },
+
+    nudge(dx, dy) {
+        const step = Math.max(4, this.stageSize() / 40);
+        this.ox -= dx * step;
+        this.oy -= dy * step;
+        this.clampAndSync();
+    },
+
+    reset() {
+        this.zoom = 100;
+        this.centre();
+        this.clampAndSync();
+    },
+
+    /* ---- αποτέλεσμα ---- */
+
+    clampAndSync() {
+        if (!this.nw) return;
+
+        this.clamp();
+        this.paint();
+        this.write();
+    },
+
+    paint() {
+        const image = this.$refs.image;
+
+        image.style.width = this.nw * this.scale() + 'px';
+        image.style.height = this.nh * this.scale() + 'px';
+        image.style.transform = `translate(${this.ox}px, ${this.oy}px)`;
+
+        /* Οι προεπισκοπήσεις δείχνουν το ίδιο τετράγωνο στα σχήματα του site. */
+        const crop = this.square();
+
+        [this.$refs.roundPreview, this.$refs.archPreview].forEach((node) => {
+            if (!node) return;
+
+            node.style.backgroundImage = `url("${image.src}")`;
+            node.style.backgroundSize = `${(this.nw / crop.w) * 100}% ${(this.nh / crop.h) * 100}%`;
+            node.style.backgroundPosition =
+                `${this.nw === crop.w ? 50 : (crop.x / (this.nw - crop.w)) * 100}% ` +
+                `${this.nh === crop.h ? 50 : (crop.y / (this.nh - crop.h)) * 100}%`;
+        });
+    },
+
+    /* Το τετράγωνο σε pixel της φωτογραφίας. */
+    square() {
+        const scale = this.scale();
+        const side = Math.round(this.stageSize() / scale);
+
+        return {
+            x: Math.max(0, Math.min(Math.round(-this.ox / scale), this.nw - side)),
+            y: Math.max(0, Math.min(Math.round(-this.oy / scale), this.nh - side)),
+            w: Math.min(side, this.nw),
+            h: Math.min(side, this.nh),
+        };
+    },
+
+    write() {
+        const crop = this.square();
+
+        this.$refs.x.value = crop.x;
+        this.$refs.y.value = crop.y;
+        this.$refs.w.value = crop.w;
+        this.$refs.h.value = crop.h;
+    },
+}));
+
 Alpine.start();
 
 /* ------------------------------------------------------------------ Trix */

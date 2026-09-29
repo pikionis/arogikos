@@ -37,6 +37,12 @@ class AuthorRequest extends FormRequest
                 'dimensions:max_width=5000,max_height=5000',
             ],
             'remove_photo' => ['boolean'],
+            // The chosen square, in the picture's own pixels. Checked
+            // against the real file in PhotoCrop, not here.
+            'crop_x' => ['nullable', 'integer', 'min:0'],
+            'crop_y' => ['nullable', 'integer', 'min:0'],
+            'crop_w' => ['nullable', 'integer', 'min:0'],
+            'crop_h' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
