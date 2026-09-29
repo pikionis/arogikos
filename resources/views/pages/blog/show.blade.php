@@ -46,6 +46,14 @@
       <p class="breadcrumb"><a href="{{ route('home') }}">{{ home_label() }}</a> · <a href="{{ route('blog.index') }}">{{ content('blog.hero.crumb') }}</a> · {{ content('blog.article_crumb') }}</p>
       <span class="cat-pill {{ $color }}" style="margin-bottom:var(--s-4);display:inline-block">{{ $article->category_label }}</span>
       <h1 style="font-size:clamp(2rem,4.5vw,3rem)">{{ $article->title }}</h1>
+
+      {{-- Η περίληψη ήταν αόρατη: τη γράφει ο συντάκτης και πήγαινε μόνο στο
+           <meta description> και στα social. Εδώ κάνει τη δουλειά της —
+           λέει σε δύο γραμμές αν αξίζει να διαβάσεις τις υπόλοιπες. --}}
+      @if (filled($article->excerpt))
+        <p class="lead article-lead reveal">{{ $article->excerpt }}</p>
+      @endif
+
       @if ($article->authors->isNotEmpty())
       <div class="post-meta" style="margin-top:var(--s-6);font-size:1rem">
         <span class="byline-faces">
