@@ -35,7 +35,7 @@ function catUser(Role $role = Role::Editor): User
 
 function publishedArticleIn(string $categoryKey, string $title = 'Άρθρο'): Article
 {
-    return Article::factory()->for(Author::factory())->create([
+    return Article::factory()->by(Author::factory()->create())->create([
         'title' => $title,
         'category' => $categoryKey,
         'is_published' => true,

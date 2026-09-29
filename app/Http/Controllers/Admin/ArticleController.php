@@ -28,7 +28,7 @@ class ArticleController extends Controller
         $search = trim((string) $request->query('q', ''));
 
         $articles = $articleModel::query()
-            ->with(['author', 'media'])
+            ->with(['authors', 'media'])
             ->when($status === 'published', fn ($q) => $q->where('is_published', true))
             ->when($status === 'draft', fn ($q) => $q->where('is_published', false))
             ->when($search !== '', fn ($q) => $q->where(
@@ -64,6 +64,7 @@ class ArticleController extends Controller
         $article = new $articleModel;
         $this->fill($article, $request);
         $article->save();
+        $this->signBy($article, $request);
 
         MediaUpload::sync($article, $request, 'cover');
 
@@ -89,6 +90,7 @@ class ArticleController extends Controller
     {
         $this->fill($article, $request);
         $article->save();
+        $this->signBy($article, $request);
 
         MediaUpload::sync($article, $request, 'cover');
 
@@ -109,6 +111,20 @@ class ArticleController extends Controller
 
     /* ------------------------------------------------------------ helpers */
 
+    /**
+     * Who signs it.
+     *
+     * After the save, not inside fill(): a brand new article has no id to
+     * hang the pivot rows off until it has been written once.
+     */
+    private function signBy(Article $article, ArticleRequest $request): void
+    {
+        $ids = array_map('intval', $request->validated()['author_ids'] ?? []);
+
+        $article->authors()->sync(array_values(array_unique($ids)));
+        $article->unsetRelation('authors');
+    }
+
     private function fill(Article $article, ArticleRequest $request): void
     {
         $data = $request->validated();
@@ -116,7 +132,6 @@ class ArticleController extends Controller
         $article->title = $data['title'];
         $article->excerpt = $data['excerpt'] ?? null;
         $article->body = $data['body'] ?? null;
-        $article->author_id = $data['author_id'] ?? null;
         $article->category = $data['category'] ?? null;
         // Empty means "no ready-made scene", which is a null and not a '' —
         // the accessor looks the key up in the registry either way.

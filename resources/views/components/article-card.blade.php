@@ -34,8 +34,17 @@
             <p style="color:var(--ink-600);font-size:.96rem">{{ $article->excerpt }}</p>
         @endif
         <div class="post-meta">
-            <x-author-avatar :author="$article->author" :color="$color" />
-            <span>{{ $article->author?->name }}@if ($showDate && $article->published_at) · {{ el_date($article->published_at) }}@endif</span>
+            {{-- Faces overlap so three of them still read as one byline and
+                 do not push the date onto its own line. --}}
+            <span class="byline-faces">
+                @foreach ($article->authors->take(3) as $person)
+                    <x-author-avatar :author="$person" :color="$color" />
+                @endforeach
+                @if ($article->authors->isEmpty())
+                    <x-author-avatar :color="$color" />
+                @endif
+            </span>
+            <span>{{ $article->byline() }}@if ($showDate && $article->published_at) · {{ el_date($article->published_at) }}@endif</span>
         </div>
     </div>
 </a>

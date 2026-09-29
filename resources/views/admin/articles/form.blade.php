@@ -132,27 +132,40 @@
                 </section>
 
                 <section class="a-card">
-                    <h2 style="font-size:.95rem;margin:0 0 14px">Συντάκτης</h2>
+                    <h2 style="font-size:.95rem;margin:0 0 4px">Ποιος υπογράφει το άρθρο</h2>
+                    <p style="color:var(--color-ink-400);font-size:.84rem;margin:0 0 14px">
+                        Διαλέξτε όσους το έγραψαν. Εμφανίζονται με τη σειρά που έχουν
+                        στους «Συντάκτες» — αν θέλετε κάποιον πρώτο, ανεβάστε τον εκεί.
+                    </p>
+
+                    @php
+                        // On a failed submit `old()` is the truth; on a fresh
+                        // load it is whoever already signs the article.
+                        $signing = array_map('intval', old('author_ids', $article->authors->modelKeys()));
+                    @endphp
+
+                    {{-- Empty submit means "nobody", which has to reach the
+                         server: an all-unticked list sends no key at all. --}}
+                    <input type="hidden" name="author_ids[]" value="">
 
                     <div class="a-field" style="margin-bottom:0">
-                        <label class="a-label" for="author_id">Ποιος υπογράφει το άρθρο</label>
-                        <select class="a-select" id="author_id" name="author_id">
-                            <option value="">— Χωρίς συντάκτη —</option>
-                            @foreach ($authorGroups as $groupLabel => $authors)
-                                <optgroup label="{{ $groupLabel }}">
-                                    @foreach ($authors as $author)
-                                        <option value="{{ $author->id }}"
-                                                @selected((int) old('author_id', $article->author_id) === $author->id)>
-                                            {{ $author->name }}@if ($author->role_title) — {{ $author->role_title }}@endif
-                                        </option>
-                                    @endforeach
-                                </optgroup>
+                        @foreach ($authorGroups as $groupLabel => $authors)
+                            <p class="a-label" style="margin-top:{{ $loop->first ? '0' : '14px' }}">{{ $groupLabel }}</p>
+
+                            @foreach ($authors as $author)
+                                <label class="a-check a-signer">
+                                    <input type="checkbox" name="author_ids[]" value="{{ $author->id }}"
+                                           @checked(in_array($author->id, $signing, true))>
+                                    <x-admin.author-chip :author="$author" />
+                                </label>
                             @endforeach
-                        </select>
-                        <span class="a-hint">
+                        @endforeach
+
+                        <span class="a-hint" style="margin-top:10px">
                             Τα «Μέλη του panel» είναι όσοι έχουν πρόσβαση στη διαχείριση.
                         </span>
-                        @error('author_id')<span class="a-error">{{ $message }}</span>@enderror
+                        @error('author_ids')<span class="a-error">{{ $message }}</span>@enderror
+                        @error('author_ids.*')<span class="a-error">{{ $message }}</span>@enderror
                     </div>
                 </section>
 

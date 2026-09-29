@@ -667,6 +667,34 @@
     clip-path: inset(50%); white-space: nowrap;
 }
 
+/* --- who signs an article --- */
+
+.a-signer {
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px 7px 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+.a-signer:hover { background: var(--color-soft-green); }
+.a-signer:has(input:checked) { background: var(--color-soft-green); }
+.a-signer input { margin-top: 0; }
+
+.a-signer-face {
+    flex: none; width: 28px; height: 28px; border-radius: 50%;
+    overflow: hidden; background: var(--color-soft-coral);
+    display: grid; place-items: center;
+    font-family: var(--font-head); font-weight: 800; font-size: .7rem;
+    color: var(--color-coral-700);
+}
+.a-signer-face img { width: 100%; height: 100%; object-fit: cover; }
+
+.a-signer-role {
+    display: block; font-weight: 500; font-size: .78rem;
+    color: var(--color-ink-400);
+}
+
 /* --- rows put in order by hand --- */
 
 .a-table-sortable tbody tr.is-dragging { opacity: .45; }

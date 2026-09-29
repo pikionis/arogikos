@@ -28,7 +28,7 @@ class PreviewController extends Controller
     {
         $this->authorize('manage-content');
 
-        $article->loadMissing(['author', 'media']);
+        $article->loadMissing(['authors', 'media']);
 
         return view('pages.blog.show', [
             'article' => $article,

@@ -162,7 +162,7 @@ it('follows a service renamed in the panel', function () {
 it('marks up an article as a blog posting with its author and date', function () {
     $author = Author::factory()->create(['name' => 'Μαρία Κωνσταντίνου', 'role_title' => 'Ειδική Παιδαγωγός']);
 
-    $article = Article::factory()->for($author)->create([
+    $article = Article::factory()->by($author)->create([
         'title' => 'Δυσλεξία στην πράξη',
         'excerpt' => 'Τι να προσέξετε.',
         'category' => 'learning',
@@ -185,7 +185,7 @@ it('marks up an article as a blog posting with its author and date', function ()
 /* ------------------------------------------------------------- breadcrumbs */
 
 it('gives an article a full breadcrumb trail', function () {
-    $article = Article::factory()->for(Author::factory())->create([
+    $article = Article::factory()->by(Author::factory()->create())->create([
         'title' => 'Ένα άρθρο',
         'is_published' => true,
         'published_at' => now()->subDay(),

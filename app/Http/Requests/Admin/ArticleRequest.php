@@ -34,7 +34,8 @@ class ArticleRequest extends FormRequest
             // Any author may be picked, including inactive ones: invited panel
             // members start inactive so they do not appear on the About page,
             // but they must still be selectable as a byline.
-            'author_id' => ['nullable', 'integer', Rule::exists('authors', 'id')],
+            'author_ids' => ['array'],
+            'author_ids.*' => ['integer', Rule::exists('authors', 'id')],
             // Any existing category, archived included: an old article must
             // keep the one it was given even after it stopped being offered.
             'category' => ['nullable', 'string', Rule::in(array_keys(app(Categories::class)->all()))],
@@ -59,6 +60,15 @@ class ArticleRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        // The form carries one empty author_ids[] so that unticking everyone
+        // arrives as "nobody" rather than as nothing at all; it is not an id.
+        $this->merge([
+            'author_ids' => array_values(array_filter(
+                (array) $this->input('author_ids', []),
+                fn ($id) => filled($id)
+            )),
+        ]);
+
         $this->merge([
             'is_published' => $this->boolean('is_published'),
             'remove_cover' => $this->boolean('remove_cover'),

@@ -59,21 +59,21 @@ it('initials collapses extra whitespace between words', function () {
 
 it('author hasMany articles relation works', function () {
     $author = Author::factory()->create();
-    Article::factory()->count(2)->for($author, 'author')->create();
+    Article::factory()->count(2)->by($author)->create();
     // an article belonging to a different author must not leak in
     Article::factory()->create();
 
     expect($author->articles)->toHaveCount(2)
         ->and($author->articles->first())->toBeInstanceOf(Article::class)
-        ->and($author->articles->pluck('author_id')->unique()->all())->toBe([$author->id]);
+        ->and($author->articles()->count())->toBe(2);
 });
 
 it('article belongsTo author resolves back to the owner', function () {
     $author = Author::factory()->create();
-    $article = Article::factory()->for($author, 'author')->create();
+    $article = Article::factory()->by($author)->create();
 
-    expect($article->author)->toBeInstanceOf(Author::class)
-        ->and($article->author->id)->toBe($author->id);
+    expect($article->authors->first())->toBeInstanceOf(Author::class)
+        ->and($article->authors->modelKeys())->toBe([$author->id]);
 });
 
 /*

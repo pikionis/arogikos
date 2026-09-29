@@ -103,9 +103,8 @@ it('shares an article with its own cover and title', function () {
     Storage::fake('public');
 
     $author = Author::factory()->create(['name' => 'Μαρία Παπαδοπούλου']);
-    $article = Article::factory()->create([
+    $article = Article::factory()->by($author)->create([
         'title' => 'Επτά σημάδια δυσλεξίας',
-        'author_id' => $author->id,
         'is_published' => true,
         'published_at' => now()->subDay(),
     ]);
@@ -120,8 +119,7 @@ it('shares an article with its own cover and title', function () {
 
 it('dates and attributes a shared article', function () {
     $author = Author::factory()->create(['name' => 'Μαρία Παπαδοπούλου']);
-    $article = Article::factory()->create([
-        'author_id' => $author->id,
+    $article = Article::factory()->by($author)->create([
         'is_published' => true,
         'published_at' => now()->subDays(3),
     ]);

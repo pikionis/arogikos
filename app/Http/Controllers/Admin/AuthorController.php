@@ -147,8 +147,8 @@ class AuthorController extends Controller
     {
         $this->authorize('manage-users');
 
-        // articles.author_id is nullOnDelete, so articles survive without a
-        // byline rather than disappearing — but say so plainly.
+        // The byline is a pivot row with cascade on delete, so the articles
+        // stay standing and lose this one name — but say so plainly.
         $count = $author->articles()->count();
         $name = $author->name;
         $author->delete();
@@ -156,7 +156,7 @@ class AuthorController extends Controller
         return redirect()->route('admin.authors.index')->with(
             'status',
             $count > 0
-                ? "Ο συντάκτης «{$name}» διαγράφηκε. {$count} άρθρα έμειναν χωρίς συντάκτη."
+                ? "Ο συντάκτης «{$name}» διαγράφηκε. {$count} άρθρα χάνουν αυτή την υπογραφή."
                 : "Ο συντάκτης «{$name}» διαγράφηκε."
         );
     }

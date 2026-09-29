@@ -88,7 +88,7 @@ it('uses the same text for the Open Graph title, so shares match search', functi
 
 it('still lets an article carry its own title', function () {
     $article = Article::factory()
-        ->for(Author::factory())
+        ->by(Author::factory()->create())
         ->create([
             'title' => 'Δυσλεξία στην πράξη',
             'seo_title' => 'Δυσλεξία: πρακτικός οδηγός για γονείς — Αρωγή Κως',

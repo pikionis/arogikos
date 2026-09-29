@@ -114,7 +114,7 @@ it('adopts the profile the centre already wrote, instead of opening a second', f
         'user_id' => null,
         'is_active' => true,
     ]);
-    $article = Article::factory()->create(['author_id' => $existing->id]);
+    $article = Article::factory()->by($existing)->create();
 
     [, $token] = Invitation::issue('papandreouzeta@example.com', 'Ζέτα Παπανδρέου', Role::Editor);
 
@@ -132,7 +132,7 @@ it('adopts the profile the centre already wrote, instead of opening a second', f
     expect($existing->user_id)->not->toBeNull()
         ->and($existing->role_title)->toBe('Ειδική Παιδαγωγός')
         ->and($existing->is_active)->toBeTrue()
-        ->and($article->refresh()->author_id)->toBe($existing->id);
+        ->and($article->refresh()->authors->modelKeys())->toBe([$existing->id]);
 });
 
 it('opens a fresh profile when there is nobody to adopt', function () {

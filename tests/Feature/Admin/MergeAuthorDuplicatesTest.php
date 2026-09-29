@@ -50,7 +50,7 @@ it('hands the account the profile that has the photo and the articles', function
         'is_active' => true,
     ]);
     $real->addMedia(UploadedFile::fake()->image('r.jpg', 600, 700))->toMediaCollection('photo');
-    $article = Article::factory()->create(['author_id' => $real->id]);
+    $article = Article::factory()->by($real)->create();
 
     $user = accountWithBlankProfile('Ραφαέλα Ντινώρη');
     $blankId = $user->author->id;
@@ -61,7 +61,7 @@ it('hands the account the profile that has the photo and the articles', function
         ->and($real->refresh()->user_id)->toBe($user->getKey())
         ->and($real->is_active)->toBeTrue()
         ->and($real->role_title)->toBe('Εργοθεραπεύτρια')
-        ->and($article->refresh()->author_id)->toBe($real->id)
+        ->and($article->refresh()->authors->modelKeys())->toBe([$real->id])
         ->and($user->refresh()->author->id)->toBe($real->id);
 });
 
@@ -82,7 +82,7 @@ it('refuses to drop a profile that holds anything', function () {
 
     $user = accountWithBlankProfile('Κάποιος Συντάκτης');
     // The account's own profile turns out to carry an article.
-    Article::factory()->create(['author_id' => $user->author->id]);
+    Article::factory()->by($user->author)->create();
 
     $this->artisan('cms:merge-author-duplicates --apply')
         ->expectsOutputToContain('left alone')
@@ -108,7 +108,7 @@ it('never touches an invited author who has not accepted yet', function () {
         'role_title' => 'Ειδική Παιδαγωγός',
         'user_id' => null,
     ]);
-    Article::factory()->create(['author_id' => $waiting->id]);
+    Article::factory()->by($waiting)->create();
 
     $this->artisan('cms:merge-author-duplicates --apply')->assertSuccessful();
 

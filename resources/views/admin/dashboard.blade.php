@@ -42,7 +42,7 @@
                                 <td>
                                     <div style="font-weight:600">{{ $article->title }}</div>
                                     <div style="color:var(--color-ink-400);font-size:.82rem">
-                                        {{ $article->author?->name ?? 'Χωρίς συντάκτη' }}
+                                        {{ $article->byline() ?: 'Χωρίς συντάκτη' }}
                                     </div>
                                 </td>
                                 <td style="text-align:right;white-space:nowrap">

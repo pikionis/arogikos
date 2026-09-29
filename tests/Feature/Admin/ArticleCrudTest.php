@@ -50,7 +50,7 @@ it('creates an article and shows it on the public blog with its author', functio
         'title' => 'Πώς στηρίζουμε τη μελέτη στο σπίτι',
         'excerpt' => 'Πρακτικές ιδέες για γονείς.',
         'body' => '<p>Το κυρίως κείμενο.</p>',
-        'author_id' => $author->id,
+        'author_ids' => [$author->id],
         'category' => 'parents',
         'is_published' => '1',
     ])->assertRedirect();
@@ -58,7 +58,7 @@ it('creates an article and shows it on the public blog with its author', functio
     $article = Article::firstOrFail();
 
     expect($article->title)->toBe('Πώς στηρίζουμε τη μελέτη στο σπίτι')
-        ->and($article->author_id)->toBe($author->id)
+        ->and($article->authors->modelKeys())->toBe([$author->id])
         ->and($article->is_published)->toBeTrue()
         // Publishing without a date would leave it invisible: the published()
         // scope requires published_at to be set and in the past.
@@ -151,11 +151,11 @@ it('accepts an inactive panel author as the byline', function () {
 
     $this->actingAs($panelUser)->post(route('admin.articles.store'), [
         'title' => 'Άρθρο μέλους',
-        'author_id' => $author->id,
+        'author_ids' => [$author->id],
         'is_published' => '1',
     ])->assertSessionHasNoErrors();
 
-    expect(Article::firstOrFail()->author_id)->toBe($author->id);
+    expect(Article::firstOrFail()->authors->modelKeys())->toBe([$author->id]);
 });
 
 /* ------------------------------------------------------------ sanitisation */

@@ -395,6 +395,13 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .story-prose p:first-child { margin-top: 0; }
 .story-prose p:last-child { margin-bottom: 0; }
 
+/* ---- a byline with more than one name ---- */
+/* The faces overlap rather than queue: three avatars in a row would shove the
+   name and the date onto a line of their own on a card. */
+.byline-faces { display: inline-flex; align-items: center; flex: none; }
+.byline-faces > * + * { margin-left: -10px; }
+.byline-faces > * { box-shadow: 0 0 0 2px #fff; border-radius: 50%; }
+
 /* ---- article ---- */
 .article-body { max-width: none; }
 .article-body p {

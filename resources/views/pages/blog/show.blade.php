@@ -15,9 +15,9 @@
     @if ($article->updated_at)
         <meta property="article:modified_time" content="{{ $article->updated_at->toIso8601String() }}">
     @endif
-    @if ($article->author)
-        <meta property="article:author" content="{{ $article->author->name }}">
-    @endif
+    @foreach ($article->authors as $person)
+        <meta property="article:author" content="{{ $person->name }}">
+    @endforeach
     @if (filled($article->category_label))
         <meta property="article:section" content="{{ $article->category_label }}">
     @endif
@@ -46,10 +46,14 @@
       <p class="breadcrumb"><a href="{{ route('home') }}">{{ home_label() }}</a> · <a href="{{ route('blog.index') }}">{{ content('blog.hero.crumb') }}</a> · {{ content('blog.article_crumb') }}</p>
       <span class="cat-pill {{ $color }}" style="margin-bottom:var(--s-4);display:inline-block">{{ $article->category_label }}</span>
       <h1 style="font-size:clamp(2rem,4.5vw,3rem)">{{ $article->title }}</h1>
-      @if ($article->author)
+      @if ($article->authors->isNotEmpty())
       <div class="post-meta" style="margin-top:var(--s-6);font-size:1rem">
-        <x-author-avatar :author="$article->author" :color="$color" size="46px" />
-        <span><strong style="color:var(--ink);font-family:var(--font-head)">{{ $article->author->name }}</strong><br>{{ $article->author->role_title }} · {{ el_date($article->published_at) }} · {{ $readMinutes }}′ {{ content('blog.read_suffix') }}</span>
+        <span class="byline-faces">
+          @foreach ($article->authors as $person)
+            <x-author-avatar :author="$person" :color="$color" size="46px" />
+          @endforeach
+        </span>
+        <span><strong style="color:var(--ink);font-family:var(--font-head)">{{ $article->byline() }}</strong><br>@if ($article->authors->count() === 1 && filled($article->authors->first()->role_title)){{ $article->authors->first()->role_title }} · @endif{{ el_date($article->published_at) }} · {{ $readMinutes }}′ {{ content('blog.read_suffix') }}</span>
       </div>
       @endif
     </div>
@@ -67,27 +71,34 @@
     </div>
   </div>
 
-  @if ($article->author && filled($article->author->bio))
-    @php $authorId = 'author-'.$article->author->id; @endphp
+  @php
+    // A profile with no bio has nothing to open, so it gets no box.
+    $written = $article->authors->filter(fn ($person) => filled($person->bio))->values();
+  @endphp
 
-    <div class="container column" style="margin-top:var(--s-12)">
+  @foreach ($written as $person)
+    @php $authorId = 'author-'.$person->id; @endphp
+
+    <div class="container column" style="margin-top:var(--s-{{ $loop->first ? '12' : '6' }})">
       <div class="author-card reveal" style="--profile-tint:{{ $tint }}">
-        <x-author-portrait :author="$article->author" :id="$authorId" :tint="$tint" frame="author-card-photo" />
+        <x-author-portrait :author="$person" :id="$authorId" :tint="$tint" frame="author-card-photo" />
 
         <div class="author-card-text">
-          <span class="eyebrow coral">{{ content('blog.author_eyebrow') }}</span>
-          <h3><x-author-name :author="$article->author" :id="$authorId" /></h3>
-          @if (filled($article->author->role_title))
-            <p class="role">{{ $article->author->role_title }}</p>
+          @if ($loop->first)
+            <span class="eyebrow coral">{{ content('blog.author_eyebrow') }}</span>
+          @endif
+          <h3><x-author-name :author="$person" :id="$authorId" /></h3>
+          @if (filled($person->role_title))
+            <p class="role">{{ $person->role_title }}</p>
           @endif
 
-          <x-author-bio :author="$article->author" :id="$authorId" :tint="$tint" :lines="3" />
+          <x-author-bio :author="$person" :id="$authorId" :tint="$tint" :lines="3" />
         </div>
       </div>
     </div>
 
-    <x-author-dialog :author="$article->author" :id="$authorId" :tint="$tint" />
-  @endif
+    <x-author-dialog :author="$person" :id="$authorId" :tint="$tint" />
+  @endforeach
 </article>
 
 <!-- RELATED -->

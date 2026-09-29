@@ -54,7 +54,7 @@ it('shows the latest published article title and an upcoming event on home', fun
 
     $author = Author::factory()->create();
 
-    $latest = Article::factory()->for($author)->create([
+    $latest = Article::factory()->by($author)->create([
         'title' => 'Το πιο πρόσφατο άρθρο μας',
         'is_published' => true,
         'published_at' => now()->subDay(),
@@ -78,7 +78,7 @@ it('lists published articles on the blog index', function () {
     $this->seed(SettingsSeeder::class);
 
     $author = Author::factory()->create();
-    $article = Article::factory()->for($author)->create([
+    $article = Article::factory()->by($author)->create([
         'title' => 'Δημοσιευμένο άρθρο στο blog',
         'is_published' => true,
         'published_at' => now()->subDay(),
@@ -93,7 +93,7 @@ it('does not list draft / unpublished articles on the blog index', function () {
     $this->seed(SettingsSeeder::class);
 
     $author = Author::factory()->create();
-    $draft = Article::factory()->for($author)->draft()->create([
+    $draft = Article::factory()->by($author)->draft()->create([
         'title' => 'Κρυφό προσχέδιο άρθρου',
     ]);
 
@@ -107,14 +107,14 @@ it('filters the blog index by ?category=learning and hides other categories', fu
 
     $author = Author::factory()->create();
 
-    $learning = Article::factory()->for($author)->create([
+    $learning = Article::factory()->by($author)->create([
         'title' => 'Άρθρο για μαθησιακές δυσκολίες',
         'category' => 'learning',
         'is_published' => true,
         'published_at' => now()->subDay(),
     ]);
 
-    $counseling = Article::factory()->for($author)->create([
+    $counseling = Article::factory()->by($author)->create([
         'title' => 'Άρθρο για συμβουλευτική γονέων',
         'category' => 'counseling',
         'is_published' => true,
@@ -133,7 +133,7 @@ it('returns 200 for a published article slug', function () {
     $this->seed(SettingsSeeder::class);
 
     $author = Author::factory()->create();
-    $article = Article::factory()->for($author)->create([
+    $article = Article::factory()->by($author)->create([
         'title' => 'Ένα άρθρο που διαβάζεται',
         'is_published' => true,
         'published_at' => now()->subDay(),
@@ -155,7 +155,7 @@ it('returns 404 for a draft (unpublished) article slug', function () {
     $this->seed(SettingsSeeder::class);
 
     $author = Author::factory()->create();
-    $draft = Article::factory()->for($author)->draft()->create([
+    $draft = Article::factory()->by($author)->draft()->create([
         'title' => 'Προσχέδιο που δεν πρέπει να φαίνεται',
     ]);
 
@@ -191,7 +191,7 @@ it('renders the sitemap as text/xml containing a blog article URL', function () 
     $this->seed(SettingsSeeder::class);
 
     $author = Author::factory()->create();
-    $article = Article::factory()->for($author)->create([
+    $article = Article::factory()->by($author)->create([
         'is_published' => true,
         'published_at' => now()->subDay(),
     ]);

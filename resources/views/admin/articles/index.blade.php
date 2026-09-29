@@ -56,8 +56,8 @@
                                 <div style="color:var(--color-ink-400);font-size:.8rem">/{{ $article->slug }}</div>
                             </td>
                             <td style="font-size:.88rem">
-                                {{ $article->author?->name ?? '—' }}
-                                @if ($article->author?->hasPanelAccess())
+                                {{ $article->byline() ?: '—' }}
+                                @if ($article->authors->contains(fn ($person) => $person->hasPanelAccess()))
                                     <span class="a-badge a-badge-grey">panel</span>
                                 @endif
                             </td>

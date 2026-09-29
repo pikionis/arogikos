@@ -44,8 +44,8 @@ class BlogController extends Controller
 
         $articles = $articleModel::published()
             ->inCategory($category)
-            ->when($author, fn ($q, $id) => $q->where('author_id', $id))
-            ->with(['author', 'media'])
+            ->when($author, fn ($q, $id) => $q->whereHas('authors', fn ($a) => $a->whereKey($id)))
+            ->with(['authors', 'media'])
             ->latest('published_at')
             ->paginate(9)
             ->withQueryString();
@@ -59,7 +59,7 @@ class BlogController extends Controller
         $articleModel = cms_model('article');
 
         $article = $articleModel::published()
-            ->with(['author', 'media'])
+            ->with(['authors', 'media'])
             ->where('slug', $slug)
             ->firstOrFail();
 

@@ -39,7 +39,7 @@ function authorWithPhoto(string $name = 'Μαρία Κωνσταντίνου'): 
 
 function articleBy(Author $author, string $title = 'Ένα άρθρο'): Article
 {
-    return Article::factory()->for($author)->create([
+    return Article::factory()->by($author)->create([
         'title' => $title,
         'category' => 'learning',
         'is_published' => true,

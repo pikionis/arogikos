@@ -55,7 +55,7 @@ it('tells the preview which fields to fall back to', function () {
 });
 
 it('shows the preview when editing an existing article', function () {
-    $article = Article::factory()->for(Author::factory())->create();
+    $article = Article::factory()->by(Author::factory()->create())->create();
 
     $this->actingAs(seoUser(Role::Editor))
         ->get(route('admin.articles.edit', $article))

@@ -18,7 +18,7 @@ class HomeController extends Controller
         $eventModel = cms_model('event');
 
         $articles = $articleModel::published()
-            ->with(['author', 'media'])
+            ->with(['authors', 'media'])
             ->latest('published_at')
             ->take(3)
             ->get();

@@ -233,13 +233,20 @@ class StructuredData
             $node['dateModified'] = $article->updated_at->toIso8601String();
         }
 
-        if ($article->author) {
-            $node['author'] = array_filter([
+        // One Person per byline. Google accepts a list, and naming only the
+        // first would credit one of three people for everyone's work.
+        $people = $article->authors
+            ->map(fn ($person) => array_filter([
                 '@type' => 'Person',
-                'name' => $article->author->name,
-                'jobTitle' => $article->author->role_title,
-                'image' => $article->author->photoUrl('web'),
-            ]);
+                'name' => $person->name,
+                'jobTitle' => $person->role_title,
+                'image' => $person->photoUrl('web'),
+            ]))
+            ->values()
+            ->all();
+
+        if ($people !== []) {
+            $node['author'] = count($people) === 1 ? $people[0] : $people;
         }
 
         if (filled($cover = $article->getFirstMediaUrl('cover', 'web'))) {

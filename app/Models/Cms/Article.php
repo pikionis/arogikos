@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -29,7 +29,7 @@ class Article extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-        'title', 'slug', 'excerpt', 'body', 'author_id', 'category', 'cover_preset',
+        'title', 'slug', 'excerpt', 'body', 'category', 'cover_preset',
         'published_at', 'is_published', 'seo_title', 'seo_description',
     ];
 
@@ -61,9 +61,30 @@ class Article extends Model implements HasMedia
             ->doNotGenerateSlugsOnUpdate();
     }
 
-    public function author(): BelongsTo
+    /**
+     * Everyone who signed it.
+     *
+     * Ordered by the Συντάκτες screen rather than by when they were ticked:
+     * the centre already decides who comes first there, and a second order
+     * living on the pivot would be a second answer to the same question.
+     */
+    public function authors(): BelongsToMany
     {
-        return $this->belongsTo(Author::class);
+        return $this->belongsToMany(Author::class)
+            ->orderBy('authors.position')
+            ->orderBy('authors.name');
+    }
+
+    /** The byline as one line: "Α, Β και Γ". */
+    public function byline(): string
+    {
+        $names = $this->authors->pluck('name')->filter()->values();
+
+        if ($names->count() < 2) {
+            return (string) $names->first();
+        }
+
+        return $names->slice(0, -1)->implode(', ').' και '.$names->last();
     }
 
     public function registerMediaCollections(): void
@@ -104,7 +125,7 @@ class Article extends Model implements HasMedia
     public function related(int $limit = 3)
     {
         return static::published()
-            ->with('author')
+            ->with('authors')
             ->whereKeyNot($this->getKey())
             ->where('category', $this->category)
             ->latest('published_at')

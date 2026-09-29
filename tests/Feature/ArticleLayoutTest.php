@@ -30,8 +30,7 @@ function articleWithAuthor(string $bio): Article
         'is_active' => true,
     ]);
 
-    return Article::factory()->create([
-        'author_id' => $author->id,
+    return Article::factory()->by($author)->create([
         'is_published' => true,
         'published_at' => now()->subDay(),
         'body' => '<p>Το κείμενο του άρθρου.</p>',
@@ -89,8 +88,8 @@ it('puts a long bio in a box you can open, exactly as the team page does', funct
 
     expect($html)->toContain('profile-bio')
         ->and($html)->toContain('is-clamped')
-        ->and($html)->toContain('data-profile-open="author-'.$article->author_id.'"')
-        ->and($html)->toContain('<dialog id="author-'.$article->author_id.'"')
+        ->and($html)->toContain('data-profile-open="author-'.$article->authors->first()->id.'"')
+        ->and($html)->toContain('<dialog id="author-'.$article->authors->first()->id.'"')
         ->and($html)->toContain('profile-modal-photo');
 });
 
@@ -159,7 +158,7 @@ it('opens the author from the photo and the name on an article too', function ()
 
     $html = $this->get(route('blog.show', $article->slug))->getContent();
 
-    expect(substr_count($html, 'data-profile-open="author-'.$article->author_id.'"'))->toBe(3)
+    expect(substr_count($html, 'data-profile-open="author-'.$article->authors->first()->id.'"'))->toBe(3)
         ->and($html)->toContain('class="profile-portrait author-card-photo frame-arch"')
         ->and($html)->toContain('aria-label="Περισσότερα για Μαρία Παπαδοπούλου"');
 });

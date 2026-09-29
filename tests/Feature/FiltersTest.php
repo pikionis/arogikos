@@ -29,9 +29,8 @@ function writer(string $name): Author
 
 function postBy(Author $author, string $title, string $category = 'learning'): Article
 {
-    return Article::factory()->create([
+    return Article::factory()->by($author)->create([
         'title' => $title,
-        'author_id' => $author->id,
         'category' => $category,
         'is_published' => true,
         'published_at' => now()->subDay(),

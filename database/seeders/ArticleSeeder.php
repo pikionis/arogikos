@@ -16,13 +16,12 @@ class ArticleSeeder extends Seeder
         $authors = Author::pluck('id', 'name');
 
         foreach ($this->articles() as $data) {
-            Article::updateOrCreate(
+            $article = Article::updateOrCreate(
                 ['slug' => $data['slug']],
                 [
                     'title' => $data['title'],
                     'excerpt' => $data['excerpt'],
                     'body' => $data['body'],
-                    'author_id' => $authors[$data['author']] ?? null,
                     'category' => $data['category'],
                     'published_at' => Carbon::parse($data['published_at']),
                     'is_published' => true,
@@ -30,6 +29,12 @@ class ArticleSeeder extends Seeder
                     'seo_description' => $data['seo_description'] ?? $data['excerpt'],
                 ]
             );
+
+            // syncWithoutDetaching, not sync: reseeding must not wipe a second
+            // name the centre added to a piece in the panel.
+            if ($id = $authors[$data['author']] ?? null) {
+                $article->authors()->syncWithoutDetaching([$id]);
+            }
         }
     }
 
