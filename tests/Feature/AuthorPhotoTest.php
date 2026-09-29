@@ -51,7 +51,7 @@ function articleBy(Author $author, string $title = 'Ένα άρθρο'): Article
 
 it('lets an author photo be uploaded from the admin', function () {
     $user = User::factory()->create();
-    $user->forceFill(['role' => Role::Editor, 'is_active' => true])->save();
+    $user->forceFill(['role' => Role::Admin, 'is_active' => true])->save();
 
     $author = Author::factory()->create(['name' => 'Νέα Συντάκτρια']);
 
@@ -71,7 +71,7 @@ it('lets an author photo be uploaded from the admin', function () {
 
 it('refuses a non-image as an author photo', function () {
     $user = User::factory()->create();
-    $user->forceFill(['role' => Role::Editor, 'is_active' => true])->save();
+    $user->forceFill(['role' => Role::Admin, 'is_active' => true])->save();
 
     $author = Author::factory()->create();
 

@@ -7,10 +7,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\AuthorRequest;
 use App\Models\Cms\Author;
+use App\Models\User;
 use App\Support\MediaUpload;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AuthorController extends Controller
@@ -22,11 +24,24 @@ class AuthorController extends Controller
         /** @var class-string<Author> $authorModel */
         $authorModel = cms_model('author');
 
+        $authors = $authorModel::with(['user', 'media'])
+            ->withCount('articles')
+            ->ordered()
+            ->get();
+
+        // A profile that says "χωρίς πρόσβαση" beside an account of the same
+        // name is almost always one nobody got round to linking. Naming them
+        // here is what turns that back into a two-click fix.
+        $free = $this->freeAccounts()->keyBy(fn (User $user) => Author::normaliseName($user->name));
+
         return view('admin.authors.index', [
-            'authors' => $authorModel::with(['user', 'media'])
-                ->withCount('articles')
-                ->ordered()
-                ->get(),
+            'authors' => $authors,
+            'suggested' => $authors
+                ->filter(fn (Author $author) => $author->user_id === null)
+                ->mapWithKeys(fn (Author $author) => [
+                    $author->getKey() => $free->get(Author::normaliseName($author->name)),
+                ])
+                ->filter(),
         ]);
     }
 
@@ -80,11 +95,16 @@ class AuthorController extends Controller
         /** @var class-string<Author> $authorModel */
         $authorModel = cms_model('author');
 
-        return view('admin.authors.form', ['author' => new $authorModel]);
+        return view('admin.authors.form', [
+            'author' => new $authorModel,
+            'accounts' => $this->freeAccounts(),
+        ]);
     }
 
     public function store(AuthorRequest $request): RedirectResponse
     {
+        $this->authorize('manage-users');
+
         /** @var class-string<Author> $authorModel */
         $authorModel = cms_model('author');
 
@@ -103,11 +123,18 @@ class AuthorController extends Controller
     {
         $this->authorize('manage-users');
 
-        return view('admin.authors.form', compact('author'));
+        return view('admin.authors.form', [
+            'author' => $author,
+            // Plus the one already on this profile, which is not free but has
+            // to stay selected.
+            'accounts' => $this->freeAccounts($author->user),
+        ]);
     }
 
     public function update(AuthorRequest $request, Author $author): RedirectResponse
     {
+        $this->authorize('manage-users');
+
         $this->fill($author, $request);
         $author->save();
 
@@ -142,5 +169,33 @@ class AuthorController extends Controller
         $author->role_title = $data['role_title'] ?? null;
         $author->bio = $data['bio'] ?? null;
         $author->is_active = $data['is_active'] ?? false;
+
+        // Linking is what lets someone edit their own photo and bio, and what
+        // makes the "Λογαριασμός" column tell the truth.
+        $author->user_id = $data['user_id'] ?? null;
+    }
+
+    /**
+     * Accounts that can still be linked to a profile.
+     *
+     * One account owns at most one profile (authors.user_id is unique), so
+     * offering a taken one would only produce a constraint error at the end
+     * of a filled-in form.
+     *
+     * @return Collection<int, User>
+     */
+    private function freeAccounts(?User $keep = null): Collection
+    {
+        return User::query()
+            ->where('is_active', true)
+            ->where(function ($query) use ($keep) {
+                $query->whereDoesntHave('author');
+
+                if ($keep) {
+                    $query->orWhere('id', $keep->getKey());
+                }
+            })
+            ->orderBy('name')
+            ->get();
     }
 }

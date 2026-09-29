@@ -6,12 +6,17 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Unique;
 
 class AuthorRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return Gate::allows('manage-content');
+        // Same door as the screen itself: this form decides who appears on the
+        // public team page and which account owns a profile, neither of which
+        // belongs to an editor.
+        return Gate::allows('manage-users');
     }
 
     /** @return array<string, mixed> */
@@ -23,6 +28,7 @@ class AuthorRequest extends FormRequest
             // Plain text: the About page renders the bio escaped.
             'bio' => ['nullable', 'string', 'max:2000'],
             'is_active' => ['boolean'],
+            'user_id' => ['nullable', 'integer', 'exists:users,id', $this->accountRule()],
             'photo' => [
                 'nullable', 'image',
                 'mimes:jpg,jpeg,png,webp',
@@ -32,6 +38,29 @@ class AuthorRequest extends FormRequest
             ],
             'remove_photo' => ['boolean'],
         ];
+    }
+
+    /** @return array<string, string> */
+    public function messages(): array
+    {
+        return [
+            'user_id.unique' => 'Ο λογαριασμός ανήκει ήδη σε άλλο προφίλ συντάκτη.',
+        ];
+    }
+
+    /**
+     * The account must not already belong to a different profile.
+     *
+     * authors.user_id is unique, so without this the form would take a filled
+     * page and answer it with a database error.
+     */
+    private function accountRule(): Unique
+    {
+        $unique = Rule::unique('authors', 'user_id');
+
+        $author = $this->route('author');
+
+        return $author ? $unique->ignore($author->getKey()) : $unique;
     }
 
     protected function prepareForValidation(): void

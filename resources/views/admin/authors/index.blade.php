@@ -78,6 +78,15 @@
                                 <span class="a-badge a-badge-green">{{ $author->user->role->label() }}</span>
                             @else
                                 <span style="color:var(--color-ink-400)">Χωρίς πρόσβαση</span>
+                                @if ($suggested->has($author->id))
+                                    {{-- Almost certainly the same person, waiting
+                                         on a link nobody knew to make. --}}
+                                    <div style="color:var(--color-coral-700);font-size:.78rem;margin-top:4px">
+                                        Υπάρχει λογαριασμός με αυτό το όνομα —
+                                        <a href="{{ route('admin.authors.edit', $author) }}"
+                                           style="text-decoration:underline">συνδέστε τον</a>.
+                                    </div>
+                                @endif
                             @endif
                         </td>
                         <td style="font-size:.88rem">{{ $author->articles_count }}</td>

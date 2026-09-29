@@ -64,13 +64,24 @@
                         </span>
                     </div>
 
-                    @if ($author->exists && $author->user)
-                        <div class="a-alert a-alert-ok" style="font-size:.85rem;margin-bottom:14px">
-                            Συνδεδεμένο με τον λογαριασμό
-                            <strong>{{ $author->user->email }}</strong>
-                            ({{ $author->user->role->label() }}).
-                        </div>
-                    @endif
+                    <div class="a-field">
+                        <label class="a-label" for="user_id">Λογαριασμός διαχείρισης</label>
+                        <select class="a-select" id="user_id" name="user_id">
+                            <option value="">— Χωρίς πρόσβαση —</option>
+                            @foreach ($accounts as $account)
+                                <option value="{{ $account->id }}"
+                                        @selected((int) old('user_id', $author->user_id) === $account->id)>
+                                    {{ $account->name }} · {{ $account->role->label() }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="a-hint">
+                            Ο λογαριασμός στον οποίο ανήκει αυτό το προφίλ. Μόλις συνδεθεί,
+                            το άτομο αλλάζει μόνο του φωτογραφία, ιδιότητα και βιογραφικό
+                            από το «Το προφίλ μου».
+                        </span>
+                        @error('user_id')<span class="a-error">{{ $message }}</span>@enderror
+                    </div>
 
                     <button class="a-btn a-btn-primary" type="submit" style="width:100%">
                         {{ $isNew ? 'Δημιουργία' : 'Αποθήκευση' }}
