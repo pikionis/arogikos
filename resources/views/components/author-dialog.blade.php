@@ -19,13 +19,7 @@
             <button type="button" class="profile-modal-close" data-profile-close aria-label="Κλείσιμο">✕</button>
 
             <div class="profile-modal-photo frame-arch">
-                <x-media-image
-                    :model="$author"
-                    collection="photo"
-                    motif="one"
-                    :tint="$tint"
-                    :alt="$author->name"
-                />
+                <x-author-photo :author="$author" :tint="$tint" :alt="$author->name" />
             </div>
 
             <div class="profile-modal-text">

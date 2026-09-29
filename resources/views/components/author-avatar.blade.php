@@ -8,7 +8,7 @@
     // The coloured initials circle is the fallback, not the default: an author
     // who has uploaded a photo should be recognisable at a glance.
     $tone = ['green' => 'g', 'coral' => 'c', 'yellow' => 'y'][$color] ?? 'g';
-    $photo = $author?->photoUrl('thumb');
+    $photo = $author?->photoUrl('circle');
     $style = $size ? "width:{$size};height:{$size};font-size:calc({$size} / 2.7)" : null;
 @endphp
 

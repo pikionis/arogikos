@@ -10,11 +10,15 @@ use Spatie\MediaLibrary\Conversions\FileManipulator;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 /**
- * Storing which square of the uploaded photograph becomes the photograph.
+ * Storing which part of the uploaded photograph each frame keeps.
  *
- * The browser sends a rectangle in the picture's own pixels. It is checked
- * against the real file here rather than trusted: a crop that reaches past
- * the edge would fail inside the image conversion, which happens during the
+ * There are two, because the site draws two quite different shapes: a small
+ * circle beside a byline and a tall arch on the team page. One rectangle
+ * cannot be right for both.
+ *
+ * The browser sends each one in the picture's own pixels. They are checked
+ * against the real file here rather than trusted: a rectangle reaching past
+ * the edge would fail inside the image conversion, which runs during the
  * request and would take the whole save down with it.
  */
 class PhotoCrop
@@ -38,52 +42,53 @@ class PhotoCrop
             return;
         }
 
-        $crop = self::fit($media, [
-            'x' => (int) $request->input('crop_x'),
-            'y' => (int) $request->input('crop_y'),
-            'w' => (int) $request->input('crop_w'),
-            'h' => (int) $request->input('crop_h'),
-        ]);
+        [$width, $height] = self::dimensions($media);
 
-        if ($crop === null) {
-            self::clear($author);
-            self::regenerate($media);
-
+        if ($width < 1 || $height < 1) {
             return;
         }
 
-        // Nothing moved, so nothing needs rebuilding — regenerating the
-        // conversions is the slow part of this whole screen.
-        if ((int) $author->crop_x === $crop['x'] && (int) $author->crop_y === $crop['y']
-            && (int) $author->crop_w === $crop['w'] && (int) $author->crop_h === $crop['h']) {
+        $changed = false;
+        $values = [];
+
+        foreach (array_keys(Author::FRAMES) as $frame) {
+            $crop = self::fit($width, $height, [
+                'x' => (int) $request->input($frame.'_x'),
+                'y' => (int) $request->input($frame.'_y'),
+                'w' => (int) $request->input($frame.'_w'),
+                'h' => (int) $request->input($frame.'_h'),
+            ]);
+
+            foreach (['x', 'y', 'w', 'h'] as $part) {
+                $column = $frame.'_'.$part;
+                $was = $author->{$column} === null ? null : (int) $author->{$column};
+                $now = $crop === null ? null : $crop[$part];
+
+                $values[$column] = $now;
+                $changed = $changed || $was !== $now;
+            }
+        }
+
+        // Regenerating the conversions is the slow part of this whole screen,
+        // so it only happens when a frame actually moved.
+        if (! $changed) {
             return;
         }
 
-        $author->forceFill([
-            'crop_x' => $crop['x'],
-            'crop_y' => $crop['y'],
-            'crop_w' => $crop['w'],
-            'crop_h' => $crop['h'],
-        ])->save();
+        $author->forceFill($values)->save();
 
         self::regenerate($media);
     }
 
     /**
-     * The submitted square, pulled back inside the picture.
+     * The submitted rectangle, pulled back inside the picture.
      *
      * @param  array{x: int, y: int, w: int, h: int}  $crop
      * @return array{x: int, y: int, w: int, h: int}|null null when there is nothing to crop
      */
-    private static function fit(Media $media, array $crop): ?array
+    private static function fit(int $width, int $height, array $crop): ?array
     {
         if ($crop['w'] < 1 || $crop['h'] < 1) {
-            return null;
-        }
-
-        [$width, $height] = self::dimensions($media);
-
-        if ($width < 1 || $height < 1) {
             return null;
         }
 
@@ -93,7 +98,7 @@ class PhotoCrop
         $y = max(0, min($crop['y'], $height - $h));
 
         // The whole picture is not a crop; leaving it unset keeps the
-        // conversions one step shorter.
+        // conversion one step shorter.
         if ($x === 0 && $y === 0 && $w === $width && $h === $height) {
             return null;
         }
@@ -111,18 +116,24 @@ class PhotoCrop
 
     private static function clear(Author $author): void
     {
-        if (! $author->hasCrop()) {
+        $values = [];
+
+        foreach (array_keys(Author::FRAMES) as $frame) {
+            foreach (['x', 'y', 'w', 'h'] as $part) {
+                $values[$frame.'_'.$part] = null;
+            }
+        }
+
+        if (array_filter($values, fn ($v, $k) => $author->{$k} !== null, ARRAY_FILTER_USE_BOTH) === []) {
             return;
         }
 
-        $author->forceFill([
-            'crop_x' => null, 'crop_y' => null, 'crop_w' => null, 'crop_h' => null,
-        ])->save();
+        $author->forceFill($values)->save();
     }
 
     private static function regenerate(Media $media): void
     {
-        // The model is what carries the crop, and the conversions are
+        // The model is what carries the framing, and the conversions are
         // registered from it — so it has to be the freshly saved one.
         $media->load('model');
 

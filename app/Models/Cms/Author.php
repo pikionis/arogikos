@@ -29,7 +29,20 @@ class Author extends Model implements HasMedia
 
     protected $fillable = [
         'name', 'role_title', 'bio', 'is_active', 'user_id', 'position',
-        'crop_x', 'crop_y', 'crop_w', 'crop_h',
+        'circle_x', 'circle_y', 'circle_w', 'circle_h',
+        'arch_x', 'arch_y', 'arch_w', 'arch_h',
+    ];
+
+    /**
+     * The two shapes a photograph is shown in, and what each one is.
+     *
+     * `circle` is the small round face beside a byline; `arch` is the tall
+     * frame on the team page, next to an article and in the dialog. The ratio
+     * is width over height of the frame the site actually draws.
+     */
+    public const FRAMES = [
+        'circle' => ['ratio' => 1.0, 'width' => 600, 'label' => 'Στρογγυλή'],
+        'arch' => ['ratio' => 0.9, 'width' => 800, 'label' => 'Στην ομάδα'],
     ];
 
     protected $casts = ['is_active' => 'boolean'];
@@ -110,30 +123,37 @@ class Author extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
-        // The crop comes first: cutting the square out of the upload and then
-        // resizing it is what makes the picture on the site the one that was
-        // chosen, at every size it is shown.
-        $this->cropped($this->addMediaConversion('thumb'))->width(400)->nonQueued();
-        $this->cropped($this->addMediaConversion('web'))->width(1600)->format('webp')->nonQueued();
+        // One conversion per shape, each cut to its own frame. The crop comes
+        // first and the resize after, so the picture on the site is the one
+        // that was chosen at every size it is shown.
+        // The whole picture, uncropped: the panel shows it above the framing
+        // tool, where what you are about to frame is the point.
+        $this->addMediaConversion('thumb')->width(400)->nonQueued();
+
+        foreach (self::FRAMES as $frame => $spec) {
+            $this->cropped($this->addMediaConversion($frame), $frame)
+                ->width($spec['width'])
+                ->nonQueued();
+        }
     }
 
-    /** Has somebody chosen which part of the photograph to keep? */
-    public function hasCrop(): bool
+    /** Has somebody framed the photograph for this shape? */
+    public function hasCrop(string $frame): bool
     {
-        return $this->crop_w > 0 && $this->crop_h > 0;
+        return (int) $this->{$frame.'_w'} > 0 && (int) $this->{$frame.'_h'} > 0;
     }
 
-    private function cropped(Conversion $conversion): Conversion
+    private function cropped(Conversion $conversion, string $frame): Conversion
     {
-        if (! $this->hasCrop()) {
+        if (! $this->hasCrop($frame)) {
             return $conversion;
         }
 
         return $conversion->manualCrop(
-            (int) $this->crop_w,
-            (int) $this->crop_h,
-            (int) $this->crop_x,
-            (int) $this->crop_y,
+            (int) $this->{$frame.'_w'},
+            (int) $this->{$frame.'_h'},
+            (int) $this->{$frame.'_x'},
+            (int) $this->{$frame.'_y'},
         );
     }
 
@@ -170,7 +190,7 @@ class Author extends Model implements HasMedia
         return (string) preg_replace('/\s+/u', ' ', $folded);
     }
 
-    public function photoUrl(string $conversion = 'web'): ?string
+    public function photoUrl(string $conversion = 'arch'): ?string
     {
         $url = $this->getFirstMediaUrl('photo', $conversion);
 

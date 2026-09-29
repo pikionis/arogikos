@@ -241,7 +241,7 @@ class StructuredData
                 '@type' => 'Person',
                 'name' => $person->name,
                 'jobTitle' => $person->role_title,
-                'image' => $person->photoUrl('web'),
+                'image' => $person->photoUrl('circle'),
             ]))
             ->values()
             ->all();

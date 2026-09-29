@@ -42,7 +42,7 @@
             </thead>
             <tbody x-ref="list">
                 @foreach ($authors as $author)
-                    @php $photo = $author->getFirstMediaUrl('photo', 'thumb'); @endphp
+                    @php $photo = $author->photoUrl('circle'); @endphp
                     <tr data-id="{{ $author->id }}" draggable="false"
                         @dragstart="dragStart($event)" @dragover.prevent="dragOver($event)"
                         @drop.prevent="drop()" @dragend="dragEnd()">

@@ -6,61 +6,54 @@
 @php $media = $author->exists ? $author->getFirstMedia('photo') : null; @endphp
 
 @if ($media)
-    {{-- The window stays put and the picture moves behind it: what is inside
-         the window is what the site shows, at every size. --}}
-    <div class="a-field" x-data="photoCrop()" x-ref="root"
-         data-crop-x="{{ (int) $author->crop_x }}"
-         data-crop-y="{{ (int) $author->crop_y }}"
-         data-crop-w="{{ (int) $author->crop_w }}"
-         data-crop-h="{{ (int) $author->crop_h }}">
-
+    <div class="a-field">
         <label class="a-label">Ποιο κομμάτι θα φαίνεται</label>
+        <span class="a-hint" style="margin-bottom:14px">
+            Το site δείχνει τη φωτογραφία σε δύο σχήματα, οπότε διαλέγετε
+            ξεχωριστά για το καθένα. Σύρετε τη φωτογραφία μέσα στο πλαίσιο —
+            ή με τα βελάκια — και μεγεθύνετε με τη μπάρα.
+        </span>
 
-        <div class="a-crop">
-            <div class="a-crop-stage" x-ref="stage"
-                 tabindex="0" role="application"
-                 aria-label="Σύρετε τη φωτογραφία για να διαλέξετε τι θα φαίνεται"
-                 @pointerdown="grab($event)"
-                 @pointermove="drag($event)"
-                 @pointerup="release($event)"
-                 @pointercancel="release($event)"
-                 @keydown.arrow-left.prevent="nudge(-1, 0)"
-                 @keydown.arrow-right.prevent="nudge(1, 0)"
-                 @keydown.arrow-up.prevent="nudge(0, -1)"
-                 @keydown.arrow-down.prevent="nudge(0, 1)">
-                <img x-ref="image" src="{{ $media->getUrl() }}" alt="" draggable="false">
-            </div>
+        <div class="a-crops">
+            @foreach (App\Models\Cms\Author::FRAMES as $frame => $spec)
+                {{-- The window stays put and the picture moves behind it: what
+                     is inside the window is what the site shows. --}}
+                <div class="a-crop" x-data="photoCrop({{ $spec['ratio'] }})">
+                    <p class="a-crop-title">{{ $spec['label'] }}</p>
 
-            <div class="a-crop-side">
-                <p class="a-crop-note">Σύρετέ την με το ποντίκι — ή με τα βελάκια.</p>
+                    <div class="a-crop-stage {{ $frame === 'circle' ? 'is-round' : 'is-arch' }}"
+                         x-ref="stage"
+                         style="aspect-ratio:{{ $spec['ratio'] }}"
+                         tabindex="0" role="application"
+                         aria-label="Σύρετε τη φωτογραφία: {{ $spec['label'] }}"
+                         @pointerdown="grab($event)"
+                         @pointermove="drag($event)"
+                         @pointerup="release($event)"
+                         @pointercancel="release($event)"
+                         @keydown.arrow-left.prevent="nudge(-1, 0)"
+                         @keydown.arrow-right.prevent="nudge(1, 0)"
+                         @keydown.arrow-up.prevent="nudge(0, -1)"
+                         @keydown.arrow-down.prevent="nudge(0, 1)">
+                        <img x-ref="image" src="{{ $media->getUrl() }}" alt="" draggable="false">
+                    </div>
 
-                <label class="a-crop-zoom">
-                    <span>Μεγέθυνση</span>
-                    <input type="range" min="100" max="300" step="1"
-                           x-model.number="zoom" @input="clampAndSync()">
-                </label>
+                    <label class="a-crop-zoom">
+                        <span class="a-sr">Μεγέθυνση: {{ $spec['label'] }}</span>
+                        <input type="range" min="100" max="300" step="1"
+                               x-model.number="zoom" @input="clampAndSync()">
+                    </label>
 
-                <div class="a-crop-previews">
-                    <figure>
-                        <span class="a-crop-preview is-round" x-ref="roundPreview"></span>
-                        <figcaption>Δίπλα σε άρθρο</figcaption>
-                    </figure>
-                    <figure>
-                        <span class="a-crop-preview is-arch" x-ref="archPreview"></span>
-                        <figcaption>Στην ομάδα</figcaption>
-                    </figure>
+                    <button type="button" class="a-btn a-btn-ghost a-btn-sm" @click="reset()">
+                        Επαναφορά
+                    </button>
+
+                    <input type="hidden" name="{{ $frame }}_x" x-ref="x" value="{{ (int) $author->{$frame.'_x'} }}">
+                    <input type="hidden" name="{{ $frame }}_y" x-ref="y" value="{{ (int) $author->{$frame.'_y'} }}">
+                    <input type="hidden" name="{{ $frame }}_w" x-ref="w" value="{{ (int) $author->{$frame.'_w'} }}">
+                    <input type="hidden" name="{{ $frame }}_h" x-ref="h" value="{{ (int) $author->{$frame.'_h'} }}">
                 </div>
-
-                <button type="button" class="a-btn a-btn-ghost a-btn-sm" @click="reset()">
-                    Επαναφορά
-                </button>
-            </div>
+            @endforeach
         </div>
-
-        <input type="hidden" name="crop_x" x-ref="x" value="{{ (int) $author->crop_x }}">
-        <input type="hidden" name="crop_y" x-ref="y" value="{{ (int) $author->crop_y }}">
-        <input type="hidden" name="crop_w" x-ref="w" value="{{ (int) $author->crop_w }}">
-        <input type="hidden" name="crop_h" x-ref="h" value="{{ (int) $author->crop_h }}">
 
         <span class="a-hint">
             Η φωτογραφία μένει ολόκληρη όπως την ανεβάσατε — αλλάζει μόνο ποιο

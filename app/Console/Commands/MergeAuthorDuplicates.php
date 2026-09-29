@@ -80,7 +80,7 @@ class MergeAuthorDuplicates extends Command
                 $merge['real']->id,
                 $merge['real']->name,
                 $merge['real']->articles_count,
-                $merge['real']->photoUrl('thumb') ? ', με φωτογραφία' : '',
+                $merge['real']->photoUrl('circle') ? ', με φωτογραφία' : '',
                 $merge['blank']->id,
             ));
         }
@@ -114,6 +114,6 @@ class MergeAuthorDuplicates extends Command
         return blank($author->role_title)
             && blank($author->bio)
             && $author->articles()->count() === 0
-            && $author->photoUrl('thumb') === null;
+            && $author->photoUrl('circle') === null;
     }
 }

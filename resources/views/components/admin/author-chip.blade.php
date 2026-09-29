@@ -3,7 +3,7 @@
 {{-- Name, role and face: a list of bare names asks whoever is signing an
      article to remember which Μαρία is which. --}}
 <span class="a-signer-face">
-    @php $photo = $author->photoUrl('thumb'); @endphp
+    @php $photo = $author->photoUrl('circle'); @endphp
     @if ($photo)
         <img src="{{ $photo }}" alt="" width="28" height="28" loading="lazy" decoding="async">
     @else

@@ -65,8 +65,10 @@ it('lets an author photo be uploaded from the admin', function () {
     $media = $author->refresh()->getFirstMedia('photo');
 
     expect($media)->not->toBeNull()
-        ->and($media->hasGeneratedConversion('thumb'))->toBeTrue()
-        ->and($media->hasGeneratedConversion('web'))->toBeTrue();
+        // One per shape the site draws, plus the whole picture for the panel.
+        ->and($media->hasGeneratedConversion('circle'))->toBeTrue()
+        ->and($media->hasGeneratedConversion('arch'))->toBeTrue()
+        ->and($media->hasGeneratedConversion('thumb'))->toBeTrue();
 });
 
 it('refuses a non-image as an author photo', function () {
@@ -89,12 +91,12 @@ it('shows the author photo on the article page', function () {
 
     $html = $this->get(route('blog.show', $article->slug))->assertOk()->getContent();
 
-    expect($html)->toContain($author->photoUrl('thumb'))
+    expect($html)->toContain($author->photoUrl('circle'))
         // Twice, at two sizes: the small avatar beside the byline, and the
         // framed photo in the author card at the foot of the article.
         ->and($html)->toContain('class="avatar g has-photo"')
         ->and($html)->toContain('author-card-photo')
-        ->and($html)->toContain($author->photoUrl('web'));
+        ->and($html)->toContain($author->photoUrl('arch'));
 });
 
 it('shows the author photo on the blog listing card', function () {
@@ -103,7 +105,7 @@ it('shows the author photo on the blog listing card', function () {
 
     $this->get(route('blog.index'))
         ->assertOk()
-        ->assertSee($author->photoUrl('thumb'), false);
+        ->assertSee($author->photoUrl('circle'), false);
 });
 
 it('shows the author photo on the home page article cards', function () {
@@ -112,7 +114,7 @@ it('shows the author photo on the home page article cards', function () {
 
     $this->get(route('home'))
         ->assertOk()
-        ->assertSee($author->photoUrl('thumb'), false);
+        ->assertSee($author->photoUrl('circle'), false);
 });
 
 it('falls back to the initials disc when an author has no photo', function () {
@@ -145,8 +147,8 @@ it('shows the author photo in the About page team grid', function () {
     $this->get(route('about'))
         ->assertOk()
         ->assertSeeText('Ελένη Σαββίδη')
-        // The team card uses the larger web conversion.
-        ->assertSee($author->photoUrl('web'), false);
+        // The team card is a tall frame, so it takes the arch framing.
+        ->assertSee($author->photoUrl('arch'), false);
 });
 
 it('keeps an author with no photo on the team grid with their motif', function () {
@@ -182,5 +184,5 @@ it('still shows an inactive author photo on their articles', function () {
     $this->get(route('blog.show', $article->slug))
         ->assertOk()
         ->assertSeeText('Ανενεργό Μέλος')
-        ->assertSee($author->photoUrl('thumb'), false);
+        ->assertSee($author->photoUrl('circle'), false);
 });

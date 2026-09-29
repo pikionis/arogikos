@@ -496,17 +496,21 @@ Alpine.data('sortableRows', () => ({
     },
 }));
 
-/* Διαλέγοντας ποιο κομμάτι της φωτογραφίας κρατάει το site.
+/* Διαλέγοντας ποιο κομμάτι της φωτογραφίας κρατάει κάθε σχήμα του site.
  *
  * Το παράθυρο μένει ακίνητο και η φωτογραφία κινείται από πίσω — ό,τι
- * φαίνεται μέσα του είναι ό,τι θα δει ο επισκέπτης. Το αποτέλεσμα γράφεται σε
- * pixel της ίδιας της φωτογραφίας, γιατί ο server ξανακόβει το πρωτότυπο και
- * πρέπει να εννοούν και οι δύο το ίδιο τετράγωνο.
+ * φαίνεται μέσα του είναι ό,τι θα δει ο επισκέπτης. Στήνεται μία φορά ανά
+ * σχήμα, με τον λόγο πλάτους προς ύψος του πραγματικού πλαισίου: ο κύκλος
+ * δίπλα σε ένα άρθρο και η καμάρα στην ομάδα θέλουν άλλο κομμάτι, και το ίδιο
+ * τετράγωνο και για τα δύο ήταν σωστό μόνο για το ένα.
  *
- * Η φωτογραφία δεν αγγίζεται ποτέ: κρατιούνται τέσσερις αριθμοί, οπότε το
- * πλαίσιο μετακινείται ξανά αύριο χωρίς να ξαναζητηθεί το αρχείο.
+ * Το αποτέλεσμα γράφεται σε pixel της ίδιας της φωτογραφίας, γιατί ο server
+ * ξανακόβει το πρωτότυπο και πρέπει να εννοούν και οι δύο το ίδιο ορθογώνιο.
+ * Η φωτογραφία δεν αγγίζεται ποτέ.
  */
-Alpine.data('photoCrop', () => ({
+Alpine.data('photoCrop', (ratio = 1) => ({
+    /* Πλάτος προς ύψος του παραθύρου. */
+    ratio,
     /* Φυσικές διαστάσεις της φωτογραφίας. */
     nw: 0,
     nh: 0,
@@ -536,15 +540,17 @@ Alpine.data('photoCrop', () => ({
 
     /* ---- γεωμετρία ---- */
 
-    stageSize() {
-        return this.$refs.stage.clientWidth;
+    frame() {
+        const w = this.$refs.stage.clientWidth;
+
+        return { w, h: w / this.ratio };
     },
 
-    /* Η κλίμακα που γεμίζει ακριβώς το παράθυρο. */
+    /* Η κλίμακα στην οποία η φωτογραφία γεμίζει ακριβώς το παράθυρο. */
     baseScale() {
-        const v = this.stageSize();
+        const frame = this.frame();
 
-        return Math.max(v / this.nw, v / this.nh);
+        return Math.max(frame.w / this.nw, frame.h / this.nh);
     },
 
     scale() {
@@ -562,9 +568,8 @@ Alpine.data('photoCrop', () => ({
         const saved = Number(this.$refs.w.value) || 0;
 
         if (saved > 0) {
-            /* Ανάποδα από το αποθηκευμένο τετράγωνο: μέγεθος πρώτα, θέση μετά. */
-            const v = this.stageSize();
-            const scale = v / saved;
+            /* Ανάποδα από το αποθηκευμένο ορθογώνιο: μέγεθος πρώτα, θέση μετά. */
+            const scale = this.frame().w / saved;
             this.zoom = Math.max(100, Math.round((scale / this.baseScale()) * 100));
             this.ox = -Number(this.$refs.x.value) * this.scale();
             this.oy = -Number(this.$refs.y.value) * this.scale();
@@ -577,19 +582,19 @@ Alpine.data('photoCrop', () => ({
     },
 
     centre() {
-        const v = this.stageSize();
-        this.ox = (v - this.nw * this.scale()) / 2;
-        this.oy = (v - this.nh * this.scale()) / 2;
+        const frame = this.frame();
+        this.ox = (frame.w - this.nw * this.scale()) / 2;
+        this.oy = (frame.h - this.nh * this.scale()) / 2;
     },
 
     /* Η φωτογραφία δεν αφήνει ποτέ κενό μέσα στο παράθυρο. */
     clamp() {
-        const v = this.stageSize();
+        const frame = this.frame();
         const w = this.nw * this.scale();
         const h = this.nh * this.scale();
 
-        this.ox = Math.min(0, Math.max(v - w, this.ox));
-        this.oy = Math.min(0, Math.max(v - h, this.oy));
+        this.ox = Math.min(0, Math.max(frame.w - w, this.ox));
+        this.oy = Math.min(0, Math.max(frame.h - h, this.oy));
     },
 
     /* ---- σύρσιμο ---- */
@@ -623,7 +628,7 @@ Alpine.data('photoCrop', () => ({
     },
 
     nudge(dx, dy) {
-        const step = Math.max(4, this.stageSize() / 40);
+        const step = Math.max(4, this.frame().w / 40);
         this.ox -= dx * step;
         this.oy -= dy * step;
         this.clampAndSync();
@@ -651,41 +656,30 @@ Alpine.data('photoCrop', () => ({
         image.style.width = this.nw * this.scale() + 'px';
         image.style.height = this.nh * this.scale() + 'px';
         image.style.transform = `translate(${this.ox}px, ${this.oy}px)`;
-
-        /* Οι προεπισκοπήσεις δείχνουν το ίδιο τετράγωνο στα σχήματα του site. */
-        const crop = this.square();
-
-        [this.$refs.roundPreview, this.$refs.archPreview].forEach((node) => {
-            if (!node) return;
-
-            node.style.backgroundImage = `url("${image.src}")`;
-            node.style.backgroundSize = `${(this.nw / crop.w) * 100}% ${(this.nh / crop.h) * 100}%`;
-            node.style.backgroundPosition =
-                `${this.nw === crop.w ? 50 : (crop.x / (this.nw - crop.w)) * 100}% ` +
-                `${this.nh === crop.h ? 50 : (crop.y / (this.nh - crop.h)) * 100}%`;
-        });
     },
 
-    /* Το τετράγωνο σε pixel της φωτογραφίας. */
-    square() {
+    /* Το ορθογώνιο σε pixel της φωτογραφίας. */
+    rect() {
         const scale = this.scale();
-        const side = Math.round(this.stageSize() / scale);
+        const frame = this.frame();
+        const w = Math.min(Math.round(frame.w / scale), this.nw);
+        const h = Math.min(Math.round(frame.h / scale), this.nh);
 
         return {
-            x: Math.max(0, Math.min(Math.round(-this.ox / scale), this.nw - side)),
-            y: Math.max(0, Math.min(Math.round(-this.oy / scale), this.nh - side)),
-            w: Math.min(side, this.nw),
-            h: Math.min(side, this.nh),
+            x: Math.max(0, Math.min(Math.round(-this.ox / scale), this.nw - w)),
+            y: Math.max(0, Math.min(Math.round(-this.oy / scale), this.nh - h)),
+            w,
+            h,
         };
     },
 
     write() {
-        const crop = this.square();
+        const rect = this.rect();
 
-        this.$refs.x.value = crop.x;
-        this.$refs.y.value = crop.y;
-        this.$refs.w.value = crop.w;
-        this.$refs.h.value = crop.h;
+        this.$refs.x.value = rect.x;
+        this.$refs.y.value = rect.y;
+        this.$refs.w.value = rect.w;
+        this.$refs.h.value = rect.h;
     },
 }));
 

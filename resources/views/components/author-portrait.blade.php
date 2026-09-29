@@ -15,10 +15,10 @@
     <button type="button" class="profile-portrait {{ $frame }} frame-arch"
             data-profile-open="{{ $id }}" aria-haspopup="dialog"
             aria-label="Περισσότερα για {{ $author->name }}">
-        <x-media-image :model="$author" collection="photo" motif="one" :tint="$tint" alt="" />
+        <x-author-photo :author="$author" :tint="$tint" alt="" />
     </button>
 @else
     <div class="{{ $frame }} frame-arch">
-        <x-media-image :model="$author" collection="photo" motif="one" :tint="$tint" :alt="$author->name" />
+        <x-author-photo :author="$author" :tint="$tint" :alt="$author->name" />
     </div>
 @endif

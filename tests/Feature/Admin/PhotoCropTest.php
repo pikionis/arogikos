@@ -64,23 +64,23 @@ function saveAuthor(Author $author, array $extra = []): TestResponse
 it('keeps the square somebody chose', function () {
     $author = withPhoto();
 
-    saveAuthor($author, ['crop_x' => 200, 'crop_y' => 100, 'crop_w' => 500, 'crop_h' => 500])
+    saveAuthor($author, ['circle_x' => 200, 'circle_y' => 100, 'circle_w' => 500, 'circle_h' => 500])
         ->assertRedirect()->assertSessionHasNoErrors();
 
     $author->refresh();
 
-    expect($author->hasCrop())->toBeTrue()
-        ->and([$author->crop_x, $author->crop_y, $author->crop_w, $author->crop_h])
+    expect($author->hasCrop('circle'))->toBeTrue()
+        ->and([$author->circle_x, $author->circle_y, $author->circle_w, $author->circle_h])
         ->toBe([200, 100, 500, 500]);
 });
 
 it('cuts the picture the site shows down to it', function () {
     $author = withPhoto(1200, 800);
 
-    saveAuthor($author, ['crop_x' => 100, 'crop_y' => 0, 'crop_w' => 400, 'crop_h' => 400]);
+    saveAuthor($author, ['circle_x' => 100, 'circle_y' => 0, 'circle_w' => 400, 'circle_h' => 400]);
 
     $media = $author->refresh()->getFirstMedia('photo');
-    [$width, $height] = getimagesize($media->getPath('thumb'));
+    [$width, $height] = getimagesize($media->getPath('circle'));
 
     // A square crop, then the 400px resize: a square is what comes out.
     expect($width)->toBe($height);
@@ -94,49 +94,117 @@ it('pulls a square that reaches past the edge back inside', function () {
     $author = withPhoto(1200, 800);
 
     // A tab left open while the photo was replaced could send anything.
-    saveAuthor($author, ['crop_x' => 1100, 'crop_y' => 700, 'crop_w' => 900, 'crop_h' => 900]);
+    saveAuthor($author, ['circle_x' => 1100, 'circle_y' => 700, 'circle_w' => 900, 'circle_h' => 900]);
 
     $author->refresh();
 
-    expect($author->crop_w)->toBeLessThanOrEqual(1200)
-        ->and($author->crop_h)->toBeLessThanOrEqual(800)
-        ->and($author->crop_x + $author->crop_w)->toBeLessThanOrEqual(1200)
-        ->and($author->crop_y + $author->crop_h)->toBeLessThanOrEqual(800);
+    expect($author->circle_w)->toBeLessThanOrEqual(1200)
+        ->and($author->circle_h)->toBeLessThanOrEqual(800)
+        ->and($author->circle_x + $author->circle_w)->toBeLessThanOrEqual(1200)
+        ->and($author->circle_y + $author->circle_h)->toBeLessThanOrEqual(800);
 
     // And it still produced a file rather than failing the save.
-    expect($author->getFirstMedia('photo')->getPath('thumb'))->toBeFile();
+    expect($author->getFirstMedia('photo')->getPath('circle'))->toBeFile();
 });
 
 it('treats the whole picture as no crop at all', function () {
     $author = withPhoto(1200, 800);
 
-    saveAuthor($author, ['crop_x' => 0, 'crop_y' => 0, 'crop_w' => 1200, 'crop_h' => 800]);
+    saveAuthor($author, ['circle_x' => 0, 'circle_y' => 0, 'circle_w' => 1200, 'circle_h' => 800]);
 
-    expect($author->refresh()->hasCrop())->toBeFalse();
+    expect($author->refresh()->hasCrop('circle'))->toBeFalse();
 });
 
 it('starts a newly uploaded photo whole', function () {
     $author = withPhoto(1200, 800);
-    saveAuthor($author, ['crop_x' => 100, 'crop_y' => 100, 'crop_w' => 400, 'crop_h' => 400]);
-    expect($author->refresh()->hasCrop())->toBeTrue();
+    saveAuthor($author, ['circle_x' => 100, 'circle_y' => 100, 'circle_w' => 400, 'circle_h' => 400]);
+    expect($author->refresh()->hasCrop('circle'))->toBeTrue();
 
     // A different picture: the numbers on the form describe the old one.
     saveAuthor($author, [
         'photo' => UploadedFile::fake()->image('another.jpg', 900, 900),
-        'crop_x' => 100, 'crop_y' => 100, 'crop_w' => 400, 'crop_h' => 400,
+        'circle_x' => 100, 'circle_y' => 100, 'circle_w' => 400, 'circle_h' => 400,
     ])->assertRedirect();
 
-    expect($author->refresh()->hasCrop())->toBeFalse();
+    expect($author->refresh()->hasCrop('circle'))->toBeFalse();
 });
 
 it('forgets the crop when the photo is removed', function () {
     $author = withPhoto();
-    saveAuthor($author, ['crop_x' => 10, 'crop_y' => 10, 'crop_w' => 300, 'crop_h' => 300]);
+    saveAuthor($author, ['circle_x' => 10, 'circle_y' => 10, 'circle_w' => 300, 'circle_h' => 300]);
 
     saveAuthor($author, ['remove_photo' => '1'])->assertRedirect();
 
-    expect($author->refresh()->hasCrop())->toBeFalse()
+    expect($author->refresh()->hasCrop('circle'))->toBeFalse()
         ->and($author->getFirstMedia('photo'))->toBeNull();
+});
+
+/* ------------------------------------------------------ two frames, two answers */
+
+it('frames the circle and the team photo separately', function () {
+    $author = withPhoto(1200, 800);
+
+    saveAuthor($author, [
+        // The face, for the small round one.
+        'circle_x' => 300, 'circle_y' => 80, 'circle_w' => 400, 'circle_h' => 400,
+        // More of them, for the tall one on the team page.
+        'arch_x' => 250, 'arch_y' => 0, 'arch_w' => 540, 'arch_h' => 600,
+    ])->assertRedirect()->assertSessionHasNoErrors();
+
+    $author->refresh();
+
+    expect($author->hasCrop('circle'))->toBeTrue()
+        ->and($author->hasCrop('arch'))->toBeTrue()
+        ->and($author->circle_x)->not->toBe($author->arch_x);
+});
+
+it('gives each shape a picture of its own shape', function () {
+    $author = withPhoto(1200, 800);
+
+    saveAuthor($author, [
+        'circle_x' => 300, 'circle_y' => 80, 'circle_w' => 400, 'circle_h' => 400,
+        'arch_x' => 250, 'arch_y' => 0, 'arch_w' => 540, 'arch_h' => 600,
+    ]);
+
+    $media = $author->refresh()->getFirstMedia('photo');
+
+    [$cw, $ch] = getimagesize($media->getPath('circle'));
+    [$aw, $ah] = getimagesize($media->getPath('arch'));
+
+    // Square for the circle, taller than wide for the arch — and the two are
+    // different files, not the same crop resized twice.
+    expect($cw)->toBe($ch)
+        ->and($ah)->toBeGreaterThan($aw)
+        ->and(round($aw / $ah, 2))->toBe(0.9);
+});
+
+it('lets one shape be framed while the other is left alone', function () {
+    $author = withPhoto(1200, 800);
+
+    saveAuthor($author, ['arch_x' => 250, 'arch_y' => 0, 'arch_w' => 540, 'arch_h' => 600]);
+
+    $author->refresh();
+
+    expect($author->hasCrop('arch'))->toBeTrue()
+        ->and($author->hasCrop('circle'))->toBeFalse();
+});
+
+it('shows each shape the picture it was given', function () {
+    $author = withPhoto(1200, 800);
+    saveAuthor($author, [
+        'circle_x' => 300, 'circle_y' => 80, 'circle_w' => 400, 'circle_h' => 400,
+        'arch_x' => 250, 'arch_y' => 0, 'arch_w' => 540, 'arch_h' => 600,
+    ]);
+
+    $author->refresh();
+
+    // The byline avatar and the team portrait must not reach for the same
+    // file, or one of them is showing the other one's framing.
+    expect($author->photoUrl('circle'))->not->toBe($author->photoUrl('arch'));
+
+    $html = $this->get(route('about'))->assertOk()->getContent();
+
+    expect($html)->toContain(basename((string) parse_url($author->photoUrl('arch'), PHP_URL_PATH)));
 });
 
 /* -------------------------------------------------------- own profile */
@@ -151,10 +219,14 @@ it('lets somebody frame their own photo', function () {
     $this->actingAs($user->refresh())->put(route('admin.profile.author'), [
         'role_title' => 'Ψυχολόγος',
         'bio' => 'Λίγα λόγια.',
-        'crop_x' => 150, 'crop_y' => 50, 'crop_w' => 450, 'crop_h' => 450,
+        'circle_x' => 150, 'circle_y' => 50, 'circle_w' => 450, 'circle_h' => 450,
+        'arch_x' => 100, 'arch_y' => 0, 'arch_w' => 540, 'arch_h' => 600,
     ])->assertRedirect()->assertSessionHasNoErrors();
 
-    expect($author->refresh()->crop_w)->toBe(450);
+    $author->refresh();
+
+    expect($author->circle_w)->toBe(450)
+        ->and($author->arch_h)->toBe(600);
 });
 
 /* -------------------------------------------------------------- the tool */
@@ -163,12 +235,14 @@ it('offers the tool once there is a photo to frame', function () {
     $html = $this->actingAs(cropper())
         ->get(route('admin.authors.edit', withPhoto()))->assertOk()->getContent();
 
-    expect($html)->toContain('photoCrop')
-        ->and($html)->toContain('a-crop-stage')
-        // Drag and zoom, which is the whole tool.
+    // One window per shape the site draws, each with its own drag and zoom.
+    expect(substr_count($html, 'a-crop-stage'))->toBe(count(Author::FRAMES))
+        ->and(substr_count($html, 'type="range"'))->toBe(count(Author::FRAMES))
+        ->and($html)->toContain('photoCrop(1)')
+        ->and($html)->toContain('photoCrop(0.9)')
         ->and($html)->toContain('@pointerdown')
-        ->and($html)->toContain('type="range"')
-        ->and($html)->toContain('name="crop_x"');
+        ->and($html)->toContain('name="circle_x"')
+        ->and($html)->toContain('name="arch_x"');
 });
 
 it('says nothing until a photo has been uploaded', function () {
