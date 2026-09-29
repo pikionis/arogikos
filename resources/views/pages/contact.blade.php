@@ -47,6 +47,7 @@
 </x-page-hero>
 
 <section class="section bg-white">
+  <x-scene-backdrop />
   <div class="container">
     <div class="contact-grid">
       <!-- FORM -->

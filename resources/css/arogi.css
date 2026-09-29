@@ -252,6 +252,29 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .deco-dot { background: var(--coral-300); border-radius: 50%; }
 .section > .container { position: relative; z-index: 1; }
 
+/* ---- σκηνή για φόντο ---- */
+/* Τα ίδια εξώφυλλα των άρθρων, ξεθωριασμένα σχεδόν στο τίποτα, πίσω από μια
+   ζώνη. Δίνουν στη σελίδα κάτι που ανασαίνει χωρίς να διεκδικούν προσοχή:
+   αν τα προσέξεις, είναι ήδη πολύ. Το κείμενο πατά από πάνω τους χάρη στο
+   z-index του .container ακριβώς παραπάνω. */
+.scene-backdrop {
+  position: absolute; inset: 0; z-index: 0;
+  overflow: hidden; pointer-events: none;
+  opacity: .07;
+}
+.scene-backdrop .cv {
+  position: absolute; top: 50%; left: 50%;
+  width: 118%; height: auto; aspect-ratio: 1600 / 1000;
+  transform: translate(-50%, -50%);
+  filter: saturate(.75);
+}
+@media (max-width: 760px) {
+  /* Σε στενή οθόνη η σκηνή γίνεται λωρίδα στη μέση μιας ψηλής ζώνης· καλύτερα
+     πιο μεγάλη και πιο αχνή παρά μια κορδέλα στο κέντρο. */
+  .scene-backdrop { opacity: .055; }
+  .scene-backdrop .cv { width: 170%; }
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

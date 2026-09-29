@@ -26,6 +26,7 @@
 </x-page-hero>
 
 <section class="section bg-white">
+  <x-scene-backdrop />
   <div class="container">
     @php $i = 0; @endphp
     <div class="gal-grid">

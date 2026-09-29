@@ -45,6 +45,7 @@
 
 <!-- MISSION + VALUES -->
 <section class="section bg-green arch-top">
+  <x-scene-backdrop />
   <div class="container">
     <x-section-head :eyebrow="content('about.values.eyebrow')" :title="content('about.values.title')"
       :lead="content('about.values.lead')" />

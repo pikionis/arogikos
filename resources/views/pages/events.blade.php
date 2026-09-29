@@ -37,6 +37,7 @@
 
 <!-- UPCOMING -->
 <section class="section bg-white">
+  <x-scene-backdrop />
   <div class="container">
     <div class="section-head left reveal" style="margin-bottom:var(--s-8)"><span class="eyebrow">{{ content('events.upcoming.eyebrow') }}</span><h2>{{ content('events.upcoming.title') }}</h2></div>
     @if ($upcoming->isNotEmpty())

@@ -109,6 +109,7 @@
 
 @if ($faqs->isNotEmpty())
 <section class="section bg-white" id="syxnes-erotiseis">
+  <x-scene-backdrop />
   <div class="container" style="max-width:820px">
     <x-section-head :title="content('services.faq_title')" :lead="content('services.faq_lead')" />
 

@@ -50,26 +50,43 @@ final class SvgRaster
             throw new RuntimeException('Could not parse the scene.');
         }
 
-        $this->walk($xml, $canvas, 1.0);
+        $this->walk($xml, $canvas, 1.0, []);
     }
 
-    private function walk(SimpleXMLElement $node, Canvas $canvas, float $opacity): void
+    /**
+     * @param  array<string, string>  $inherited  paint set on an ancestor <g>
+     */
+    private function walk(SimpleXMLElement $node, Canvas $canvas, float $opacity, array $inherited): void
     {
         foreach ($node->children() as $child) {
             $name = $child->getName();
             $own = $opacity * (float) ($this->attr($child, 'opacity') ?? 1.0);
 
+            // SVG paint is inherited, and these files lean on it: a group
+            // declares fill="none" stroke-width="16" once and six paths take
+            // it. Reading only the element's own attributes turned every one
+            // of those into a hairline.
+            $paint = $inherited;
+            foreach (['fill', 'stroke', 'stroke-width'] as $property) {
+                if (($value = $this->attr($child, $property)) !== null) {
+                    $paint[$property] = $value;
+                }
+            }
+
             if ($name === 'g') {
-                $this->walk($child, $canvas, $own);
+                $this->walk($child, $canvas, $own, $paint);
 
                 continue;
             }
 
-            $this->draw($name, $child, $canvas, $own);
+            $this->draw($name, $child, $canvas, $own, $paint);
         }
     }
 
-    private function draw(string $name, SimpleXMLElement $el, Canvas $canvas, float $opacity): void
+    /**
+     * @param  array<string, string>  $paint  the element's own attributes over those it inherits
+     */
+    private function draw(string $name, SimpleXMLElement $el, Canvas $canvas, float $opacity, array $paint): void
     {
         $subpaths = match ($name) {
             'rect' => [$this->rect($el)],
@@ -89,14 +106,14 @@ final class SvgRaster
             default => throw new RuntimeException("Unsupported element: <$name>"),
         };
 
-        $fill = $this->colour($this->attr($el, 'fill'));
-        $stroke = $this->colour($this->attr($el, 'stroke'));
-        $width = (float) ($this->attr($el, 'stroke-width') ?? 1);
+        $fill = $this->colour($paint['fill'] ?? null);
+        $stroke = $this->colour($paint['stroke'] ?? null);
+        $width = (float) ($paint['stroke-width'] ?? 1);
 
         // A path with a stroke and no fill attribute is a line in these
         // files. SVG would default it to black, which is a colour this brand
         // does not use anywhere.
-        if ($fill !== null && ! ($name === 'path' && $this->attr($el, 'fill') === null && $stroke !== null)) {
+        if ($fill !== null && ! ($name === 'path' && ! isset($paint['fill']) && $stroke !== null)) {
             foreach ($subpaths as $points) {
                 $canvas->fillPolygon($points, $fill, $opacity);
             }

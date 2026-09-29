@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Models\Cms\Article;
+use App\Support\Backdrop;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\SettingsSeeder;
 use Illuminate\Http\UploadedFile;
@@ -29,7 +30,8 @@ beforeEach(function () {
 it('ships a Blade partial for every scene in the registry', function () {
     $scenes = config('cms-covers');
 
-    expect($scenes)->toHaveCount(20);
+    // Counted from the registry, not pinned: scenes get added.
+    expect($scenes)->not->toBeEmpty();
 
     foreach ($scenes as $key => $scene) {
         expect(view()->exists("covers.$key"))->toBeTrue("covers.$key is missing")
@@ -85,10 +87,20 @@ it('keeps the scene still in the blog list', function () {
         'published_at' => now()->subDay(),
     ]);
 
+    // The band behind the list runs its own scene, so pin it to something
+    // else: the question here is only whether the cover on the card moves.
+    $this->instance(Backdrop::class, new class extends Backdrop
+    {
+        public function next(): ?string
+        {
+            return 'calm';
+        }
+    });
+
     $html = $this->get(route('blog.index'))->assertOk()->getContent();
 
-    expect($html)->toContain('cv-september')
-        ->and($html)->not->toContain('is-live');
+    expect($html)->toContain('class="cv cv-september"')
+        ->and($html)->not->toContain('cv-september is-live');
 });
 
 it('lets an uploaded photo beat the chosen scene', function () {

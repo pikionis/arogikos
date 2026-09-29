@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Enums\Role;
 use App\Models\Cms\ContentBlock;
 use App\Models\User;
+use App\Support\Backdrop;
 use App\Support\Content;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -22,7 +23,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // One per request, so the bands on a page get different scenes and the
+        // next visitor gets a different set again.
+        $this->app->singleton(Backdrop::class);
     }
 
     /**

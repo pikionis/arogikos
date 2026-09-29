@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Support\Backdrop;
 use App\Support\Content;
 use App\Support\Settings;
 use Illuminate\Database\Eloquent\Model;
@@ -169,5 +170,13 @@ if (! function_exists('service_list')) {
         }
 
         return $services;
+    }
+}
+
+if (! function_exists('backdrop_scene')) {
+    /** The next scene to run faintly behind a band, or null if there are none. */
+    function backdrop_scene(): ?string
+    {
+        return app(Backdrop::class)->next();
     }
 }

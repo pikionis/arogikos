@@ -122,6 +122,7 @@
 
 <!-- ============ WHY ΑΡΩΓΗ ============ -->
 <section class="section bg-green why-row arch-top">
+  <x-scene-backdrop />
   <div class="container">
     <div class="grid-2" style="gap:var(--s-12);align-items:center">
       <div class="section-head left reveal">
@@ -179,6 +180,7 @@
 <!-- ============ UPCOMING EVENTS ============ -->
 @if ($events->isNotEmpty())
 <section class="section bg-coral">
+  <x-scene-backdrop />
   <div class="container">
     <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s-6);flex-wrap:wrap" class="reveal">
       <div class="section-head left" style="margin:0">

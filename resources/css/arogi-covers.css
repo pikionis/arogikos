@@ -510,6 +510,84 @@
 .cv-announcement.is-live .br { animation: cv-announcement-breathe 16s ease-in-out infinite; }
 .cv-announcement.is-live .d1 { animation-delay: -4s; }
 
+/* ---- family · Γονείς και παιδί ---- */
+@keyframes cv-family-float-a { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+@keyframes cv-family-float-b { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-11px); } }
+@keyframes cv-family-swing { 0%, 100% { transform: rotate(-1.6deg) translateY(0); } 50% { transform: rotate(1.6deg) translateY(-9px); } }
+@keyframes cv-family-reach { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes cv-family-rise { 0% { transform: translateY(0) scale(0.85); opacity: 0; } 22% { opacity: 0.9; } 100% { transform: translateY(-180px) scale(1.1); opacity: 0; } }
+@keyframes cv-family-sun { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes cv-family-halo { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.3); opacity: 0.05; } }
+@keyframes cv-family-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-family-twinkle { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.22; } }
+.cv-family.is-live .f-a { animation: cv-family-float-a 9s ease-in-out infinite; }
+.cv-family.is-live .f-b { animation: cv-family-float-b 11s ease-in-out infinite; }
+.cv-family.is-live .child { animation: cv-family-swing 7s ease-in-out infinite; }
+.cv-family.is-live .arm { animation: cv-family-reach 7s ease-in-out infinite; }
+.cv-family.is-live .a2 { animation-delay: -0.4s; }
+.cv-family.is-live .heart { animation: cv-family-rise 8s ease-in-out infinite; }
+.cv-family.is-live .h2 { animation-delay: -3.4s; }
+.cv-family.is-live .sun { animation: cv-family-sun 12s ease-in-out infinite; }
+.cv-family.is-live .halo { animation: cv-family-halo 9s ease-in-out infinite; }
+.cv-family.is-live .br { animation: cv-family-breathe 16s ease-in-out infinite; }
+.cv-family.is-live .tw { animation: cv-family-twinkle 7s ease-in-out infinite; }
+.cv-family.is-live .d1 { animation-delay: -1.6s; }
+.cv-family.is-live .d2 { animation-delay: -3.2s; }
+.cv-family.is-live .d3 { animation-delay: -4.8s; }
+
+/* ---- classroom · Στο θρανίο ---- */
+@keyframes cv-classroom-write { 0% { stroke-dashoffset: 560; } 34%, 100% { stroke-dashoffset: 0; } }
+@keyframes cv-classroom-tick { 0%, 46% { stroke-dashoffset: 260; } 62%, 100% { stroke-dashoffset: 0; } }
+@keyframes cv-classroom-scribble { 0%, 100% { transform: translate(0, 0) rotate(0deg); } 25% { transform: translate(-16px, 3px) rotate(-7deg); } 60% { transform: translate(12px, -2px) rotate(6deg); } }
+@keyframes cv-classroom-nod { 0%, 100% { transform: rotate(0deg) translateY(0); } 50% { transform: rotate(2.4deg) translateY(-6px); } }
+@keyframes cv-classroom-point { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-5deg); } }
+@keyframes cv-classroom-float-b { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes cv-classroom-page { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-4deg); } }
+@keyframes cv-classroom-mark { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+@keyframes cv-classroom-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+@keyframes cv-classroom-twinkle { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.2; } }
+.cv-classroom.is-live .chalk { animation: cv-classroom-write 11s ease-in-out infinite; }
+.cv-classroom.is-live .w2 { animation-delay: 0.9s; }
+.cv-classroom.is-live .w3 { animation-delay: 1.8s; }
+.cv-classroom.is-live .tick { animation: cv-classroom-tick 11s ease-in-out infinite; }
+.cv-classroom.is-live .pencil { animation: cv-classroom-scribble 5s ease-in-out infinite; }
+.cv-classroom.is-live .child { animation: cv-classroom-nod 6s ease-in-out infinite; }
+.cv-classroom.is-live .point { animation: cv-classroom-point 6s ease-in-out infinite; }
+.cv-classroom.is-live .f-b { animation: cv-classroom-float-b 10s ease-in-out infinite; }
+.cv-classroom.is-live .book { animation: cv-classroom-page 13s ease-in-out infinite; }
+.cv-classroom.is-live .mark { animation: cv-classroom-mark 9s ease-in-out infinite; }
+.cv-classroom.is-live .br { animation: cv-classroom-breathe 17s ease-in-out infinite; }
+.cv-classroom.is-live .tw { animation: cv-classroom-twinkle 7s ease-in-out infinite; }
+.cv-classroom.is-live .d1 { animation-delay: -1.7s; }
+.cv-classroom.is-live .d2 { animation-delay: -3.4s; }
+.cv-classroom.is-live .d3 { animation-delay: -5.1s; }
+
+/* ---- friends · Παρέα ---- */
+@keyframes cv-friends-lean { 0%, 30%, 100% { transform: scale(1); } 14% { transform: scale(1.07); } }
+@keyframes cv-friends-link-pulse { 0%, 30%, 100% { opacity: 0.25; } 14% { opacity: 0.78; } }
+@keyframes cv-friends-halo { 0%, 30%, 100% { transform: scale(1); opacity: 0.28; } 14% { transform: scale(1.16); opacity: 0.6; } }
+@keyframes cv-friends-bounce { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-34px) rotate(14deg); } }
+@keyframes cv-friends-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes cv-friends-confetti { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 18% { opacity: 0.9; } 100% { transform: translateY(150px) rotate(260deg); opacity: 0; } }
+@keyframes cv-friends-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes cv-friends-twinkle { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.2; } }
+.cv-friends.is-live .pal { animation: cv-friends-lean 9s ease-in-out infinite; }
+.cv-friends.is-live .link { animation: cv-friends-link-pulse 9s ease-in-out infinite; }
+.cv-friends.is-live .halo { animation: cv-friends-halo 9s ease-in-out infinite; }
+.cv-friends.is-live .p1, .cv-friends.is-live .k1 { animation-delay: 0s; }
+.cv-friends.is-live .p2, .cv-friends.is-live .k2 { animation-delay: 3s; }
+.cv-friends.is-live .p3, .cv-friends.is-live .k3 { animation-delay: 6s; }
+.cv-friends.is-live .ball { animation: cv-friends-bounce 4.5s ease-in-out infinite; }
+.cv-friends.is-live .orbit { animation: cv-friends-orbit 48s linear infinite; }
+.cv-friends.is-live .bit { animation: cv-friends-confetti 8s linear infinite; }
+.cv-friends.is-live .b2 { animation-delay: -2.6s; }
+.cv-friends.is-live .b3 { animation-delay: -5.2s; }
+.cv-friends.is-live .br { animation: cv-friends-breathe 16s ease-in-out infinite; }
+.cv-friends.is-live .tw { animation: cv-friends-twinkle 7s ease-in-out infinite; }
+.cv-friends.is-live .d1 { animation-delay: -1.8s; }
+.cv-friends.is-live .d2 { animation-delay: -3.6s; }
+.cv-friends.is-live .d3 { animation-delay: -5.4s; }
+
 /* Ό,τι κινείται, σταματά όταν το ζητήσει το λειτουργικό. */
 @media (prefers-reduced-motion: reduce) {
   .cv * { animation: none !important; }
