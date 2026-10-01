@@ -93,21 +93,23 @@ it('inCategory() with an unknown category key applies no filter and returns all'
 
 /* -------------------------------------------------------------------- related */
 
-it('related() returns same-category published articles excluding itself', function () {
+it('related() returns published articles excluding itself, whatever their category', function () {
     $subject = Article::factory()->create([
         'category' => 'learning',
         'is_published' => true,
         'published_at' => now()->subDay(),
     ]);
 
-    $sameCategory = Article::factory()->count(2)->create([
+    $others = Article::factory()->count(2)->create([
         'category' => 'learning',
         'is_published' => true,
         'published_at' => now()->subDays(2),
     ]);
 
-    // Different category — must be excluded.
-    Article::factory()->create([
+    // Used to be excluded. A category with two articles in it left the end of
+    // a page with one card on it, so the section reaches wider now; see
+    // RelatedArticlesTest for the order they come back in.
+    $elsewhere = Article::factory()->create([
         'category' => 'counseling',
         'is_published' => true,
         'published_at' => now()->subDay(),
@@ -117,8 +119,7 @@ it('related() returns same-category published articles excluding itself', functi
 
     expect($related->pluck('id'))->not->toContain($subject->id)
         ->and($related->pluck('id')->all())
-        ->toEqualCanonicalizing($sameCategory->pluck('id')->all())
-        ->and($related->pluck('category')->unique()->all())->toBe(['learning']);
+        ->toEqualCanonicalizing([...$others->pluck('id')->all(), $elsewhere->id]);
 });
 
 it('related() never returns the article itself', function () {
@@ -131,7 +132,7 @@ it('related() never returns the article itself', function () {
     expect($subject->related()->pluck('id'))->not->toContain($subject->id);
 });
 
-it('related() excludes drafts and future-dated articles in the same category', function () {
+it('related() excludes drafts and future-dated articles', function () {
     $subject = Article::factory()->create([
         'category' => 'career',
         'is_published' => true,
@@ -165,13 +166,14 @@ it('related() honours the limit argument', function () {
         'published_at' => now()->subDay(),
     ]);
 
-    Article::factory()->count(5)->create([
+    Article::factory()->count(12)->create([
         'category' => 'learning',
         'is_published' => true,
         'published_at' => now()->subDays(2),
     ]);
 
-    expect($subject->related())->toHaveCount(3)
+    // The default is a carousel's worth; a caller may ask for fewer.
+    expect($subject->related())->toHaveCount(9)
         ->and($subject->related(2))->toHaveCount(2);
 });
 

@@ -115,10 +115,25 @@
   <x-scene-backdrop for="blog.related" />
   <div class="container">
     <div class="section-head left reveal" style="margin-bottom:var(--s-8)"><span class="eyebrow coral">{{ content('blog.related_eyebrow') }}</span><h2>{{ content('blog.related_title') }}</h2></div>
-    <div class="grid-3">
-      @foreach ($related as $rel)
-        <x-article-card :article="$rel" :delay="['','reveal-d1','reveal-d2'][$loop->index % 3]" :show-date="false" />
-      @endforeach
+    {{-- Μια σειρά που κυλά, όχι τρεις κάρτες και τέλος: τα προτεινόμενα είναι
+         όλα όσα αξίζει να διαβάσει κανείς μετά, και χωρούν όλα. --}}
+    <div class="post-carousel" data-carousel>
+      <button type="button" class="post-carousel-arrow is-back" data-carousel-back
+              aria-label="Προηγούμενα άρθρα" hidden>
+        <span aria-hidden="true">←</span>
+      </button>
+
+      <div class="post-carousel-track" data-carousel-track tabindex="0"
+           role="group" aria-label="{{ content('blog.related_title') }}">
+        @foreach ($related as $rel)
+          <x-article-card :article="$rel" :delay="['','reveal-d1','reveal-d2'][$loop->index % 3]" :show-date="false" />
+        @endforeach
+      </div>
+
+      <button type="button" class="post-carousel-arrow is-next" data-carousel-next
+              aria-label="Επόμενα άρθρα" hidden>
+        <span aria-hidden="true">→</span>
+      </button>
     </div>
   </div>
 </section>

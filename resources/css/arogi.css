@@ -453,6 +453,49 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .byline-faces > * + * { margin-left: -10px; }
 .byline-faces > * { box-shadow: 0 0 0 2px #fff; border-radius: 50%; }
 
+/* ---- καρουζέλ άρθρων ---- */
+/* Τα προτεινόμενα δεν είναι τρία· είναι όσα αξίζει να διαβάσει κανείς μετά.
+   Μια σειρά που κυλά τα χωράει όλα χωρίς να γίνει η σελίδα διπλάσια. */
+
+.post-carousel { position: relative; }
+
+.post-carousel-track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(290px, calc((100% - var(--s-6) * 2) / 3));
+  gap: var(--s-6);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Τα φουσκώματα του hover δεν πρέπει να κόβονται από το scroll. */
+  padding: 6px 6px var(--s-4);
+  scrollbar-width: thin;
+}
+.post-carousel-track > * { scroll-snap-align: start; }
+.post-carousel-track:focus-visible { outline: 3px solid var(--green); outline-offset: 4px; border-radius: var(--r-lg); }
+
+/* Τα βελάκια εμφανίζονται μόνο όταν υπάρχει κάτι να κυλήσει — το αναλαμβάνει
+   η app.js — και κάθονται πάνω από τη σειρά, όχι μέσα στη ροή της. */
+.post-carousel-arrow {
+  position: absolute; top: calc(50% - 28px); z-index: 2;
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--hair-soft); background: #fff;
+  box-shadow: var(--shadow-card);
+  font-size: 1.2rem; color: var(--ink-600); cursor: pointer;
+  display: grid; place-items: center;
+  transition: transform .2s var(--ease-out), color .2s, box-shadow .2s;
+}
+.post-carousel-arrow:hover { color: var(--green-700); box-shadow: var(--shadow-lift); transform: scale(1.06); }
+.post-carousel-arrow:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+.post-carousel-arrow.is-back { left: -18px; }
+.post-carousel-arrow.is-next { right: -18px; }
+.post-carousel-arrow[hidden] { display: none; }
+
+@media (max-width: 900px) {
+  .post-carousel-track { grid-auto-columns: minmax(260px, 78%); }
+  /* Σε στενή οθόνη το δάχτυλο είναι το βελάκι. */
+  .post-carousel-arrow { display: none; }
+}
+
 /* ---- article ---- */
 /* Η περίληψη κάτω από τον τίτλο του άρθρου. */
 .article-lead { margin-top: var(--s-5); max-width: none; color: var(--ink-600); }

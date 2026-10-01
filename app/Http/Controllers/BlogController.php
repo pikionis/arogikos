@@ -63,7 +63,7 @@ class BlogController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $related = $article->related(3);
+        $related = $article->related();
 
         return view('pages.blog.show', compact('article', 'related'));
     }

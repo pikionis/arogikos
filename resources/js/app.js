@@ -209,6 +209,48 @@ import { motif } from './motifs.js';
     });
   }
 
+  /* ---- καρουζέλ άρθρων ---- */
+  /* Το κύλισμα το κάνει το CSS· εδώ μπαίνουν μόνο τα βελάκια, και μόνο όταν
+     έχουν νόημα: μια σειρά που χωράει ολόκληρη δεν θέλει κουμπιά, και ένα
+     κουμπί που δεν πάει πουθενά είναι χειρότερο από κανένα. */
+  function initCarousels() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-carousel]'), function (box) {
+      var track = box.querySelector('[data-carousel-track]');
+      var back = box.querySelector('[data-carousel-back]');
+      var next = box.querySelector('[data-carousel-next]');
+
+      if (!track || !back || !next) return;
+
+      function step() {
+        var card = track.firstElementChild;
+
+        return card ? card.getBoundingClientRect().width + 24 : track.clientWidth * 0.8;
+      }
+
+      function refresh() {
+        var over = track.scrollWidth - track.clientWidth;
+        var room = over > 4;
+
+        back.hidden = !room || track.scrollLeft <= 2;
+        next.hidden = !room || track.scrollLeft >= over - 2;
+      }
+
+      back.addEventListener('click', function () {
+        track.scrollBy({ left: -step(), behavior: 'smooth' });
+      });
+
+      next.addEventListener('click', function () {
+        track.scrollBy({ left: step(), behavior: 'smooth' });
+      });
+
+      track.addEventListener('scroll', refresh, { passive: true });
+      window.addEventListener('resize', refresh);
+
+      refresh();
+    });
+  }
+
   initProfiles();
   initAuthorSelect();
+  initCarousels();
 })();

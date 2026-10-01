@@ -117,20 +117,46 @@ class Article extends Model implements HasMedia
     }
 
     /**
-     * Up to $limit published articles in the same category, newest first,
-     * excluding this one. Falls back to latest published if too few.
+     * What to read next, newest first.
+     *
+     * Anything else this article's authors have written comes first — if you
+     * liked how somebody writes, the next thing you want is more of them —
+     * and the rest of the blog follows behind it, most recent first.
+     *
+     * Deliberately not filtered by category any more. A category with two
+     * articles in it left a reader at the end of a page with one card and
+     * nowhere to go, which is the opposite of what this section is for.
      *
      * @return Collection<int, static>
      */
-    public function related(int $limit = 3)
+    public function related(int $limit = 9)
     {
-        return static::published()
-            ->with('authors')
-            ->whereKeyNot($this->getKey())
-            ->where('category', $this->category)
-            ->latest('published_at')
-            ->take($limit)
+        $authorIds = $this->authors->modelKeys();
+
+        $newest = fn () => static::published()
+            ->with(['authors', 'media'])
+            ->latest('published_at');
+
+        // An Eloquent collection even when empty: a plain one has no
+        // modelKeys(), and the next query asks it for exactly that.
+        $mine = $authorIds === []
+            ? new Collection
+            : $newest()
+                ->whereKeyNot($this->getKey())
+                ->whereHas('authors', fn (Builder $q) => $q->whereIn('authors.id', $authorIds))
+                ->take($limit)
+                ->get();
+
+        if ($mine->count() >= $limit) {
+            return $mine;
+        }
+
+        $rest = $newest()
+            ->whereNotIn($this->getKeyName(), [$this->getKey(), ...$mine->modelKeys()])
+            ->take($limit - $mine->count())
             ->get();
+
+        return $mine->concat($rest);
     }
 
     /* ------------------------------------------------------------- accessors */
