@@ -2,11 +2,18 @@
     'event',
     'delay' => '',
     'past' => false,
+    // As on an article card: the button is a sibling of the link, not inside
+    // it, because a button inside an anchor is neither.
+    'share' => false,
 ])
 
 {{-- The whole card opens the event, the way an article card does: a card
      where only the title is clickable is a card most people never open. --}}
-<a class="event-card reveal {{ $delay }}" href="{{ route('events.show', $event) }}"
+<div @class(['card-wrap', 'reveal', $delay])>
+@if ($share)
+    <x-share-button :url="route('events.show', $event)" :title="$event->title" />
+@endif
+<a class="event-card" href="{{ route('events.show', $event) }}"
    @if ($past) style="opacity:.92" @endif>
     <div class="event-date" @if ($past) style="background:#fff;animation:none" @endif>
         <span class="d" @if ($past) style="color:var(--ink-400)" @endif>{{ $event->day }}</span>
@@ -63,3 +70,4 @@
         <span class="event-more">{{ content('events.card_link') }} <span aria-hidden="true">→</span></span>
     </div>
 </a>
+</div>

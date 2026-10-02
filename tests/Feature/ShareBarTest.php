@@ -152,3 +152,93 @@ it('puts a bulleted description on an event page as a list', function () {
         // Inside the block the stylesheet actually dresses.
         ->and($html)->toContain('class="article-body reveal"');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Και έξω, και ψηλά
+|--------------------------------------------------------------------------
+| Η μπάρα στο τέλος δεν φτάνει: κάποιος που περνά από τη λίστα δεν σκοπεύει
+| να κατέβει ως κάτω, και κάποιος που μόλις άνοιξε το άρθρο δεν ψάχνει.
+*/
+
+it('puts a share button on every card in the list', function () {
+    foreach (range(1, 3) as $i) {
+        Article::factory()->by(Author::factory()->create())->create([
+            'title' => "Άρθρο $i",
+            'is_published' => true,
+            'published_at' => now()->subDays($i),
+        ]);
+    }
+
+    $html = $this->get(route('blog.index'))->assertOk()->getContent();
+
+    expect(substr_count($html, 'data-share-mini'))->toBe(3);
+
+    foreach (Article::published()->get() as $article) {
+        expect($html)->toContain('data-share-url="'.route('blog.show', $article->slug).'"');
+    }
+});
+
+it('puts one on every event in the list too', function () {
+    $soon = happeningSoon();
+    $past = Event::factory()->create([
+        'title' => 'Περασμένη',
+        'starts_at' => now()->subMonth(),
+        'is_published' => true,
+        'published_at' => now()->subMonths(2),
+    ]);
+
+    $html = $this->get(route('events'))->assertOk()->getContent();
+
+    expect(substr_count($html, 'data-share-mini'))->toBe(2)
+        ->and($html)->toContain('data-share-url="'.route('events.show', $soon).'"')
+        ->and($html)->toContain('data-share-url="'.route('events.show', $past).'"');
+});
+
+it('keeps the button out of the link rather than inside it', function () {
+    Article::factory()->by(Author::factory()->create())->create([
+        'is_published' => true, 'published_at' => now()->subDay(),
+    ]);
+
+    $html = $this->get(route('blog.index'))->getContent();
+
+    // A <button> inside an <a> is neither one. The wrapper is what lets the
+    // whole card stay a link while the button stays a button.
+    expect($html)->toContain('class="card-wrap')
+        ->and($html)->toMatch('/<div[^>]*class="card-wrap[^"]*"[^>]*>\s*<button[^>]*data-share-mini/');
+});
+
+it('offers one at the top of an article as well as the bottom', function () {
+    $article = shareable();
+
+    $html = $this->get(route('blog.show', $article->slug))->assertOk()->getContent();
+
+    $top = mb_strpos($html, 'share-top');
+    $bar = mb_strpos($html, 'share-bar');
+
+    expect($top)->not->toBeFalse()
+        ->and($bar)->not->toBeFalse()
+        // Above the body, not beside the one at the end of it.
+        ->and($top)->toBeLessThan($bar)
+        ->and($top)->toBeLessThan(mb_strpos($html, 'class="article-body'));
+});
+
+it('offers one at the top of an event as well', function () {
+    $event = happeningSoon();
+
+    $html = $this->get(route('events.show', $event))->assertOk()->getContent();
+
+    expect(mb_strpos($html, 'share-top'))->toBeLessThan(mb_strpos($html, 'share-bar'));
+});
+
+it('names what each button shares, for a reader who cannot see the card', function () {
+    $article = shareable();
+
+    $html = $this->get(route('blog.index'))->getContent();
+
+    // Nine identical "share" buttons on a page are nine identical
+    // announcements; the title is what tells them apart.
+    expect($html)->toContain(
+        'aria-label="'.content('shared.share.button').': '.e($article->title).'"'
+    );
+});

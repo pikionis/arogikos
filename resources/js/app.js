@@ -252,10 +252,67 @@ import { motif } from './motifs.js';
 
   /* ---- κοινοποίηση ---- */
   /* Ο σύνδεσμος είναι η διεύθυνση της ίδιας της σελίδας, οπότε όποιος τον
-     πατήσει έρχεται κατευθείαν εδώ. Το πρόχειρο θέλει ασφαλή σύνδεση και
-     δεν υπάρχει παντού, γι' αυτό το πεδίο με τη διεύθυνση μένει πάντα: αν
-     αποτύχει η αντιγραφή, διαλέγεται με το χέρι. */
+     πατήσει έρχεται κατευθείαν εκεί. */
+
+  /* Το πρόχειρο του browser θέλει ασφαλή σύνδεση και δεν υπάρχει παντού· από
+     κάτω του μένει το παλιό κόλπο με το κρυφό πεδίο, που δουλεύει και χωρίς. */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text);
+    }
+
+    return new Promise(function (resolve, reject) {
+      var field = document.createElement('textarea');
+      field.value = text;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.top = '-1000px';
+      field.style.opacity = '0';
+      document.body.appendChild(field);
+      field.select();
+
+      var done = false;
+      try { done = document.execCommand('copy'); } catch (e) { done = false; }
+
+      document.body.removeChild(field);
+      done ? resolve() : reject();
+    });
+  }
+
+  function flash(button) {
+    button.classList.add('is-done');
+    window.setTimeout(function () { button.classList.remove('is-done'); }, 2400);
+  }
+
+  /* Το μικρό κουμπί: πάνω στις κάρτες και στην κορυφή κάθε άρθρου. Ένα
+     πάτημα — ο διάλογος του τηλεφώνου όπου υπάρχει, αλλιώς αντιγραφή. */
+  function initShareButtons() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-share-mini]'), function (button) {
+      button.addEventListener('click', function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        var url = button.getAttribute('data-share-url');
+        var title = button.getAttribute('data-share-title') || document.title;
+
+        if (navigator.share) {
+          navigator.share({ title: title, url: url }).catch(function () {});
+
+          return;
+        }
+
+        copyText(url).then(function () { flash(button); }, function () {
+          window.prompt(button.getAttribute('data-share-copied'), url);
+        });
+      });
+    });
+  }
+
+  /* Η μπάρα στο τέλος: τα ίδια, μαζί με τα κουμπιά κάθε εφαρμογής και την
+     ίδια τη διεύθυνση για όποιον προτιμά να τη διαλέξει με το χέρι. */
   function initShare() {
+    initShareButtons();
+
     Array.prototype.forEach.call(document.querySelectorAll('[data-share]'), function (bar) {
       var url = bar.getAttribute('data-share-url');
       var title = bar.getAttribute('data-share-title') || document.title;
@@ -275,7 +332,7 @@ import { motif } from './motifs.js';
       if (!copy || !label || !field) return;
 
       copy.addEventListener('click', function () {
-        function done() {
+        copyText(url).then(function () {
           var was = bar.getAttribute('data-share-copy');
           label.textContent = bar.getAttribute('data-share-copied');
           copy.classList.add('is-done');
@@ -283,15 +340,7 @@ import { motif } from './motifs.js';
             label.textContent = was;
             copy.classList.remove('is-done');
           }, 2400);
-        }
-
-        if (navigator.clipboard && window.isSecureContext) {
-          navigator.clipboard.writeText(url).then(done, select);
-
-          return;
-        }
-
-        select();
+        }, select);
       });
 
       /* Η διεύθυνση διαλεγμένη, έτοιμη για Ctrl+C. */

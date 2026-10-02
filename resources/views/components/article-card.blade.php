@@ -7,6 +7,9 @@
     'delay' => '',
     'showExcerpt' => false,
     'showDate' => true,
+    // A card is one big link, so the share button cannot live inside it —
+    // it sits over the cover as its sibling.
+    'share' => false,
 ])
 
 @php
@@ -14,7 +17,11 @@
     $tint = ['green' => 'var(--soft-green)', 'coral' => 'var(--soft-coral)', 'yellow' => 'var(--soft-yellow)'][$color] ?? 'var(--soft-green)';
 @endphp
 
-<a class="post-card blog-card reveal {{ $delay }}" href="{{ route('blog.show', $article->slug) }}" data-cat="{{ $article->category }}">
+<div @class(['card-wrap', 'reveal', $delay]) data-cat="{{ $article->category }}">
+@if ($share)
+    <x-share-button :url="route('blog.show', $article->slug)" :title="$article->title" />
+@endif
+<a class="post-card blog-card" href="{{ route('blog.show', $article->slug) }}">
     <div class="post-cover">
         <x-media-image
             :model="$article"
@@ -48,3 +55,4 @@
         </div>
     </div>
 </a>
+</div>

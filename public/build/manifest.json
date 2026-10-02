@@ -420,7 +420,7 @@
     "src": "node_modules/@fontsource/source-sans-3/files/source-sans-3-vietnamese-700-normal.woff2"
   },
   "resources/css/admin.css": {
-    "file": "assets/admin-BLDBpRLW.css",
+    "file": "assets/admin-D-UeEz1T.css",
     "name": "admin",
     "names": [
       "admin.css"
@@ -535,7 +535,7 @@
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-DBDFldrv.css",
+    "file": "assets/app-rnK4HJq2.css",
     "name": "app",
     "names": [
       "app.css"
@@ -662,7 +662,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-CmN8_Q1S.js",
+    "file": "assets/app-C2dqFQLf.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,

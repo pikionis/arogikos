@@ -45,7 +45,7 @@
     @if ($articles->isNotEmpty())
       <div class="grid-3" style="gap:var(--s-8)">
         @foreach ($articles as $article)
-          <x-article-card :article="$article" :delay="['','reveal-d1','reveal-d2'][$loop->index % 3]" :show-excerpt="true" :level="2" />
+          <x-article-card :article="$article" :delay="['','reveal-d1','reveal-d2'][$loop->index % 3]" :show-excerpt="true" :level="2" :share="true" />
         @endforeach
       </div>
 

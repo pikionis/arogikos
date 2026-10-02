@@ -43,7 +43,7 @@
     @if ($upcoming->isNotEmpty())
       <div style="display:grid;gap:var(--s-5);max-width:860px">
         @foreach ($upcoming as $event)
-          <x-event-card :event="$event" :delay="$loop->index % 2 ? 'reveal-d1' : ''" />
+          <x-event-card :event="$event" :share="true" :delay="$loop->index % 2 ? 'reveal-d1' : ''" />
         @endforeach
       </div>
     @else
@@ -60,7 +60,7 @@
     <div class="section-head left reveal" style="margin-bottom:var(--s-8)"><span class="eyebrow coral">{{ content('events.past.eyebrow') }}</span><h2>{{ content('events.past.title') }}</h2></div>
     <div style="display:grid;gap:var(--s-5);max-width:860px">
       @foreach ($past as $event)
-        <x-event-card :event="$event" :past="true" :delay="$loop->index % 2 ? 'reveal-d1' : ''" />
+        <x-event-card :event="$event" :past="true" :share="true" :delay="$loop->index % 2 ? 'reveal-d1' : ''" />
       @endforeach
     </div>
   </div>
