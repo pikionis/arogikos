@@ -46,6 +46,9 @@ function conditionalKeys(): array
         'blog.article_crumb', 'blog.read_suffix', 'blog.author_eyebrow',
         // Shown only when a filter comes back with nothing.
         'blog.empty', 'blog.empty_link',
+        // The share bar sits on a single article or event, not on the pages
+        // that list them; ShareBarTest asserts each one where it does show.
+        'shared.share.title', 'shared.share.button', 'shared.share.copy', 'shared.share.copied',
         // These belong to a single event's own page, not to the list of
         // them; EventPageTest asserts each one where it does show.
         'events.event_crumb', 'events.photos_title', 'events.more_title', 'events.back',

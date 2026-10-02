@@ -496,6 +496,50 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   .post-carousel-arrow { display: none; }
 }
 
+/* ---- κοινοποίηση ---- */
+/* Στο κινητό αρκεί ένα κουμπί: ο διάλογος του τηλεφώνου έχει ήδη μέσα ό,τι
+   εφαρμογή χρησιμοποιεί ο καθένας. Στον υπολογιστή δεν υπάρχει τέτοιος
+   διάλογος, οπότε φαίνονται τα κουμπιά — και πάντα η ίδια η διεύθυνση, για
+   όποιον προτιμά να τη διαλέξει με το χέρι. */
+
+.share-band { padding-block: var(--s-10); }
+.share-bar {
+  max-width: var(--measure); margin-inline: auto;
+  background: var(--soft-green); border-radius: var(--r-lg);
+  padding: var(--s-6) var(--s-6) var(--s-5);
+}
+.share-title {
+  font-family: var(--font-head); font-weight: 800; font-size: 1.05rem;
+  color: var(--ink); margin-bottom: var(--s-4);
+}
+.share-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.share-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: var(--r-pill);
+  background: #fff; border: 1px solid var(--hair-soft);
+  font-family: var(--font-head); font-weight: 700; font-size: .9rem;
+  color: var(--ink-600); cursor: pointer; white-space: nowrap;
+  transition: color .2s var(--ease-out), transform .2s var(--ease-out), box-shadow .2s var(--ease-out);
+}
+.share-chip:hover { color: var(--green-700); transform: translateY(-2px); box-shadow: var(--shadow-card); }
+.share-chip:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.share-chip.is-copy { background: var(--green); color: #fff; border-color: transparent; }
+.share-chip.is-copy:hover { color: #fff; }
+.share-chip.is-done { background: var(--yellow); color: var(--ink); }
+
+.share-url {
+  width: 100%; margin-top: var(--s-4);
+  padding: 10px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--hair-soft); background: #fff;
+  color: var(--ink-600); font-size: .9rem;
+}
+.share-url:focus { outline: 3px solid var(--green); outline-offset: 1px; }
+
+/* Μόλις ο browser προσφέρει τον διάλογο του συστήματος, αυτός αρκεί. */
+.share-bar.has-native .share-chip:not(.is-copy),
+.share-bar.has-native .share-url { display: none; }
+
 /* ---- article ---- */
 /* Η περίληψη κάτω από τον τίτλο του άρθρου. */
 .article-lead { margin-top: var(--s-5); max-width: none; color: var(--ink-600); }
@@ -526,9 +570,53 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .article-body h2 { margin-top: var(--s-10); margin-bottom: var(--s-3); }
 .article-body h3 { margin-top: var(--s-8); margin-bottom: var(--s-2); }
 .article-body blockquote { border-left: 4px solid var(--coral); padding: var(--s-2) var(--s-6); margin-block: var(--s-8); font-family: var(--font-head); font-weight: 700; font-size: 1.3rem; color: var(--ink); font-style: italic; }
-.article-body ul.dotted { display: grid; gap: var(--s-3); margin-block: var(--s-5); }
-.article-body ul.dotted li { display: flex; gap: var(--s-3); align-items: flex-start; }
-.article-body ul.dotted li::before { content:""; flex:none; width:11px; height:11px; border-radius:50%; background:var(--green); margin-top:9px; }
+/* Οι λίστες του κειμένου.
+   Έπιαναν μόνο ul.dotted — μια κλάση που ο επεξεργαστής δεν γράφει ποτέ και
+   που ο καθαριστής ούτως ή άλλως αφαιρεί. Μια λίστα γραμμένη στο panel
+   έπεφτε έτσι στο κενό: χωρίς κουκκίδα, χωρίς εσοχή, χωρίς αέρα ανάμεσα.
+   Πιάνονται από το σχήμα τους τώρα, όχι από κλάση που πρέπει να θυμηθεί
+   κάποιος να βάλει. */
+.article-body ul,
+.article-body ol {
+  display: grid; gap: var(--s-3);
+  margin-block: var(--s-6); padding-left: 0; list-style: none;
+}
+.article-body li {
+  display: flex; gap: var(--s-3); align-items: flex-start;
+  font-size: 1.08rem; line-height: 1.75; color: #3a352f;
+}
+.article-body ul > li::before {
+  content: ""; flex: none;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--green); margin-top: 11px;
+}
+.article-body ol { counter-reset: prose-step; }
+.article-body ol > li { counter-increment: prose-step; }
+.article-body ol > li::before {
+  content: counter(prose-step); flex: none;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--soft-green); color: var(--green-700);
+  font-family: var(--font-head); font-weight: 800; font-size: .86rem;
+  display: grid; place-items: center; margin-top: 2px;
+}
+/* Μια λίστα μέσα σε λίστα δεν ξαναρχίζει από την αρχή της σελίδας. */
+.article-body li > ul,
+.article-body li > ol { margin-block: var(--s-3); width: 100%; }
+
+/* Οι σύνδεσμοι μέσα στο κείμενο πρέπει να φαίνονται σύνδεσμοι: το χρώμα μόνο
+   του δεν φτάνει για όποιον δεν το ξεχωρίζει. */
+.article-body a {
+  color: var(--green-700); text-decoration: underline;
+  text-underline-offset: 3px; text-decoration-thickness: 2px;
+}
+.article-body a:hover { color: var(--coral-700); }
+
+.article-body pre {
+  background: var(--soft-green); border-radius: var(--r-md);
+  padding: var(--s-4) var(--s-5); margin-block: var(--s-6);
+  overflow-x: auto; font-size: .95rem;
+}
+.article-body code { font-size: .95em; }
 
 /* ---- gallery ---- */
 .gal-grid { columns: 3; column-gap: var(--s-5); }

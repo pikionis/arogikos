@@ -270,6 +270,13 @@ it('puts an edit to the shared header and footer onto every page', function () {
                 continue;
             }
 
+            // A few shared strings belong to a single article or event rather
+            // than to every page; they are listed once, in tests/Pest.php,
+            // and asserted where they do appear.
+            if (in_array('shared.'.$field['key'], conditionalKeys(), true)) {
+                continue;
+            }
+
             $mark = 'ΚΟΙΝΟ'.count($sentinels).'ΤΕΛΟΣ';
             $sentinels[$field['key']] = $mark;
 

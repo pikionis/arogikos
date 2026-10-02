@@ -72,6 +72,8 @@
     </div>
   @endif
 
+  <x-share-bar :url="route('events.show', $event)" :title="$event->title" />
+
   {{-- Οι φωτογραφίες ανεβαίνουν μετά, οπότε η ενότητα υπάρχει μόνο όταν
        υπάρχουν κιόλας. --}}
   @if ($photos->isNotEmpty())

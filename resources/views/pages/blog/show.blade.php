@@ -79,6 +79,8 @@
     </div>
   </div>
 
+  <x-share-bar :url="route('blog.show', $article->slug)" :title="$article->title" />
+
   @php
     // A profile with no bio has nothing to open, so it gets no box.
     $written = $article->authors->filter(fn ($person) => filled($person->bio))->values();

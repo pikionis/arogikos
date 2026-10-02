@@ -250,7 +250,61 @@ import { motif } from './motifs.js';
     });
   }
 
+  /* ---- κοινοποίηση ---- */
+  /* Ο σύνδεσμος είναι η διεύθυνση της ίδιας της σελίδας, οπότε όποιος τον
+     πατήσει έρχεται κατευθείαν εδώ. Το πρόχειρο θέλει ασφαλή σύνδεση και
+     δεν υπάρχει παντού, γι' αυτό το πεδίο με τη διεύθυνση μένει πάντα: αν
+     αποτύχει η αντιγραφή, διαλέγεται με το χέρι. */
+  function initShare() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-share]'), function (bar) {
+      var url = bar.getAttribute('data-share-url');
+      var title = bar.getAttribute('data-share-title') || document.title;
+      var native = bar.querySelector('[data-share-native]');
+      var copy = bar.querySelector('[data-share-copy-button]');
+      var label = bar.querySelector('[data-share-copy-label]');
+      var field = bar.querySelector('[data-share-field]');
+
+      if (native && navigator.share) {
+        native.hidden = false;
+        bar.classList.add('has-native');
+        native.addEventListener('click', function () {
+          navigator.share({ title: title, url: url }).catch(function () {});
+        });
+      }
+
+      if (!copy || !label || !field) return;
+
+      copy.addEventListener('click', function () {
+        function done() {
+          var was = bar.getAttribute('data-share-copy');
+          label.textContent = bar.getAttribute('data-share-copied');
+          copy.classList.add('is-done');
+          window.setTimeout(function () {
+            label.textContent = was;
+            copy.classList.remove('is-done');
+          }, 2400);
+        }
+
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(url).then(done, select);
+
+          return;
+        }
+
+        select();
+      });
+
+      /* Η διεύθυνση διαλεγμένη, έτοιμη για Ctrl+C. */
+      function select() {
+        field.hidden = false;
+        field.focus();
+        field.setSelectionRange(0, field.value.length);
+      }
+    });
+  }
+
   initProfiles();
   initAuthorSelect();
   initCarousels();
+  initShare();
 })();
