@@ -252,7 +252,11 @@ import { motif } from './motifs.js';
 
   /* ---- κοινοποίηση ---- */
   /* Ο σύνδεσμος είναι η διεύθυνση της ίδιας της σελίδας, οπότε όποιος τον
-     πατήσει έρχεται κατευθείαν εκεί. */
+     πατήσει έρχεται κατευθείαν εκεί.
+
+     Ο διάλογος του συστήματος δεν ανοίγει ποτέ από μόνος του: στον
+     υπολογιστή είναι ένα παράθυρο που δεν γράφει πουθενά «αντιγραφή», και ο
+     κόσμος έμενε να ψάχνει. Είναι επιλογή μέσα στο μενού, με το όνομά της. */
 
   /* Το πρόχειρο του browser θέλει ασφαλή σύνδεση και δεν υπάρχει παντού· από
      κάτω του μένει το παλιό κόλπο με το κρυφό πεδίο, που δουλεύει και χωρίς. */
@@ -279,77 +283,81 @@ import { motif } from './motifs.js';
     });
   }
 
-  function flash(button) {
-    button.classList.add('is-done');
-    window.setTimeout(function () { button.classList.remove('is-done'); }, 2400);
-  }
-
-  /* Το μικρό κουμπί: πάνω στις κάρτες και στην κορυφή κάθε άρθρου. Ένα
-     πάτημα — ο διάλογος του τηλεφώνου όπου υπάρχει, αλλιώς αντιγραφή. */
-  function initShareButtons() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-share-mini]'), function (button) {
+  /* Κάθε κουμπί αντιγραφής, όπου κι αν στέκεται: στην κάρτα, στο μενού, στη
+     μπάρα. Το ίδιο πάτημα, η ίδια επιβεβαίωση. */
+  function initCopyLinks() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-share-copy-link]'), function (button) {
       button.addEventListener('click', function (event) {
         event.preventDefault();
         event.stopPropagation();
 
         var url = button.getAttribute('data-share-url');
-        var title = button.getAttribute('data-share-title') || document.title;
 
-        if (navigator.share) {
-          navigator.share({ title: title, url: url }).catch(function () {});
+        copyText(url).then(function () {
+          button.classList.add('is-done');
+          window.setTimeout(function () { button.classList.remove('is-done'); }, 2400);
+        }, function () {
+          /* Ούτε αυτό; Τότε η διεύθυνση διαλεγμένη, έτοιμη για Ctrl+C. */
+          var panel = button.closest('[data-share-menu], .share-bar');
+          var field = panel && panel.querySelector('[data-share-field]');
 
-          return;
-        }
+          if (field) {
+            field.focus();
+            field.setSelectionRange(0, field.value.length);
 
-        copyText(url).then(function () { flash(button); }, function () {
+            return;
+          }
+
           window.prompt(button.getAttribute('data-share-copied'), url);
         });
       });
     });
   }
 
-  /* Η μπάρα στο τέλος: τα ίδια, μαζί με τα κουμπιά κάθε εφαρμογής και την
-     ίδια τη διεύθυνση για όποιον προτιμά να τη διαλέξει με το χέρι. */
-  function initShare() {
-    initShareButtons();
+  /* Ο διάλογος της συσκευής, μόνο όπου υπάρχει και μόνο όταν ζητηθεί. */
+  function initNativeShare() {
+    if (!navigator.share) return;
 
-    Array.prototype.forEach.call(document.querySelectorAll('[data-share]'), function (bar) {
-      var url = bar.getAttribute('data-share-url');
-      var title = bar.getAttribute('data-share-title') || document.title;
-      var native = bar.querySelector('[data-share-native]');
-      var copy = bar.querySelector('[data-share-copy-button]');
-      var label = bar.querySelector('[data-share-copy-label]');
-      var field = bar.querySelector('[data-share-field]');
-
-      if (native && navigator.share) {
-        native.hidden = false;
-        bar.classList.add('has-native');
-        native.addEventListener('click', function () {
-          navigator.share({ title: title, url: url }).catch(function () {});
-        });
-      }
-
-      if (!copy || !label || !field) return;
-
-      copy.addEventListener('click', function () {
-        copyText(url).then(function () {
-          var was = bar.getAttribute('data-share-copy');
-          label.textContent = bar.getAttribute('data-share-copied');
-          copy.classList.add('is-done');
-          window.setTimeout(function () {
-            label.textContent = was;
-            copy.classList.remove('is-done');
-          }, 2400);
-        }, select);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-share-native]'), function (button) {
+      button.hidden = false;
+      button.addEventListener('click', function () {
+        navigator.share({
+          title: button.getAttribute('data-share-title') || document.title,
+          url: button.getAttribute('data-share-url'),
+        }).catch(function () {});
       });
-
-      /* Η διεύθυνση διαλεγμένη, έτοιμη για Ctrl+C. */
-      function select() {
-        field.hidden = false;
-        field.focus();
-        field.setSelectionRange(0, field.value.length);
-      }
     });
+  }
+
+  /* Το μενού κλείνει όταν ο αναγνώστης κοιτάξει αλλού ή πατήσει Esc — όπως
+     ο επιλογέας συντάκτη. */
+  function initShareMenus() {
+    var menus = Array.prototype.slice.call(document.querySelectorAll('[data-share-menu]'));
+
+    if (!menus.length) return;
+
+    document.addEventListener('click', function (event) {
+      menus.forEach(function (menu) {
+        if (menu.open && !menu.contains(event.target)) menu.open = false;
+      });
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') return;
+
+      menus.forEach(function (menu) {
+        if (!menu.open) return;
+
+        menu.open = false;
+        menu.querySelector('summary').focus();
+      });
+    });
+  }
+
+  function initShare() {
+    initCopyLinks();
+    initNativeShare();
+    initShareMenus();
   }
 
   initProfiles();

@@ -540,6 +540,47 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 }
 .share-top.is-done::after { right: auto; left: 0; }
 
+/* ---- το μενού κοινοποίησης ---- */
+/* Στην κορυφή ενός άρθρου. Η αντιγραφή είναι το πρώτο και πλατύτερο κουμπί
+   και η διεύθυνση φαίνεται από κάτω της, ώστε να μη μαντεύει κανείς τι θα
+   αντιγραφεί ή πού να πατήσει. */
+
+.share-menu { position: relative; display: inline-block; }
+.share-menu > summary { list-style: none; cursor: pointer; }
+.share-menu > summary::-webkit-details-marker { display: none; }
+.share-menu[open] > summary { color: var(--green-700); }
+
+.share-menu-panel {
+  position: absolute; top: calc(100% + 10px); left: 0; z-index: 20;
+  width: min(340px, calc(100vw - var(--s-10)));
+  display: grid; gap: 10px;
+  padding: var(--s-5);
+  background: #fff; border: 1px solid var(--hair-soft);
+  border-radius: var(--r-lg); box-shadow: var(--shadow-lift);
+}
+.share-menu-apps { display: flex; flex-wrap: wrap; gap: 8px; }
+.share-menu-panel .share-url { margin-top: 0; }
+
+.share-more {
+  justify-self: start;
+  font-family: var(--font-head); font-weight: 700; font-size: .86rem;
+  color: var(--green-700); text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.share-more[hidden] { display: none; }
+.share-more:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; border-radius: 6px; }
+
+/* Το κουμπί αντιγραφής λέει ότι αντέγραψε, όπου κι αν στέκεται. */
+.share-chip.is-copy.is-done { background: var(--yellow); color: var(--ink); }
+.share-chip.is-copy.is-done > span:last-child { visibility: hidden; }
+.share-chip.is-copy.is-done::after {
+  content: attr(data-share-copied);
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  font-family: var(--font-head); font-weight: 700; font-size: .86rem;
+}
+.share-chip { position: relative; }
+
 /* ---- κοινοποίηση ---- */
 /* Στο κινητό αρκεί ένα κουμπί: ο διάλογος του τηλεφώνου έχει ήδη μέσα ό,τι
    εφαρμογή χρησιμοποιεί ο καθένας. Στον υπολογιστή δεν υπάρχει τέτοιος

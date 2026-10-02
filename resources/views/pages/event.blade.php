@@ -32,8 +32,8 @@
 
       <h1 style="font-size:clamp(2rem,4.5vw,3rem)">{{ $event->title }}</h1>
 
-      <x-share-button class="share-top" :url="route('events.show', $event)"
-                      :title="$event->title" :label="true" />
+      <x-share-menu class="share-top" :url="route('events.show', $event)"
+                    :title="$event->title" />
 
       {{-- Πότε και πού: οι δύο ερωτήσεις που φέρνουν κάποιον εδώ. --}}
       <div class="event-facts reveal reveal-d1">

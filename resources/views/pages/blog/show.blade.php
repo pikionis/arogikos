@@ -54,8 +54,8 @@
         <p class="lead article-lead reveal">{{ $article->excerpt }}</p>
       @endif
 
-      <x-share-button class="share-top" :url="route('blog.show', $article->slug)"
-                      :title="$article->title" :label="true" />
+      <x-share-menu class="share-top" :url="route('blog.show', $article->slug)"
+                    :title="$article->title" />
 
       @if ($article->authors->isNotEmpty())
       <div class="post-meta" style="margin-top:var(--s-6);font-size:1rem">

@@ -15,25 +15,21 @@
      πατήσει έρχεται κατευθείαν εδώ — όχι σε μια λίστα να το ψάχνει. --}}
 <section class="section-sm bg-white share-band">
     <div class="container">
-        <div class="share-bar reveal"
-             data-share
-             data-share-url="{{ $url }}"
-             data-share-title="{{ $title }}"
-             data-share-copy="{{ content('shared.share.copy') }}"
-             data-share-copied="{{ content('shared.share.copied') }}">
+        <div class="share-bar reveal">
 
             <p class="share-title">{{ content('shared.share.title') }}</p>
 
             <div class="share-actions">
                 {{-- Μόνο όπου υπάρχει ο διάλογος του συστήματος· η app.js το
                      αποκαλύπτει και κρύβει τα υπόλοιπα. --}}
-                <button type="button" class="btn btn-primary btn-sm share-native" data-share-native hidden>
-                    {{ content('shared.share.button') }}
-                </button>
-
-                <button type="button" class="share-chip is-copy" data-share-copy-button>
+                {{-- Η αντιγραφή πρώτη και πάντα ορατή: είναι αυτό που θέλει
+                     ο περισσότερος κόσμος, και το κουμπί το λέει. --}}
+                <button type="button" class="share-chip is-copy"
+                        data-share-copy-link
+                        data-share-url="{{ $url }}"
+                        data-share-copied="{{ content('shared.share.copied') }}">
                     <span aria-hidden="true">🔗</span>
-                    <span data-share-copy-label>{{ content('shared.share.copy') }}</span>
+                    <span>{{ content('shared.share.copy') }}</span>
                 </button>
 
                 <a class="share-chip" rel="noopener nofollow" target="_blank"
@@ -57,10 +53,15 @@
                 </a>
             </div>
 
-            {{-- Η ίδια η διεύθυνση, για όποιον προτιμά να τη διαλέξει με το
-                 χέρι — και για όταν το πρόχειρο του browser δεν παίζει. --}}
+            {{-- Η ίδια η διεύθυνση, πάντα ορατή: κανείς δεν χρειάζεται να
+                 μαντέψει τι θα αντιγραφεί, και διαλέγεται και με το χέρι. --}}
             <input class="share-url" type="text" readonly value="{{ $url }}"
                    aria-label="{{ content('shared.share.copy') }}" data-share-field>
+
+            <button type="button" class="share-more" data-share-native
+                    data-share-url="{{ $url }}" data-share-title="{{ $title }}" hidden>
+                {{ content('shared.share.more') }}
+            </button>
         </div>
     </div>
 </section>

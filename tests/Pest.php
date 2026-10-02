@@ -49,6 +49,7 @@ function conditionalKeys(): array
         // The share bar sits on a single article or event, not on the pages
         // that list them; ShareBarTest asserts each one where it does show.
         'shared.share.title', 'shared.share.button', 'shared.share.copy', 'shared.share.copied',
+        'shared.share.more',
         // These belong to a single event's own page, not to the list of
         // them; EventPageTest asserts each one where it does show.
         'events.event_crumb', 'events.photos_title', 'events.more_title', 'events.back',

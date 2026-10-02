@@ -172,7 +172,7 @@ it('puts a share button on every card in the list', function () {
 
     $html = $this->get(route('blog.index'))->assertOk()->getContent();
 
-    expect(substr_count($html, 'data-share-mini'))->toBe(3);
+    expect(substr_count($html, 'data-share-copy-link'))->toBe(3);
 
     foreach (Article::published()->get() as $article) {
         expect($html)->toContain('data-share-url="'.route('blog.show', $article->slug).'"');
@@ -190,7 +190,7 @@ it('puts one on every event in the list too', function () {
 
     $html = $this->get(route('events'))->assertOk()->getContent();
 
-    expect(substr_count($html, 'data-share-mini'))->toBe(2)
+    expect(substr_count($html, 'data-share-copy-link'))->toBe(2)
         ->and($html)->toContain('data-share-url="'.route('events.show', $soon).'"')
         ->and($html)->toContain('data-share-url="'.route('events.show', $past).'"');
 });
@@ -205,7 +205,7 @@ it('keeps the button out of the link rather than inside it', function () {
     // A <button> inside an <a> is neither one. The wrapper is what lets the
     // whole card stay a link while the button stays a button.
     expect($html)->toContain('class="card-wrap')
-        ->and($html)->toMatch('/<div[^>]*class="card-wrap[^"]*"[^>]*>\s*<button[^>]*data-share-mini/');
+        ->and($html)->toMatch('/<div[^>]*class="card-wrap[^"]*"[^>]*>\s*<button[^>]*data-share-copy-link/');
 });
 
 it('offers one at the top of an article as well as the bottom', function () {
@@ -213,7 +213,7 @@ it('offers one at the top of an article as well as the bottom', function () {
 
     $html = $this->get(route('blog.show', $article->slug))->assertOk()->getContent();
 
-    $top = mb_strpos($html, 'share-top');
+    $top = mb_strpos($html, 'data-share-menu');
     $bar = mb_strpos($html, 'share-bar');
 
     expect($top)->not->toBeFalse()
@@ -228,7 +228,7 @@ it('offers one at the top of an event as well', function () {
 
     $html = $this->get(route('events.show', $event))->assertOk()->getContent();
 
-    expect(mb_strpos($html, 'share-top'))->toBeLessThan(mb_strpos($html, 'share-bar'));
+    expect(mb_strpos($html, 'data-share-menu'))->toBeLessThan(mb_strpos($html, 'share-bar'));
 });
 
 it('names what each button shares, for a reader who cannot see the card', function () {
@@ -238,7 +238,51 @@ it('names what each button shares, for a reader who cannot see the card', functi
 
     // Nine identical "share" buttons on a page are nine identical
     // announcements; the title is what tells them apart.
+    // The card button has one job, and says which piece it does it for.
     expect($html)->toContain(
-        'aria-label="'.content('shared.share.button').': '.e($article->title).'"'
+        'aria-label="'.content('shared.share.copy').': '.e($article->title).'"'
     );
+});
+
+it('never hands the reader off to a dialog they did not ask for', function () {
+    $article = shareable();
+
+    $html = $this->get(route('blog.show', $article->slug))->getContent();
+    $js = file_get_contents(resource_path('js/app.js'));
+
+    // The system's own share window is an option inside the menu, with its
+    // name on it — not what happens when somebody presses "Κοινοποίηση".
+    // On a desktop that window says nothing about copying, which is exactly
+    // what sent people looking for a button that was not there.
+    expect($html)->toContain('data-share-native')
+        ->and($html)->toContain(e(content('shared.share.more')))
+        ->and($js)->toContain('function initNativeShare()')
+        ->and($js)->not->toContain('navigator.share({ title: title, url: url })');
+});
+
+it('puts copying first, and shows what will be copied', function () {
+    $article = shareable();
+
+    $html = $this->get(route('blog.show', $article->slug))->getContent();
+
+    preg_match('/<div class="share-menu-panel">.*?<\/div>\s*<\/details>/s', $html, $panel);
+
+    expect($panel)->not->toBeEmpty();
+
+    $copy = mb_strpos($panel[0], content('shared.share.copy'));
+    $facebook = mb_strpos($panel[0], 'facebook.com');
+
+    expect($copy)->toBeLessThan($facebook)
+        // And the address is right there, not a guess.
+        ->and($panel[0])->toContain('value="'.route('blog.show', $article->slug).'"');
+});
+
+it('opens the menu without a line of script', function () {
+    // <details> is keyboard-operable and announced as a disclosure on its
+    // own; the script only closes it when the reader looks elsewhere.
+    $html = $this->get(route('blog.show', shareable()->slug))->getContent();
+
+    expect($html)->toContain('data-share-menu')
+        ->and($html)->toMatch('/<details[^>]*class="[^"]*share-menu[^"]*"[^>]*data-share-menu>/')
+        ->and($html)->toContain('<summary class="share-mini has-label"');
 });
