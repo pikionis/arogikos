@@ -116,3 +116,51 @@ it('tells Google which picture is the logo', function () {
         // And it is still not the same thing as the wide share card.
         ->and($organisation['logo'])->not->toBe($organisation['image'] ?? null);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Ποια σελίδα απαντά στο όνομα του κέντρου
+|--------------------------------------------------------------------------
+*/
+
+it('puts the name and the town together on the front page, and nowhere else', function () {
+    $home = $this->get(route('home'))->assertOk()->getContent();
+    $contact = $this->get(route('contact'))->assertOk()->getContent();
+
+    $titleOf = function (string $html): string {
+        preg_match('/<title>([^<]*)<\/title>/', $html, $m);
+
+        return html_entity_decode($m[1] ?? '', ENT_QUOTES, 'UTF-8');
+    };
+
+    // "αρωγή κως" is how people look for it. Two pages answering that query
+    // equally well is how the wrong one came back.
+    expect($titleOf($home))->toContain('Αρωγή Κως')
+        ->and($titleOf($contact))->not->toContain('Κως');
+});
+
+it('tells Google the centre also goes by its name and town', function () {
+    $graph = StructuredData::site()['@graph'];
+
+    $organisation = collect($graph)->first(
+        fn (array $node) => in_array('LocalBusiness', (array) $node['@type'], true)
+    );
+
+    expect($organisation['alternateName'])->toBe('Αρωγή Κως');
+});
+
+it('ranks the front page above the rest in the sitemap', function () {
+    $xml = $this->get(route('sitemap'))->assertOk()->getContent();
+
+    preg_match_all('/<loc>([^<]+)<\/loc>\s*(?:<lastmod>[^<]*<\/lastmod>\s*)?<priority>([\d.]+)<\/priority>/', $xml, $m, PREG_SET_ORDER);
+
+    $priorities = [];
+    foreach ($m as [, $loc, $priority]) {
+        $priorities[$loc] = (float) $priority;
+    }
+
+    $home = $priorities[route('home')] ?? 0.0;
+
+    expect($home)->toBe(1.0)
+        ->and(collect($priorities)->except(route('home'))->max())->toBeLessThan($home);
+});

@@ -231,7 +231,7 @@ it('leaves fields out of the payload untouched', function () {
         ->assertOk()
         ->assertSeeText('Μόνο ο τίτλος')
         ->assertSeeText('Δίπλα στις οικογένειες της Κω από το 2009.')
-        ->assertSeeText('Τρεις τρόποι να στηρίξουμε το παιδί σας');
+        ->assertSeeText('Πώς μπορούμε να στηρίξουμε το παιδί σας');
 });
 
 it('never blanks a repeater band, even on a truncated submit', function () {

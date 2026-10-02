@@ -59,6 +59,9 @@ class StructuredData
             '@type' => ['EducationalOrganization', 'LocalBusiness'],
             '@id' => url('/').self::ORG_ID,
             'name' => setting('org_name', 'Αρωγή'),
+            // What people actually type to find it. Without this, the name
+            // and the town are two separate facts Google has to join up.
+            'alternateName' => trim(setting('org_name', 'Αρωγή').' '.setting('locality', 'Κως')),
             'url' => url('/'),
             'description' => setting('footer_tagline'),
             'inLanguage' => 'el',

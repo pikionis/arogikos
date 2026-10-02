@@ -21,7 +21,11 @@ class SitemapController extends Controller
 
             // Static pages. The site serves a fixed set of routes; the CMS
             // edits their content but never creates new ones.
-            foreach (['home', 'about', 'services', 'blog.index', 'events', 'gallery', 'contact'] as $name) {
+            // The front page is the one a search for the centre by name
+            // should land on; everything else said it was just as important.
+            $sitemap->add(Url::create(route('home'))->setPriority(1.0));
+
+            foreach (['about', 'services', 'blog.index', 'events', 'gallery', 'contact'] as $name) {
                 $sitemap->add(Url::create(route($name))->setPriority(0.8));
             }
 
