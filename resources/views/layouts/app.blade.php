@@ -12,7 +12,13 @@
     <meta name="description" content="@yield('meta_description', $defaultDescription)">
     <link rel="canonical" href="{{ url()->current() }}">
 
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="32x32">
+    {{-- Google draws the icon beside a search result from these, and will
+         not use one smaller than 48 square — so the 32 that used to be
+         declared here left the result with a blank space where the logo
+         belongs. The .ico has carried a 48 frame all along; now it says so. --}}
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="48x48">
+    <link rel="icon" href="{{ asset('icon-192.png') }}" type="image/png" sizes="192x192">
+    <link rel="icon" href="{{ asset('icon-480.png') }}" type="image/png" sizes="480x480">
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
     <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 

@@ -98,6 +98,12 @@ class StructuredData
             $node['image'] = $image;
         }
 
+        // What Google puts beside the name in a knowledge panel. The share
+        // card is a wide picture with words on it; this is the mark itself.
+        if (is_file(public_path('icon-480.png'))) {
+            $node['logo'] = asset('icon-480.png');
+        }
+
         $node['areaServed'] = ['@type' => 'Place', 'name' => setting('locality', 'Κως')];
 
         return $node;

@@ -177,6 +177,13 @@ class BuildBrandImages extends Command
 
     /* ------------------------------------------------------------ favicons */
 
+    /**
+     * Sides Google accepts for a search result's icon: 48, or a multiple.
+     *
+     * @var array<int, int>
+     */
+    private const ICON_SIZES = [48, 96, 192, 480];
+
     private function favicons(string $out): void
     {
         // Apple ignores transparency and composites on black, so the touch
@@ -194,6 +201,21 @@ class BuildBrandImages extends Command
 
         file_put_contents("$out/favicon.ico", $this->ico($icon, [16, 32, 48]));
         $this->info("  wrote $out/favicon.ico  (16, 32, 48)");
+
+        // Google wants the icon for a search result as a square PNG whose
+        // side is a multiple of 48, and will not take 32 — which is all the
+        // page offered it, so it drew nothing at all. 512 doubles as the
+        // logo in the structured data.
+        foreach (self::ICON_SIZES as $size) {
+            $png = new Canvas($size, $size, $size < 128 ? 8 : 2);
+            $png->fill(self::OFF_WHITE);
+            $this->logoMark($png, $size * 0.0625, $size * 0.0625, $size * 0.875);
+            $png->save("$out/icon-{$size}.png");
+        }
+
+        $this->info('  wrote '.implode(', ', array_map(
+            fn (int $s) => "$out/icon-$s.png", self::ICON_SIZES
+        )));
 
         file_put_contents("$out/favicon.svg", $this->svgIcon());
         $this->info("  wrote $out/favicon.svg");
