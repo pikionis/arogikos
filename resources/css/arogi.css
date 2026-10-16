@@ -201,11 +201,15 @@ image-slot { display: block; width: 100%; height: 100%; }
 .nav-cta { margin-left: var(--s-2); }
 .burger { display: none; margin-left: auto; width: 46px; height: 46px; border-radius: var(--r-md); align-items: center; justify-content: center; }
 .burger:hover { background: var(--soft-green); }
-.burger span { display: block; width: 22px; height: 2.5px; background: var(--ink); border-radius: 2px; position: relative; transition: transform .3s var(--ease-out), opacity .2s; }
-.burger span + span { margin-top: 5px; }
-.burger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+/* Ολόκληρα pixel, επίτηδες.
+   Οι τρεις παύλες ήταν 2.5px με 5px κενό, άρα κάθε μία έπεφτε σε άλλο σημείο
+   του μισού pixel: η οθόνη στρογγυλοποιούσε την καθεμία αλλιώς και η μεσαία
+   έβγαινε αισθητά πιο αχνή — έμοιαζε με επιλογή, ήταν στρογγυλοποίηση. */
+.burger span { display: block; width: 22px; height: 3px; background: var(--ink); border-radius: 2px; position: relative; transition: transform .3s var(--ease-out), opacity .2s; }
+.burger span + span { margin-top: 4px; }
+.burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .burger.open span:nth-child(2) { opacity: 0; }
-.burger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+.burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* mobile drawer */
 .mobile-menu {

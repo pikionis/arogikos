@@ -168,3 +168,22 @@ it('keeps the admin palette in step with the site palette', function () {
         expect(strtolower($admin))->toContain('--color-'.$name.': '.strtolower(token($name)));
     }
 });
+
+it('draws the menu icon on whole pixels', function () {
+    $css = file_get_contents(resource_path('css/arogi.css'));
+
+    preg_match('/\.burger span \{[^}]*height: ([\d.]+)px/', $css, $height);
+    preg_match('/\.burger span \+ span \{[^}]*margin-top: ([\d.]+)px/', $css, $gap);
+
+    // Three bars at a half-pixel height each land on a different part of a
+    // device pixel, so the screen rounds each one differently and the middle
+    // one comes out visibly fainter. It read as a design decision; it was
+    // rounding.
+    expect((float) $height[1])->toBe(floor((float) $height[1]))
+        ->and((float) $gap[1])->toBe(floor((float) $gap[1]));
+
+    // And the open state has to move bar one exactly onto bar two.
+    preg_match('/nth-child\(1\) \{ transform: translateY\(([\d.]+)px\)/', $css, $shift);
+
+    expect((float) $shift[1])->toBe((float) $height[1] + (float) $gap[1]);
+});
