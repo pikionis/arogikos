@@ -42,9 +42,9 @@
   // keeps working however many services there are and in whatever order the
   // panel puts them.
   $layouts = [
-    ['section' => 'bg-white', 'rev' => false, 'media' => 'var(--soft-green)', 'tagBg' => 'var(--soft-green)', 'tagColor' => 'var(--green-700)'],
-    ['section' => 'bg-coral', 'rev' => true,  'media' => '#fff',              'tagBg' => '#fff',              'tagColor' => 'var(--coral-700)'],
-    ['section' => 'bg-white', 'rev' => false, 'media' => 'var(--soft-yellow)', 'tagBg' => 'var(--soft-yellow)', 'tagColor' => 'var(--yellow-700)'],
+    ['section' => 'bg-white', 'rev' => false, 'media' => 'var(--soft-green)'],
+    ['section' => 'bg-coral', 'rev' => true,  'media' => '#fff'],
+    ['section' => 'bg-white', 'rev' => false, 'media' => 'var(--soft-yellow)'],
   ];
 @endphp
 
@@ -64,7 +64,6 @@
           @endif
         </div>
         <div>
-          <span class="zig-tag" style="background:{{ $layout['tagBg'] }};color:{{ $layout['tagColor'] }}">{{ content('services.tag_prefix') }} {{ str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT) }}</span>
           <h2>{{ $service['name'] ?? '' }}</h2>
           <p class="lead" style="margin:var(--s-4) 0 var(--s-5)">{{ $service['lead'] ?? '' }}</p>
           @if (filled($service['signs'] ?? []) && filled(content('services.signs_heading')))
