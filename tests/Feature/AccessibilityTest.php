@@ -169,21 +169,40 @@ it('keeps the admin palette in step with the site palette', function () {
     }
 });
 
-it('draws the menu icon on whole pixels', function () {
+it('makes the menu button the mark of the centre', function () {
+    $html = $this->get(route('home'))->assertOk()->getContent();
+
+    preg_match('/<button class="burger".*?<\/button>/s', $html, $m);
+
+    expect($m)->not->toBeEmpty()
+        // The three shapes of the logo, not three bars.
+        ->and($m[0])->toContain('mk-ring')
+        ->and($m[0])->toContain('mk-bar')
+        ->and($m[0])->toContain('mk-arch')
+        // And the extra stroke that only the menu button carries.
+        ->and($m[0])->toContain('mk-cross')
+        ->and($m[0])->not->toContain('<span></span>');
+});
+
+it('leaves the brand logo alone', function () {
+    $html = $this->get(route('home'))->getContent();
+
+    preg_match('/<a class="brand".*?<\/a>/s', $html, $m);
+
+    // The closing stroke belongs to the button, not to every mark on the page.
+    expect($m[0])->toContain('mk-ring')
+        ->and($m[0])->not->toContain('mk-cross');
+});
+
+it('opens the mark rather than snapping to a different picture', function () {
     $css = file_get_contents(resource_path('css/arogi.css'));
 
-    preg_match('/\.burger span \{[^}]*height: ([\d.]+)px/', $css, $height);
-    preg_match('/\.burger span \+ span \{[^}]*margin-top: ([\d.]+)px/', $css, $gap);
-
-    // Three bars at a half-pixel height each land on a different part of a
-    // device pixel, so the screen rounds each one differently and the middle
-    // one comes out visibly fainter. It read as a design decision; it was
-    // rounding.
-    expect((float) $height[1])->toBe(floor((float) $height[1]))
-        ->and((float) $gap[1])->toBe(floor((float) $gap[1]));
-
-    // And the open state has to move bar one exactly onto bar two.
-    preg_match('/nth-child\(1\) \{ transform: translateY\(([\d.]+)px\)/', $css, $shift);
-
-    expect((float) $shift[1])->toBe((float) $height[1] + (float) $gap[1]);
+    // Each shape moves on its own, slightly after the one before it, and the
+    // cross it ends on is drawn in the brand's coral.
+    expect($css)->toContain('.burger.open .burger-mark .mk-ring')
+        ->and($css)->toContain('.burger.open .burger-mark .mk-bar { transform: rotate(45deg); }')
+        ->and($css)->toContain('.burger.open .burger-mark .mk-cross { opacity: 1; transform: rotate(-45deg); }')
+        ->and($css)->toContain('.burger-mark .mk-cross { transition-delay: .14s; }')
+        // Still still for anybody who asked for less motion.
+        ->and($css)->toContain('.burger-mark > * { transition: none; }');
 });

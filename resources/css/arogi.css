@@ -201,15 +201,42 @@ image-slot { display: block; width: 100%; height: 100%; }
 .nav-cta { margin-left: var(--s-2); }
 .burger { display: none; margin-left: auto; width: 46px; height: 46px; border-radius: var(--r-md); align-items: center; justify-content: center; }
 .burger:hover { background: var(--soft-green); }
-/* Ολόκληρα pixel, επίτηδες.
-   Οι τρεις παύλες ήταν 2.5px με 5px κενό, άρα κάθε μία έπεφτε σε άλλο σημείο
-   του μισού pixel: η οθόνη στρογγυλοποιούσε την καθεμία αλλιώς και η μεσαία
-   έβγαινε αισθητά πιο αχνή — έμοιαζε με επιλογή, ήταν στρογγυλοποίηση. */
-.burger span { display: block; width: 22px; height: 3px; background: var(--ink); border-radius: 2px; position: relative; transition: transform .3s var(--ease-out), opacity .2s; }
-.burger span + span { margin-top: 4px; }
-.burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.burger.open span:nth-child(2) { opacity: 0; }
-.burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+/* Το κουμπί του μενού είναι το ίδιο το σήμα.
+
+   Ήταν τρεις παύλες, και η μεσαία έβγαινε διαφορετική κατά λάθος: ύψος 2.5px
+   με κενό 5px σήμαινε ότι κάθε μία έπεφτε σε άλλο σημείο του μισού pixel και
+   η οθόνη στρογγυλοποιούσε την καθεμία αλλιώς — σε ένα τηλέφωνο ξεθώριαζε η
+   μεσαία, σε άλλο η πρώτη. Η λεπτομέρεια άξιζε· έπρεπε όμως να είναι απόφαση
+   και όχι στρογγυλοποίηση.
+
+   Τώρα είναι το σήμα: κίτρινος κύκλος πάνω, πράσινη γραμμή στη μέση, κοραλί
+   καμάρα με δύο πόδια από κάτω. Με το πάτημα ανοίγει — ο κύκλος πέφτει στο
+   κέντρο και σβήνει, η καμάρα μαζεύεται, η πράσινη γραμμή γέρνει και μια
+   κοραλί τη σταυρώνει. Το × το φτιάχνει το ίδιο το σήμα, με τα χρώματά του. */
+.burger-mark { width: 30px; height: 30px; }
+.burger-mark > * {
+  transform-box: view-box;
+  transform-origin: 50px 50px;
+  transition: transform .42s var(--ease-out), opacity .28s var(--ease-out);
+}
+/* Μικρή διαφορά η μία από την άλλη, ώστε να διαβάζεται ως κίνηση και όχι ως
+   αλλαγή εικόνας. */
+.burger-mark .mk-arch { transition-delay: .04s; }
+.burger-mark .mk-bar { transition-delay: .08s; }
+.burger-mark .mk-cross { transition-delay: .14s; }
+
+/* Κλειστό: η δεύτερη γραμμή περιμένει, μαζεμένη και αόρατη. */
+.burger-mark .mk-cross { opacity: 0; transform: rotate(-45deg) scale(.3); }
+
+.burger.open .burger-mark .mk-ring { transform: translateY(23px) scale(.3); opacity: 0; }
+.burger.open .burger-mark .mk-arch { transform: translateY(-16px) scale(.3); opacity: 0; }
+.burger.open .burger-mark .mk-bar { transform: rotate(45deg); }
+.burger.open .burger-mark .mk-cross { opacity: 1; transform: rotate(-45deg); }
+
+/* Όποιος έχει ζητήσει λιγότερη κίνηση παίρνει το αποτέλεσμα χωρίς το ταξίδι. */
+@media (prefers-reduced-motion: reduce) {
+  .burger-mark > * { transition: none; }
+}
 
 /* mobile drawer */
 .mobile-menu {
