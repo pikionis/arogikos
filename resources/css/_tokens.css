@@ -10,8 +10,8 @@
    ============================================================ */
 
 @theme {
-    --font-head: 'Comfortaa', system-ui, sans-serif;
-    --font-body: 'Source Sans 3', system-ui, sans-serif;
+    --font-head: 'Comfortaa', 'Comfortaa Fallback', system-ui, sans-serif;
+    --font-body: 'Source Sans 3', 'Source Sans 3 Fallback', system-ui, sans-serif;
 
     --color-green: #1e9e58;
     --color-green-700: #178049;

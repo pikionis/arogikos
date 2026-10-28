@@ -53,7 +53,9 @@
 
     @include('partials.analytics')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- The stylesheet inline: no request to wait for before the first paint --}}
+    <style>{!! Vite::content('resources/css/app.css') !!}</style>
+    @vite(['resources/js/app.js'])
 </head>
 <body data-page="@yield('body_page', '')" @class(['is-preview' => isset($preview)])>
     @isset($preview)

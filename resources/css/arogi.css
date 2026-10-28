@@ -32,7 +32,7 @@
 
   /* Type */
   --font-head: "Nunito", system-ui, sans-serif;
-  --font-body: "Source Sans 3", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Source Sans 3 Fallback", system-ui, sans-serif;
 
   /* Radii — the arch sets the tone */
   --r-sm: 12px;

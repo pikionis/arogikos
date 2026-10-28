@@ -37,5 +37,5 @@
    --font-head wins over the @theme token above; this later unlayered rule
    takes precedence and points the design's heading variable at Comfortaa. */
 :root {
-    --font-head: 'Comfortaa', system-ui, sans-serif;
+    --font-head: 'Comfortaa', 'Comfortaa Fallback', system-ui, sans-serif;
 }
