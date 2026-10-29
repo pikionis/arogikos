@@ -1,5 +1,5 @@
 @props([
-    'bg' => 'var(--coral)',
+    'bg' => 'var(--coral-700)',
 ])
 
 <div class="cta-band reveal" style="background:{{ $bg }}">

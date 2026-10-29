@@ -210,13 +210,13 @@
         <div class="deco deco-ring" style="width:160px;height:160px;top:-50px;left:-40px"></div>
         <div class="deco deco-dot" style="width:90px;height:90px;bottom:-30px;right:30px;background:var(--yellow-300)"></div>
       </x-slot:deco>
-      <span class="eyebrow" style="color:#fff;opacity:.9">{{ content('home.cta.eyebrow') }}</span>
+      <span class="eyebrow" style="color:#fff">{{ content('home.cta.eyebrow') }}</span>
       <h2 style="margin-top:12px">{{ content('home.cta.title') }}</h2>
       <p>{{ content('home.cta.text') }}</p>
       <div style="display:flex;gap:var(--s-3);justify-content:center;flex-wrap:wrap">
         <a class="btn btn-white btn-lg" href="{{ route('contact') }}">{{ content('home.cta.button') }}</a>
         @if (filled(setting('phone')))
-          <a class="btn btn-lg" href="tel:{{ setting('phone_href', setting('phone')) }}" style="background:rgba(255,255,255,.16);color:#fff">☏ {{ setting('phone') }}</a>
+          <a class="btn btn-lg" href="tel:{{ setting('phone_href', setting('phone')) }}" style="background:rgba(0,0,0,.16);color:#fff">☏ {{ setting('phone') }}</a>
         @endif
       </div>
     </x-cta-band>

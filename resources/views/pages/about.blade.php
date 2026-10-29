@@ -105,7 +105,7 @@
 <section class="section-sm bg-white">
   <x-scene-backdrop for="about.cta" />
   <div class="container">
-    <x-cta-band bg="var(--green)">
+    <x-cta-band bg="var(--green-700)">
       <x-slot:deco>
         <div class="deco deco-dot" style="width:90px;height:90px;top:-30px;left:8%;background:var(--yellow-300)"></div>
         <div class="deco deco-ring" style="width:130px;height:130px;bottom:-50px;right:5%;border-color:var(--coral-300)"></div>
