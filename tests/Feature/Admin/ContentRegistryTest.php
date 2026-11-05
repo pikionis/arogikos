@@ -160,8 +160,9 @@ it('declares every key the Blade templates actually ask for', function () {
             continue;
         }
 
+        // Not Vite::content(), which takes a file path, not a registry key.
         preg_match_all(
-            '/\bcontent(?:_lines|_items|_image)?\(\s*[\'"]([^\'"]+)[\'"]/',
+            '/(?<!::)\bcontent(?:_lines|_items|_image)?\(\s*[\'"]([^\'"]+)[\'"]/',
             (string) file_get_contents($file->getPathname()),
             $matches
         );

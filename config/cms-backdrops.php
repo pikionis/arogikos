@@ -25,7 +25,10 @@ return [
     // Οι υπηρεσίες: τι κάνει το κέντρο.
     'home.services' => ['network', 'branching', 'play', 'growth'],
 
-    // «Γιατί Αρωγή»: ο τρόπος, όχι η υπηρεσία.
+    // Η ιστορία μας.
+    'home.story' => ['growth', 'journey', 'september'],
+
+    // Οι αρχές μας: ο τρόπος, όχι η υπηρεσία.
     'home.why' => ['growth', 'family', 'calm', 'balance'],
 
     // Τα τελευταία άρθρα: γραφή και ανάγνωση.
@@ -45,12 +48,6 @@ return [
     'services.cta' => ['journey', 'bridge', 'growth'],
 
     /* ---------------------------------------------------------- Σχετικά */
-
-    // Η ιστορία μας.
-    'about.story' => ['growth', 'journey', 'september'],
-
-    // Αποστολή & αξίες.
-    'about.values' => ['calm', 'balance', 'family', 'growth'],
 
     // Η ομάδα.
     'about.team' => ['network', 'friends', 'family'],

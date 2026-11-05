@@ -205,12 +205,14 @@ it('sets the bios flush on both edges as well', function () {
     }
 });
 
-it('gives up justifying on a narrow screen', function () {
+it('justifies on every screen, narrow ones included', function () {
     $css = file_get_contents(resource_path('css/arogi.css'));
 
-    // A phone line holds a handful of words; flush edges there cost more in
-    // gaps than the straight edge is worth — for the article and the bios.
+    // The centre asked for full justification. Hyphenation stays on precisely
+    // because of it: on a short line it is the only thing keeping the spaces
+    // between words from opening into rivers.
     expect($css)->toContain('.article-body p,
   .profile-bio-text,
-  .profile-modal-bio { text-align: start; hyphens: manual; }');
+  .profile-modal-bio { hyphens: auto; -webkit-hyphens: auto; }')
+        ->and($css)->not->toContain('text-align: start; hyphens: manual;');
 });

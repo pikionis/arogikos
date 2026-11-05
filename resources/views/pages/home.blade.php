@@ -121,7 +121,32 @@
   </div>
 </section>
 
-<!-- ============ WHY ΑΡΩΓΗ ============ -->
+<!-- ============ STORY ============ -->
+<section class="section bg-white">
+  <x-scene-backdrop for="home.story" />
+  <div class="container">
+    <div class="grid-2" style="gap:var(--s-12);align-items:center">
+      <div class="reveal">
+        <span class="eyebrow">{{ content('home.story.eyebrow') }}</span>
+        <h2 style="margin:12px 0 var(--s-5)">{{ content('home.story.title') }}</h2>
+        <div class="story-prose" style="color:var(--ink-600);font-size:1.08rem">
+          {!! content('home.story.body') !!}
+        </div>
+      </div>
+      <div class="sunrise-stage frame-soft" style="aspect-ratio:1/1;position:relative;background:linear-gradient(180deg,#FFF7E6 0%,#FCEEE9 100%);overflow:hidden">
+        <svg viewBox="0 0 400 400" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true">
+          <g class="sunrise-glow"><circle cx="200" cy="250" r="150" fill="#F9D27E" opacity=".35"/></g>
+          <g class="sunrise-sun"><circle cx="200" cy="250" r="60" fill="#F4B62A"/></g>
+          <rect x="0" y="248" width="400" height="10" rx="5" fill="#1E9E58"/>
+          <path d="M120 258 A80 80 0 0 1 280 258" fill="none" stroke="#E26D5A" stroke-width="18" stroke-linecap="round"/>
+          <rect x="170" y="190" width="60" height="68" rx="6" fill="#178049"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ΟΙ ΑΡΧΕΣ ΜΑΣ ============ -->
 <section class="section bg-green why-row arch-top">
   <x-scene-backdrop for="home.why" />
   <div class="container">

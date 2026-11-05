@@ -30,7 +30,7 @@
         {{ content('events.event_crumb') }}
       </p>
 
-      <h1 style="font-size:clamp(2rem,4.5vw,3rem)">{{ $event->title }}</h1>
+      <h1 style="font-size:clamp(1.7rem,3.4vw,2.3rem)">{{ $event->title }}</h1>
 
       <x-share-menu class="share-top" :url="route('events.show', $event)"
                     :title="$event->title" />

@@ -197,7 +197,7 @@ it('gives an article a full breadcrumb trail', function () {
     );
 
     expect(array_column($trail['itemListElement'], 'name'))
-        ->toBe(['Αρχική', 'Blog', 'Ένα άρθρο'])
+        ->toBe(['Αρχική', 'Άρθρα', 'Ένα άρθρο'])
         ->and($trail['itemListElement'][0]['position'])->toBe(1);
 });
 
@@ -209,7 +209,7 @@ it('gives the inner pages a breadcrumb trail too', function (string $routeName, 
     expect($trail)->not->toBeNull()
         ->and(array_column($trail['itemListElement'], 'name'))->toBe(['Αρχική', $label]);
 })->with([
-    ['about', 'Σχετικά με εμάς'],
+    ['about', 'Η ομάδα μας'],
     ['services', 'Υπηρεσίες'],
     ['contact', 'Επικοινωνία'],
     ['gallery', 'Gallery'],

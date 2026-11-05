@@ -230,20 +230,20 @@ it('leaves fields out of the payload untouched', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertSeeText('Μόνο ο τίτλος')
-        ->assertSeeText('Δίπλα στις οικογένειες της Κω από το 2009.')
+        ->assertSeeText('Δίπλα στις οικογένειες της Κω από το 2022.')
         ->assertSeeText('Πώς μπορούμε να στηρίξουμε το παιδί σας');
 });
 
 it('never blanks a repeater band, even on a truncated submit', function () {
     // Regression: an empty repeater payload used to store "[]", which wiped
-    // the four "Γιατί Αρωγή" points off the home page.
+    // the four points of "Οι αρχές μας" off the home page.
     $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'home'), [
         'fields' => ['why.items' => []],
     ]);
 
     expect(content_items('home.why.items'))->toHaveCount(4);
 
-    $this->get(route('home'))->assertOk()->assertSeeText('Εξατομικευμένη προσέγγιση');
+    $this->get(route('home'))->assertOk()->assertSeeText('Σεβασμός στον ρυθμό');
 });
 
 it('tops a short repeater submit back up from the shipped copy', function () {
@@ -260,7 +260,7 @@ it('tops a short repeater submit back up from the shipped copy', function () {
     expect($nav)->toHaveCount(6)
         ->and($nav[0]['label'])->toBe('Μόνο μία')
         // The rest fell back to the shipped labels.
-        ->and($nav[1]['label'])->toBe('Σχετικά με εμάς');
+        ->and($nav[1]['label'])->toBe('Η ομάδα μας');
 
     $this->get(route('home'))->assertOk()->assertSeeText('Μόνο μία');
 });
@@ -304,16 +304,16 @@ it('restores every original text for a page', function () {
 
 /* ------------------------------------------------------- sanitisation */
 
-it('strips scripts from the About page prose body', function () {
-    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'about'), [
+it('strips scripts from the story prose body', function () {
+    $this->actingAs(pagesUser(Role::Owner))->put(route('admin.pages.update', 'home'), [
         'fields' => ['story.body' => '<p>Η δική μας ιστορία</p><script>alert(1)</script>'],
     ]);
 
-    expect(content('about.story.body'))->toContain('Η δική μας ιστορία')
-        ->and(content('about.story.body'))->not->toContain('<script>');
+    expect(content('home.story.body'))->toContain('Η δική μας ιστορία')
+        ->and(content('home.story.body'))->not->toContain('<script>');
 
     // And the public page renders it unescaped, so this must stay clean.
-    $this->get(route('about'))
+    $this->get(route('home'))
         ->assertOk()
         ->assertSeeText('Η δική μας ιστορία')
         ->assertDontSee('alert(1)', false);
@@ -322,13 +322,13 @@ it('strips scripts from the About page prose body', function () {
 it('ships a story rather than an empty space under the heading', function () {
     // The page shipped with nothing below "Ξεκινήσαμε με μια απλή πεποίθηση",
     // because the text lived in a database row nobody had filled in.
-    $html = $this->get(route('about'))->assertOk()->getContent();
+    $html = $this->get(route('home'))->assertOk()->getContent();
 
     preg_match('/<div class="story-prose.*?<\/div>/s', $html, $prose);
 
     expect(strip_tags($prose[0] ?? ''))->not->toBe('')
         ->and($prose[0])->toContain('<p>')
-        ->and($html)->toContain(e(content('about.story.title')));
+        ->and($html)->toContain(e(content('home.story.title')));
 });
 
 it('edits the About page SEO from the one place that owns it', function () {

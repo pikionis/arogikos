@@ -67,11 +67,11 @@ it('keeps each band on its own subject', function () {
 });
 
 it('draws only from that shortlist', function () {
-    $allowed = config('cms-backdrops')['about.values'];
+    $allowed = config('cms-backdrops')['home.why'];
 
     $drawn = [];
     for ($i = 0; $i < 20; $i++) {
-        $drawn[] = (new Backdrop)->next('about.values');
+        $drawn[] = (new Backdrop)->next('home.why');
     }
 
     expect(array_diff(array_unique($drawn), $allowed))->toBe([]);

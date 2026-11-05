@@ -53,8 +53,19 @@
 
     @include('partials.analytics')
 
-    {{-- The stylesheet inline: no request to wait for before the first paint --}}
-    <style>{!! Vite::content('resources/css/app.css') !!}</style>
+    {{-- Το stylesheet μπαίνει μέσα στη σελίδα: η πρώτη ζωγραφιά δεν περιμένει
+         κανένα αίτημα.
+
+         Στα τεστ μπαίνει ως σύνδεσμος. Αλλιώς κάθε σελίδα κουβαλά ολόκληρο το
+         stylesheet, και κάθε έλεγχος της μορφής «η σελίδα ΔΕΝ περιέχει X»
+         πέφτει πάνω στο όνομα μιας κλάσης μέσα του — ογδόντα πέντε τεστ
+         έγιναν έτσι κόκκινα χωρίς να έχει χαλάσει τίποτα στο site. Το ίδιο το
+         inline το φυλάει το PerformanceTest. --}}
+    @if (config('arogi.inline_css'))
+        <style>{!! Vite::content('resources/css/app.css') !!}</style>
+    @else
+        @vite(['resources/css/app.css'])
+    @endif
     @vite(['resources/js/app.js'])
 </head>
 <body data-page="@yield('body_page', '')" @class(['is-preview' => isset($preview)])>

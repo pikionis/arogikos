@@ -209,42 +209,20 @@ image-slot { display: block; width: 100%; height: 100%; }
 .nav-cta { margin-left: var(--s-2); }
 .burger { display: none; margin-left: auto; width: 46px; height: 46px; border-radius: var(--r-md); align-items: center; justify-content: center; }
 .burger:hover { background: var(--soft-green); }
-/* Το κουμπί του μενού είναι το ίδιο το σήμα.
+/* Τρεις γραμμές στα χρώματα του σήματος.
 
-   Ήταν τρεις παύλες, και η μεσαία έβγαινε διαφορετική κατά λάθος: ύψος 2.5px
-   με κενό 5px σήμαινε ότι κάθε μία έπεφτε σε άλλο σημείο του μισού pixel και
-   η οθόνη στρογγυλοποιούσε την καθεμία αλλιώς — σε ένα τηλέφωνο ξεθώριαζε η
-   μεσαία, σε άλλο η πρώτη. Η λεπτομέρεια άξιζε· έπρεπε όμως να είναι απόφαση
-   και όχι στρογγυλοποίηση.
-
-   Τώρα είναι το σήμα: κίτρινος κύκλος πάνω, πράσινη γραμμή στη μέση, κοραλί
-   καμάρα με δύο πόδια από κάτω. Με το πάτημα ανοίγει — ο κύκλος πέφτει στο
-   κέντρο και σβήνει, η καμάρα μαζεύεται, η πράσινη γραμμή γέρνει και μια
-   κοραλί τη σταυρώνει. Το × το φτιάχνει το ίδιο το σήμα, με τα χρώματά του. */
-.burger-mark { width: 30px; height: 30px; }
-.burger-mark > * {
-  transform-box: view-box;
-  transform-origin: 50px 50px;
-  transition: transform .42s var(--ease-out), opacity .28s var(--ease-out);
-}
-/* Μικρή διαφορά η μία από την άλλη, ώστε να διαβάζεται ως κίνηση και όχι ως
-   αλλαγή εικόνας. */
-.burger-mark .mk-arch { transition-delay: .04s; }
-.burger-mark .mk-bar { transition-delay: .08s; }
-.burger-mark .mk-cross { transition-delay: .14s; }
-
-/* Κλειστό: η δεύτερη γραμμή περιμένει, μαζεμένη και αόρατη. */
-.burger-mark .mk-cross { opacity: 0; transform: rotate(-45deg) scale(.3); }
-
-.burger.open .burger-mark .mk-ring { transform: translateY(23px) scale(.3); opacity: 0; }
-.burger.open .burger-mark .mk-arch { transform: translateY(-16px) scale(.3); opacity: 0; }
-.burger.open .burger-mark .mk-bar { transform: rotate(45deg); }
-.burger.open .burger-mark .mk-cross { opacity: 1; transform: rotate(-45deg); }
-
-/* Όποιος έχει ζητήσει λιγότερη κίνηση παίρνει το αποτέλεσμα χωρίς το ταξίδι. */
-@media (prefers-reduced-motion: reduce) {
-  .burger-mark > * { transition: none; }
-}
+   Ολόκληρα pixel, επίτηδες: με ύψος 2.5px και κενό 5px κάθε γραμμή έπεφτε σε
+   άλλο σημείο του μισού pixel, η οθόνη στρογγυλοποιούσε την καθεμία αλλιώς
+   και μία έβγαινε αισθητά πιο αχνή από τις άλλες — σε κάθε συσκευή άλλη. */
+.burger span { display: block; width: 24px; height: 3px; border-radius: 2px; position: relative; transition: transform .3s var(--ease-out), opacity .2s; }
+.burger span:nth-child(1) { background: var(--yellow); }
+.burger span:nth-child(2) { background: var(--green); }
+.burger span:nth-child(3) { background: var(--coral); }
+.burger span + span { margin-top: 4px; }
+/* Ανοιχτό: η μεσαία σβήνει και οι άλλες δύο σταυρώνουν. */
+.burger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.burger.open span:nth-child(2) { opacity: 0; }
+.burger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* mobile drawer */
 .mobile-menu {
@@ -382,7 +360,7 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .cat-pill.green { background: var(--soft-green); color: var(--green-800); }
 .cat-pill.coral { background: var(--soft-coral); color: var(--coral-800); }
 .cat-pill.yellow { background: var(--soft-yellow); color: var(--yellow-800); }
-.post-card h3 { font-size: 1.22rem; line-height: 1.25; }
+.post-card h3 { font-size: 1.4rem; line-height: 1.25; }
 .post-meta { display: flex; align-items: center; gap: var(--s-2); margin-top: auto; padding-top: var(--s-3); color: var(--ink-400); font-size: .9rem; }
 .avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: .85rem; color: #fff; flex: none; }
 .avatar.g { background: var(--green-700); } .avatar.c { background: var(--coral-700); }
@@ -665,11 +643,19 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 
 /* ---- article ---- */
 /* Η περίληψη κάτω από τον τίτλο του άρθρου. */
-.article-lead { margin-top: var(--s-5); max-width: none; color: var(--ink-600); }
+.article-lead {
+  margin-top: var(--s-5); max-width: none; color: var(--ink-600);
+  text-align: justify; text-justify: inter-word; hyphens: auto; -webkit-hyphens: auto;
+}
+
+/* Το κείμενο της ιστορίας, όπου κι αν στέκεται. */
+.story-prose p {
+  text-align: justify; text-justify: inter-word; hyphens: auto; -webkit-hyphens: auto;
+}
 
 .article-body { max-width: none; }
 .article-body p {
-  margin-block: var(--s-5); line-height: 1.8; font-size: 1.12rem; color: #3a352f;
+  margin-block: var(--s-5); line-height: 1.8; font-size: 1.18rem; color: #3a352f;
   /* Ίσιο και από τις δύο πλευρές. Με συλλαβισμό: χωρίς αυτόν, το justify
      ανοίγει μεγάλα κενά ανάμεσα στις λέξεις και το μάτι χάνει τη γραμμή. */
   text-align: justify;
@@ -678,12 +664,13 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
   -webkit-hyphens: auto;
 }
 
-/* Σε στενή οθόνη η γραμμή χωράει λίγες λέξεις, οπότε το justify βγάζει
-   ποτάμια κενού αντί για ίσια άκρη. Εκεί μένει στοιχισμένο αριστερά. */
+/* Πλήρης στοίχιση και στο κινητό, όπως ζητήθηκε. Ο συλλαβισμός μένει
+   αναμμένος ακριβώς γι' αυτό: σε στενή γραμμή είναι το μόνο που εμποδίζει το
+   justify να ανοίξει ποτάμια κενού ανάμεσα στις λέξεις. */
 @media (max-width: 560px) {
   .article-body p,
   .profile-bio-text,
-  .profile-modal-bio { text-align: start; hyphens: manual; }
+  .profile-modal-bio { hyphens: auto; -webkit-hyphens: auto; }
 }
 
 /* Ο αναγνώστης που έχει ζητήσει τα πάντα πιο απλά τα παίρνει πιο απλά. */
@@ -809,7 +796,7 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
 /* ---- team ---- */
 .team-card { text-align: center; display: flex; flex-direction: column; height: 100%; }
 .team-photo { width: 180px; height: 200px; margin: 0 auto var(--s-4); }
-.team-card h3 { font-size: 1.2rem; }
+.team-card h2, .team-card h3 { font-size: 1.2rem; }
 .team-card .role { color: var(--coral-700); font-family: var(--font-head); font-weight: 700; font-size: .95rem; margin-bottom: 8px; }
 .team-card p { color: var(--ink-600); font-size: .96rem; }
 

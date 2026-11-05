@@ -45,7 +45,7 @@
     <div style="padding-top:var(--s-12)" class="reveal">
       <p class="breadcrumb"><a href="{{ route('home') }}">{{ home_label() }}</a> · <a href="{{ route('blog.index') }}">{{ content('blog.hero.crumb') }}</a> · {{ content('blog.article_crumb') }}</p>
       <span class="cat-pill {{ $color }}" style="margin-bottom:var(--s-4);display:inline-block">{{ $article->category_label }}</span>
-      <h1 style="font-size:clamp(2rem,4.5vw,3rem)">{{ $article->title }}</h1>
+      <h1 style="font-size:clamp(1.7rem,3.4vw,2.3rem)">{{ $article->title }}</h1>
 
       {{-- Η περίληψη ήταν αόρατη: τη γράφει ο συντάκτης και πήγαινε μόνο στο
            <meta description> και στα social. Εδώ κάνει τη δουλειά της —

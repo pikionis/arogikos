@@ -32,11 +32,11 @@
 
             <a class="btn btn-coral nav-cta desk" href="{{ route('contact') }}">{{ content('shared.nav_cta') }}</a>
 
-            {{-- Το κουμπί του μενού είναι το σήμα του κέντρου: κύκλος πάνω,
-                 γραμμή στη μέση, καμάρα με δύο πόδια από κάτω. Με το πάτημα
-                 ανοίγει — τα σχήματα φεύγουν από τη θέση τους και σταυρώνουν. --}}
+            {{-- Τρεις γραμμές στα χρώματα του σήματος: κίτρινη, πράσινη,
+                 κοραλί. Το ευρετήριο διαβάζεται αμέσως ως ευρετήριο, και τα
+                 χρώματα το κρατούν δικό μας. --}}
             <button class="burger" id="burger" aria-label="Μενού" aria-expanded="false">
-                <x-logo-mark class="burger-mark" :burger="true" />
+                <span></span><span></span><span></span>
             </button>
         </div>
     </nav>
