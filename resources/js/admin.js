@@ -81,12 +81,24 @@ Alpine.data('categoryPicker', (config) => ({
     message: '',
     error: false,
     editing: null,
-    selected: config.selected || '',
+    selected: config.selected || [],
     options: config.options || [],
     colors: config.colors || {},
     motifs: config.motifs || {},
     form: { label: '', color: 'green', motif: 'book' },
     newForm: { label: '', color: 'green', motif: 'book' },
+
+    /* Η σειρά μετράει: η πρώτη κατηγορία βάφει την κάρτα, οπότε κρατιέται η
+       σειρά που τις τσέκαρε κανείς και όχι η σειρά της λίστας. */
+    pick(key, on) {
+        if (on) {
+            if (!this.selected.includes(key)) this.selected.push(key);
+
+            return;
+        }
+
+        this.selected = this.selected.filter((k) => k !== key);
+    },
 
     async toggle() {
         this.open = !this.open;

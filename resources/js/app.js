@@ -194,7 +194,7 @@ import { motif } from './motifs.js';
      Το <details> ανοίγει και κλείνει μόνο του με το πληκτρολόγιο· αυτό που
      δεν κάνει είναι να κλείνει όταν ο αναγνώστης κοιτάξει αλλού. */
   function initAuthorSelect() {
-    var picker = document.querySelector('.author-select');
+    var picker = document.querySelector('.list-select');
     if (!picker) return;
 
     document.addEventListener('click', function (e) {

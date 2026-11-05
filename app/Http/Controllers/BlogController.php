@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Cms\Article;
+use App\Models\Cms\ArticleCategory;
 use App\Models\Cms\Author;
 use App\Support\Categories;
 use Illuminate\Contracts\View\View;
@@ -17,9 +18,21 @@ class BlogController extends Controller
         /** @var class-string<Article> $articleModel */
         $articleModel = cms_model('article');
 
-        // Chips offer the active categories; an archived one is no longer a
-        // filter, but articles carrying it still render their own label.
-        $categories = app(Categories::class)->active();
+        // The picker offers an active category only once something published
+        // is filed under it: an archived one is no longer a filter, and a
+        // brand new one that nothing uses yet would lead to an empty list,
+        // which is the same dead end the author picker already avoids.
+        // Articles carrying an archived category still render its label.
+        $filed = ArticleCategory::query()
+            ->whereIn('article_id', $articleModel::published()->select('id'))
+            ->distinct()
+            ->pluck('category_key')
+            ->all();
+
+        $categories = array_intersect_key(
+            app(Categories::class)->active(),
+            array_flip($filed)
+        );
 
         $category = $request->query('category');
         if (! is_string($category) || ! array_key_exists($category, $categories)) {
@@ -45,7 +58,7 @@ class BlogController extends Controller
         $articles = $articleModel::published()
             ->inCategory($category)
             ->when($author, fn ($q, $id) => $q->whereHas('authors', fn ($a) => $a->whereKey($id)))
-            ->with(['authors', 'media'])
+            ->with(['authors', 'categoryLinks', 'media'])
             ->latest('published_at')
             ->paginate(9)
             ->withQueryString();
@@ -59,7 +72,7 @@ class BlogController extends Controller
         $articleModel = cms_model('article');
 
         $article = $articleModel::published()
-            ->with(['authors', 'media'])
+            ->with(['authors', 'categoryLinks', 'media'])
             ->where('slug', $slug)
             ->firstOrFail();
 

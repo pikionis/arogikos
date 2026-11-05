@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -29,7 +30,7 @@ class Article extends Model implements HasMedia
     use InteractsWithMedia;
 
     protected $fillable = [
-        'title', 'slug', 'excerpt', 'body', 'category', 'cover_preset',
+        'title', 'slug', 'excerpt', 'body', 'cover_preset',
         'published_at', 'is_published', 'seo_title', 'seo_description',
     ];
 
@@ -75,6 +76,47 @@ class Article extends Model implements HasMedia
             ->orderBy('authors.name');
     }
 
+    /**
+     * Everything the article is about.
+     *
+     * In the order they were chosen: the first one colours the card and
+     * supplies the drawing an article without a cover falls back to, so which
+     * one leads is a decision rather than an accident of alphabet.
+     */
+    public function categoryLinks(): HasMany
+    {
+        return $this->hasMany(ArticleCategory::class)->orderBy('position');
+    }
+
+    /** @return array<int, string> */
+    public function categoryKeys(): array
+    {
+        return $this->categoryLinks->pluck('category_key')->all();
+    }
+
+    /**
+     * The categories, resolved to label, colour and drawing.
+     *
+     * Through App\Support\Categories rather than a join, so a key that only
+     * exists in config, or one that has been withdrawn, still describes the
+     * articles that carry it.
+     *
+     * @return array<string, array{label: string, color: string, motif: string, archived: bool}>
+     */
+    public function categoryList(): array
+    {
+        $all = app(Categories::class)->all();
+
+        $list = [];
+        foreach ($this->categoryKeys() as $key) {
+            if (isset($all[$key])) {
+                $list[$key] = $all[$key];
+            }
+        }
+
+        return $list;
+    }
+
     /** The byline as one line: "Α, Β και Γ". */
     public function byline(): string
     {
@@ -112,7 +154,10 @@ class Article extends Model implements HasMedia
     {
         return $query->when(
             $category && app(Categories::class)->has($category),
-            fn (Builder $q) => $q->where('category', $category)
+            fn (Builder $q) => $q->whereHas(
+                'categoryLinks',
+                fn (Builder $c) => $c->where('category_key', $category)
+            )
         );
     }
 
@@ -134,7 +179,7 @@ class Article extends Model implements HasMedia
         $authorIds = $this->authors->modelKeys();
 
         $newest = fn () => static::published()
-            ->with(['authors', 'media'])
+            ->with(['authors', 'categoryLinks', 'media'])
             ->latest('published_at');
 
         // An Eloquent collection even when empty: a plain one has no
@@ -169,6 +214,17 @@ class Article extends Model implements HasMedia
      *
      * @return array{label: string, color: string, motif: string}
      */
+    /**
+     * The category that leads: the one the card wears.
+     *
+     * Read-only and derived — the categories themselves live in the pivot, so
+     * there is nowhere for a second answer to drift into.
+     */
+    public function getCategoryAttribute(): ?string
+    {
+        return $this->categoryKeys()[0] ?? null;
+    }
+
     public function categoryMeta(): array
     {
         $meta = $this->category ? app(Categories::class)->get($this->category) : null;

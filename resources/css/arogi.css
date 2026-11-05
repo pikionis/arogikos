@@ -469,6 +469,20 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .byline-faces > * + * { margin-left: -10px; }
 .byline-faces > * { box-shadow: 0 0 0 2px #fff; border-radius: 50%; }
 
+/* ---- οι κατηγορίες ενός άρθρου ---- */
+/* Ένα άρθρο είναι συχνά για περισσότερα από ένα πράγματα, και η καθεμία είναι
+   σύνδεσμος: αν σου άρεσε αυτό, εδώ είναι τα υπόλοιπα του ίδιου θέματος. */
+.cat-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: var(--s-4); }
+.cat-pills .cat-pill { transition: transform .2s var(--ease-out), box-shadow .2s var(--ease-out); }
+.cat-pills .cat-pill:hover { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+
+/* Η κουκκίδα στον επιλογέα κατηγορίας: το χρώμα της κατηγορίας, στο μέγεθος
+   που έχει το πρόσωπο στον διπλανό επιλογέα συντάκτη. */
+.cat-dot { flex: none; width: 18px; height: 18px; border-radius: 50%; display: inline-block; }
+.cat-dot.green { background: var(--green); }
+.cat-dot.coral { background: var(--coral); }
+.cat-dot.yellow { background: var(--yellow); }
+
 /* ---- καρουζέλ άρθρων ---- */
 /* Τα προτεινόμενα δεν είναι τρία· είναι όσα αξίζει να διαβάσει κανείς μετά.
    Μια σειρά που κυλά τα χωράει όλα χωρίς να γίνει η σελίδα διπλάσια. */
@@ -1004,9 +1018,9 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
    άνθρωπο. Το <details> ανοίγει με πληκτρολόγιο και αναγγέλλεται σωστά
    χωρίς μια γραμμή script. */
 
-.author-select { position: relative; display: inline-block; text-align: left; }
+.list-select { position: relative; display: inline-block; text-align: left; }
 
-.author-select > summary {
+.list-select > summary {
   display: inline-flex; align-items: center; gap: var(--s-3);
   padding: 8px 16px 8px 10px;
   border-radius: var(--r-pill);
@@ -1015,16 +1029,16 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
   cursor: pointer; list-style: none;
   transition: border-color .2s var(--ease-out), box-shadow .2s var(--ease-out);
 }
-.author-select > summary::-webkit-details-marker { display: none; }
-.author-select > summary:hover { border-color: var(--green-300); }
-.author-select > summary:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
-.author-select[open] > summary { border-color: var(--green); box-shadow: var(--shadow-card); }
+.list-select > summary::-webkit-details-marker { display: none; }
+.list-select > summary:hover { border-color: var(--green-300); }
+.list-select > summary:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.list-select[open] > summary { border-color: var(--green); box-shadow: var(--shadow-card); }
 
-.author-select-label { padding-left: 6px; }
-.author-select-caret { transition: transform .2s var(--ease-out); }
-.author-select[open] .author-select-caret { transform: rotate(180deg); }
+.list-select-label { padding-left: 6px; }
+.list-select-caret { transition: transform .2s var(--ease-out); }
+.list-select[open] .list-select-caret { transform: rotate(180deg); }
 
-.author-select-panel {
+.list-select-panel {
   position: absolute; z-index: 60; top: calc(100% + 10px); left: 0;
   width: min(340px, calc(100vw - var(--s-8)));
   max-height: min(60vh, 420px); overflow-y: auto;
@@ -1038,25 +1052,25 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
   to { opacity: 1; transform: none; }
 }
 
-.author-option {
+.list-option {
   display: flex; align-items: center; gap: var(--s-3);
   padding: 9px 10px; border-radius: var(--r-md);
   color: var(--ink); text-decoration: none;
 }
-.author-option:hover { background: var(--soft-green); }
-.author-option.is-on { background: var(--soft-green); }
-.author-option strong { display: block; font-family: var(--font-head); font-size: .98rem; }
-.author-option em { display: block; font-style: normal; font-size: .84rem; color: var(--ink-400); margin-top: 1px; }
+.list-option:hover { background: var(--soft-green); }
+.list-option.is-on { background: var(--soft-green); }
+.list-option strong { display: block; font-family: var(--font-head); font-size: .98rem; }
+.list-option em { display: block; font-style: normal; font-size: .84rem; color: var(--ink-400); margin-top: 1px; }
 
-.author-option-all {
+.list-option-all {
   flex: none; width: 42px; height: 42px; border-radius: 50%;
   display: grid; place-items: center;
   background: var(--soft-yellow); color: var(--yellow-700); font-size: 1.1rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .author-select-panel { animation: none; }
-  .author-select-caret { transition: none; }
+  .list-select-panel { animation: none; }
+  .list-select-caret { transition: none; }
 }
 
 /* ---- το προφίλ ως κουμπί ----
@@ -1106,7 +1120,7 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
 @media (max-width: 560px) {
   .list-toolbar { justify-content: space-between; }
   /* Σε στενή οθόνη το πτυσσόμενο δεν χωράει αριστερά· ευθυγραμμίζεται δεξιά. */
-  .author-select-panel { left: auto; right: 0; }
+  .list-select-panel { left: auto; right: 0; }
 }
 
 /* ---- καρουζέλ υπηρεσιών στην αρχική ----

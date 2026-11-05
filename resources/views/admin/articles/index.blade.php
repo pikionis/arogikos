@@ -61,7 +61,16 @@
                                     <span class="a-badge a-badge-grey">panel</span>
                                 @endif
                             </td>
-                            <td style="font-size:.88rem">{{ $article->category_label ?: '—' }}</td>
+                            {{-- Όλες, και πρώτη η κύρια: αυτό είναι το μόνο μέρος που
+                                 φαίνεται τι διάλεξε κανείς, χωρίς να ανοίξει το άρθρο. --}}
+                            <td style="font-size:.88rem">
+                                @php $labels = array_column($article->categoryList(), 'label'); @endphp
+                                @forelse ($labels as $i => $label)
+                                    <span @class(['a-cat-first' => $i === 0])>{{ $label }}</span>@if (! $loop->last)<span style="color:var(--color-ink-400)">, </span>@endif
+                                @empty
+                                    —
+                                @endforelse
+                            </td>
                             <td style="white-space:nowrap">
                                 @if ($article->is_published)
                                     <span class="a-badge a-badge-green">Δημοσιευμένο</span>

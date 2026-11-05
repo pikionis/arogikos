@@ -27,7 +27,7 @@ class DashboardController extends Controller
             'upcomingEvents' => $eventModel::published()->upcoming()->count(),
             'unreadMessages' => $messageModel::whereNull('read_at')->count(),
             'latestMessages' => $messageModel::latest()->take(5)->get(),
-            'recentArticles' => $articleModel::with('authors')->latest('updated_at')->take(5)->get(),
+            'recentArticles' => $articleModel::with(['authors', 'categoryLinks'])->latest('updated_at')->take(5)->get(),
         ]);
     }
 }

@@ -119,7 +119,7 @@ it('shares an article with its own cover and title', function () {
 
 it('dates and attributes a shared article', function () {
     $author = Author::factory()->create(['name' => 'Μαρία Παπαδοπούλου']);
-    $article = Article::factory()->by($author)->create([
+    $article = Article::factory()->by($author)->inCategory('learning')->create([
         'is_published' => true,
         'published_at' => now()->subDays(3),
     ]);
@@ -129,7 +129,7 @@ it('dates and attributes a shared article', function () {
     expect(metaContent($html, 'article:published_time'))
         ->toBe($article->published_at->toIso8601String())
         ->and(metaContent($html, 'article:author'))->toBe('Μαρία Παπαδοπούλου')
-        ->and(metaContent($html, 'article:section'))->not->toBeNull();
+        ->and(metaContent($html, 'article:section'))->toBe('Μαθησιακές δυσκολίες');
 });
 
 it('still shares a coverless article with the brand card', function () {

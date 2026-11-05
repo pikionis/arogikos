@@ -722,6 +722,25 @@
 .a-crop-zoom { display: block; }
 .a-crop-zoom input { width: 100%; accent-color: var(--color-green); }
 
+/* --- τι είναι ένα άρθρο --- */
+
+.a-cats { display: grid; gap: 2px; }
+.a-cat {
+    align-items: center; gap: 9px;
+    padding: 6px 9px; border-radius: 9px; cursor: pointer;
+    transition: background .15s ease;
+}
+.a-cat:hover { background: var(--color-soft-green); }
+.a-cat:has(input:checked) { background: var(--color-soft-green); }
+.a-cat-note,
+.a-cat-lead {
+    margin-left: 7px; padding: 1px 7px; border-radius: 999px;
+    font-size: .68rem; font-weight: 800; letter-spacing: .02em;
+}
+.a-cat-note { background: var(--color-soft-coral); color: var(--color-coral-700); }
+.a-cat-first { font-weight: 700; }
+.a-cat-lead { background: var(--color-soft-yellow); color: #6b4e00; }
+
 /* --- who signs an article --- */
 
 .a-signer {

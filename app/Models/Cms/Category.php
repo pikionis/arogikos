@@ -9,7 +9,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * A blog category.
@@ -72,9 +72,9 @@ class Category extends Model implements Arrayable
         return 'key';
     }
 
-    public function articles(): HasMany
+    public function articles(): BelongsToMany
     {
-        return $this->hasMany(Article::class, 'category', 'key');
+        return $this->belongsToMany(Article::class, 'article_category', 'category_key', 'article_id', 'key', 'id');
     }
 
     /* ---------------------------------------------------------------- scopes */

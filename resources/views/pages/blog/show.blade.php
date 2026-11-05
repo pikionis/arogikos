@@ -44,7 +44,16 @@
   <div class="container column">
     <div style="padding-top:var(--s-12)" class="reveal">
       <p class="breadcrumb"><a href="{{ route('home') }}">{{ home_label() }}</a> · <a href="{{ route('blog.index') }}">{{ content('blog.hero.crumb') }}</a> · {{ content('blog.article_crumb') }}</p>
-      <span class="cat-pill {{ $color }}" style="margin-bottom:var(--s-4);display:inline-block">{{ $article->category_label }}</span>
+      {{-- Όλες όσες το αφορούν, και η καθεμία είναι σύνδεσμος: αν σου άρεσε
+           αυτό, εδώ είναι τα υπόλοιπα του ίδιου θέματος. --}}
+      @php $pills = $article->categoryList(); @endphp
+      @if ($pills !== [])
+        <div class="cat-pills">
+          @foreach ($pills as $key => $pill)
+            <a class="cat-pill {{ $pill['color'] }}" href="{{ route('blog.index', ['category' => $key]) }}">{{ $pill['label'] }}</a>
+          @endforeach
+        </div>
+      @endif
       <h1 style="font-size:clamp(1.7rem,3.4vw,2.3rem)">{{ $article->title }}</h1>
 
       {{-- Η περίληψη ήταν αόρατη: τη γράφει ο συντάκτης και πήγαινε μόνο στο

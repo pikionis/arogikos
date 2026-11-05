@@ -22,7 +22,6 @@ class ArticleSeeder extends Seeder
                     'title' => $data['title'],
                     'excerpt' => $data['excerpt'],
                     'body' => $data['body'],
-                    'category' => $data['category'],
                     'published_at' => Carbon::parse($data['published_at']),
                     'is_published' => true,
                     'seo_title' => $data['seo_title'] ?? null,
@@ -30,11 +29,16 @@ class ArticleSeeder extends Seeder
                 ]
             );
 
-            // syncWithoutDetaching, not sync: reseeding must not wipe a second
-            // name the centre added to a piece in the panel.
+            // syncWithoutDetaching, not sync: reseeding must not wipe a
+            // second name or a second category the centre added in the panel.
             if ($id = $authors[$data['author']] ?? null) {
                 $article->authors()->syncWithoutDetaching([$id]);
             }
+
+            $article->categoryLinks()->firstOrCreate(
+                ['category_key' => $data['category']],
+                ['position' => 1],
+            );
         }
     }
 

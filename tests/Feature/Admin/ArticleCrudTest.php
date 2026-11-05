@@ -51,7 +51,7 @@ it('creates an article and shows it on the public blog with its author', functio
         'excerpt' => 'Πρακτικές ιδέες για γονείς.',
         'body' => '<p>Το κυρίως κείμενο.</p>',
         'author_ids' => [$author->id],
-        'category' => 'parents',
+        'category_keys' => ['parents'],
         'is_published' => '1',
     ])->assertRedirect();
 
@@ -71,6 +71,52 @@ it('creates an article and shows it on the public blog with its author', functio
     $this->get(route('blog.show', $article->slug))
         ->assertOk()
         ->assertSeeText('Μαρία Κωνσταντίνου');
+});
+
+it('files an article under several categories, in the order they were ticked', function () {
+    $this->actingAs(staff())->post(route('admin.articles.store'), [
+        'title' => 'Δυσλεξία και γονείς',
+        'body' => '<p>Κείμενο.</p>',
+        'category_keys' => ['parents', 'learning'],
+        'is_published' => '1',
+    ])->assertSessionHasNoErrors();
+
+    $article = Article::firstOrFail();
+
+    // The first one ticked leads: it colours the card and chooses the
+    // drawing a coverless article falls back to.
+    expect($article->categoryKeys())->toBe(['parents', 'learning'])
+        ->and($article->category)->toBe('parents');
+
+    // And the reader can walk out of it in either direction.
+    $this->get(route('blog.show', $article->slug))
+        ->assertOk()
+        ->assertSee('category=parents', false)
+        ->assertSee('category=learning', false);
+});
+
+it('leaves an article with no category when every box is unticked', function () {
+    $article = Article::factory()->inCategory('learning')->create();
+
+    // What the form actually posts when nothing is ticked: the hidden empty
+    // field, so "none" reaches the server at all.
+    $this->actingAs(staff())->put(route('admin.articles.update', $article), [
+        'title' => $article->title,
+        'category_keys' => [''],
+        'is_published' => '1',
+    ])->assertSessionHasNoErrors();
+
+    expect($article->refresh()->categoryKeys())->toBe([]);
+});
+
+it('rejects a category that does not exist', function () {
+    $this->actingAs(staff())->post(route('admin.articles.store'), [
+        'title' => 'Κάτι',
+        'category_keys' => ['learning', 'kati-allo'],
+        'is_published' => '0',
+    ])->assertSessionHasErrors('category_keys.1');
+
+    expect(Article::count())->toBe(0);
 });
 
 it('generates a Greek slug from the title', function () {

@@ -37,8 +37,9 @@ class ArticleRequest extends FormRequest
             'author_ids' => ['array'],
             'author_ids.*' => ['integer', Rule::exists('authors', 'id')],
             // Any existing category, archived included: an old article must
-            // keep the one it was given even after it stopped being offered.
-            'category' => ['nullable', 'string', Rule::in(array_keys(app(Categories::class)->all()))],
+            // keep the ones it was given even after one stopped being offered.
+            'category_keys' => ['array'],
+            'category_keys.*' => ['string', Rule::in(array_keys(app(Categories::class)->all()))],
             'cover_preset' => ['nullable', 'string', Rule::in(array_keys(config('cms-covers', [])))],
             'published_at' => ['nullable', 'date'],
             'is_published' => ['boolean'],
@@ -67,6 +68,10 @@ class ArticleRequest extends FormRequest
                 (array) $this->input('author_ids', []),
                 fn ($id) => filled($id)
             )),
+            'category_keys' => array_values(array_unique(array_filter(
+                (array) $this->input('category_keys', []),
+                fn ($key) => filled($key)
+            ))),
         ]);
 
         $this->merge([

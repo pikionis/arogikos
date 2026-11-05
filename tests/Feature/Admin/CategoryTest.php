@@ -161,7 +161,7 @@ it('makes a new category immediately usable on an article and the public blog', 
 
     $this->actingAs($user)->post(route('admin.articles.store'), [
         'title' => 'Άρθρο για εφήβους',
-        'category' => 'efivia',
+        'category_keys' => ['efivia'],
         'is_published' => '1',
     ])->assertSessionHasNoErrors();
 
@@ -302,7 +302,7 @@ it('still offers a withdrawn category when editing the article that carries it',
     // And saving keeps it.
     $this->actingAs($user)->put(route('admin.articles.update', $article), [
         'title' => $article->title,
-        'category' => 'learning',
+        'category_keys' => ['learning'],
         'is_published' => '1',
     ])->assertSessionHasNoErrors();
 

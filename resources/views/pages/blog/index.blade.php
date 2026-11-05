@@ -17,15 +17,6 @@
     <div class="deco deco-dot" style="width:70px;height:70px;top:40px;left:10%;background:var(--yellow-300)"></div>
   </x-slot:deco>
 
-  {{-- Δύο ανεξάρτητα φίλτρα: η επιλογή του ενός κρατά την επιλογή του άλλου,
-       ώστε «Μαθησιακές δυσκολίες + Μαρία» να είναι εφικτό σε δύο κλικ. --}}
-  <div class="filters reveal reveal-d2">
-    <a class="chip {{ $category === null ? 'active' : '' }}" href="{{ route('blog.index', array_filter(['author' => $author])) }}">{{ content('blog.filter_all') }}</a>
-    @foreach ($categories as $key => $meta)
-      <a class="chip {{ $category === $key ? 'active' : '' }}" href="{{ route('blog.index', array_filter(['category' => $key, 'author' => $author])) }}">{{ $meta['label'] }}</a>
-    @endforeach
-  </div>
-
 </x-page-hero>
 
 <section class="section bg-white">
@@ -35,10 +26,23 @@
          βγαίνει έξω του (overflow:hidden για τα διακοσμητικά), οπότε το
          πτυσσόμενο άνοιγε κρυμμένο. Εδώ ανοίγει ελεύθερα, και στέκεται
          δίπλα στη λίστα που φιλτράρει. --}}
-    @if ($authors->count() > 1)
+    {{-- Δύο ανεξάρτητα φίλτρα, δίπλα δίπλα: η επιλογή του ενός κρατά την
+         επιλογή του άλλου, ώστε «Εφηβεία + Μαρία» να είναι δύο κλικ.
+
+         Κάθονται εδώ και όχι στο hero: το hero κόβει ό,τι βγαίνει έξω του
+         (overflow:hidden για τα διακοσμητικά), οπότε ένα πτυσσόμενο εκεί
+         άνοιγε κρυμμένο. --}}
+    @if ($authors->count() > 1 || count($categories) > 1)
       <div class="list-toolbar reveal">
-        <span class="list-toolbar-label">{{ content('blog.filter_author_label') }}</span>
-        <x-author-filter :authors="$authors" :selected="$author" :category="$category" />
+        @if (count($categories) > 1)
+          <span class="list-toolbar-label">{{ content('blog.filter_category_label') }}</span>
+          <x-category-filter :categories="$categories" :selected="$category" :author="$author" />
+        @endif
+
+        @if ($authors->count() > 1)
+          <span class="list-toolbar-label">{{ content('blog.filter_author_label') }}</span>
+          <x-author-filter :authors="$authors" :selected="$author" :category="$category" />
+        @endif
       </div>
     @endif
 

@@ -1,6 +1,7 @@
 @props([
     'categories' => [],
-    'selected' => null,
+    // The keys this article already carries, in the order it carries them.
+    'selected' => [],
 ])
 
 @php
@@ -21,13 +22,13 @@
      x-data="categoryPicker({
         endpoint: @js(route('admin.categories.index')),
         options: @js($initial),
-        selected: @js((string) old('category', $selected)),
+        selected: @js(array_values((array) old('category_keys', $selected))),
         colors: @js(Category::COLORS),
         motifs: @js(Category::MOTIFS),
      })">
 
     <div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px">
-        <label class="a-label" for="category">Κατηγορία</label>
+        <span class="a-label">Κατηγορίες</span>
         <button type="button" class="a-btn a-btn-ghost a-btn-sm"
                 style="padding:3px 9px;font-size:.78rem"
                 @click="toggle()"
@@ -36,16 +37,36 @@
         </button>
     </div>
 
-    {{-- The picker itself. Options are re-rendered by Alpine after any edit. --}}
-    <select class="a-select" id="category" name="category" x-model="selected">
-        <option value="">— Χωρίς κατηγορία —</option>
-        <template x-for="option in options" :key="option.key">
-            <option :value="option.key"
-                    x-text="option.label + (option.archived ? ' (αποσυρμένη)' : '')"></option>
-        </template>
-    </select>
+    {{-- Ένα άρθρο είναι συχνά για περισσότερα από ένα πράγματα, οπότε
+         διαλέγονται όσα ισχύουν. Η πρώτη που τσεκάρεται βάφει την κάρτα και
+         δίνει το σχέδιο σε όποιο άρθρο δεν έχει εξώφυλλο.
 
-    @error('category')<span class="a-error">{{ $message }}</span>@enderror
+         Το κενό πεδίο στέλνει το «καμία»: μια λίστα χωρίς τσεκαρισμένο κουτί
+         δεν φτάνει καθόλου στον server. --}}
+    <input type="hidden" name="category_keys[]" value="">
+
+    <div class="a-cats">
+        <template x-for="option in options" :key="option.key">
+            <label class="a-check a-cat">
+                <input type="checkbox" name="category_keys[]"
+                       :value="option.key"
+                       :checked="selected.includes(option.key)"
+                       @change="pick(option.key, $event.target.checked)">
+                <span>
+                    <span x-text="option.label"></span>
+                    <template x-if="option.archived">
+                        <span class="a-cat-note">αποσυρμένη</span>
+                    </template>
+                    <template x-if="selected[0] === option.key">
+                        <span class="a-cat-lead">κύρια</span>
+                    </template>
+                </span>
+            </label>
+        </template>
+    </div>
+
+    @error('category_keys')<span class="a-error">{{ $message }}</span>@enderror
+    @error('category_keys.*')<span class="a-error">{{ $message }}</span>@enderror
 
     {{-- ---------------------------------------------------- manage panel --}}
     <div x-show="open" x-cloak x-transition.opacity

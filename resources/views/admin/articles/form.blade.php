@@ -170,7 +170,7 @@
                 </section>
 
                 <section class="a-card">
-                    <x-admin.category-picker :categories="$categories" :selected="$article->category" />
+                    <x-admin.category-picker :categories="$categories" :selected="$article->categoryKeys()" />
                 </section>
 
                 <section class="a-card">

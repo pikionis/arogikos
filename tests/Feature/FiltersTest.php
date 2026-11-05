@@ -27,6 +27,14 @@ function writer(string $name): Author
     return Author::factory()->create(['name' => $name, 'is_active' => true]);
 }
 
+/** Just the author picker: there are two on the page now. */
+function authorPicker(string $html): string
+{
+    preg_match('/<details class="list-select is-authors.*?<\/details>/s', $html, $m);
+
+    return $m[0] ?? '';
+}
+
 function postBy(Author $author, string $title, string $category = 'learning'): Article
 {
     return Article::factory()->by($author)->create([
@@ -47,7 +55,7 @@ it('offers a row for each author who has published', function () {
 
     $this->get(route('blog.index'))
         ->assertOk()
-        ->assertSee('author-select', false)
+        ->assertSee('list-select', false)
         ->assertSeeText('Μαρία Παπαδοπούλου')
         ->assertSeeText('Κώστας Δημητρίου')
         ->assertSeeText('Όλοι οι συντάκτες');
@@ -61,15 +69,15 @@ it('shows each author with a face and what they do', function () {
     $kostas->forceFill(['role_title' => 'Ψυχολόγος'])->save();
     postBy($kostas, 'Άρθρο του Κώστα');
 
-    $html = $this->get(route('blog.index'))->assertOk()->getContent();
+    $html = authorPicker($this->get(route('blog.index'))->assertOk()->getContent());
 
     // A name alone tells a reader nothing; the role is how they recognise
     // the person whose articles they came back for.
     expect($html)->toContain(e('Ειδική Παιδαγωγός'))
         ->and($html)->toContain(e('Ψυχολόγος'))
         // One row per author plus the "all" row. Counted on the anchor, not
-        // the bare class: author-option-all is a substring of it.
-        ->and(substr_count($html, '<a class="author-option'))->toBe(3);
+        // the bare class: list-option-all is a substring of it.
+        ->and(substr_count($html, '<a class="list-option'))->toBe(3);
 });
 
 it('names the chosen author on the closed picker', function () {
@@ -78,10 +86,10 @@ it('names the chosen author on the closed picker', function () {
     $kostas = writer('Κώστας Δημητρίου');
     postBy($kostas, 'Άρθρο του Κώστα');
 
-    $html = $this->get(route('blog.index', ['author' => $maria->id]))->getContent();
+    $html = authorPicker($this->get(route('blog.index', ['author' => $maria->id]))->getContent());
 
     // Closed, it must say who is selected rather than "all authors".
-    expect($html)->toContain('author-select-label');
+    expect($html)->toContain('list-select-label');
 
     preg_match('/<summary>(.*?)<\/summary>/s', $html, $m);
 
@@ -127,6 +135,7 @@ it('combines the author filter with the category one', function () {
 it('keeps the author when the reader changes category', function () {
     $maria = writer('Μαρία Παπαδοπούλου');
     postBy($maria, 'Άρθρο της Μαρίας');
+    postBy($maria, 'Και ένα γονεϊκό', 'parents');
 
     $html = $this->get(route('blog.index', ['author' => $maria->id]))->getContent();
 
@@ -151,6 +160,101 @@ it('hides the picker when there is only one writer', function () {
 
     // Nothing to choose between, so the row would only add noise.
     $this->get(route('blog.index'))->assertOk()->assertDontSee('Όλοι οι συντάκτες');
+});
+
+/* ------------------------------------------------------- blog · κατηγορία */
+
+/** Just the category picker, the other half of the bar. */
+function categoryPicker(string $html): string
+{
+    preg_match('/<details class="list-select is-categories.*?<\/details>/s', $html, $m);
+
+    return $m[0] ?? '';
+}
+
+it('offers a row for each category something is filed under', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    postBy($maria, 'Μαθησιακό', 'learning');
+    postBy($maria, 'Γονεϊκό', 'parents');
+
+    $html = categoryPicker($this->get(route('blog.index'))->assertOk()->getContent());
+
+    expect($html)->toContain(e('Μαθησιακές δυσκολίες'))
+        ->and($html)->toContain(e('Γονείς'))
+        // Nothing is filed under counselling, so offering it would lead
+        // nowhere — the same dead end the author picker avoids.
+        ->and($html)->not->toContain(e('Συμβουλευτική'));
+});
+
+it('hides the picker when everything sits in one category', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    postBy($maria, 'Άρθρο', 'learning');
+    postBy($maria, 'Και ένα δεύτερο', 'learning');
+
+    // Nothing to choose between, so the row would only add noise.
+    $this->get(route('blog.index'))
+        ->assertOk()
+        ->assertDontSee('is-categories', false);
+});
+
+it('narrows the list to one category', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    postBy($maria, 'Μαθησιακό', 'learning');
+    postBy($maria, 'Γονεϊκό', 'parents');
+
+    $this->get(route('blog.index', ['category' => 'parents']))
+        ->assertOk()
+        ->assertSeeText('Γονεϊκό')
+        ->assertDontSee('Μαθησιακό');
+});
+
+it('lists an article under every category it is filed under', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    Article::factory()->by($maria)->inCategory('learning', 'parents')->create([
+        'title' => 'Δυσλεξία και γονείς',
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    // One piece, two shelves: the point of letting an article carry several.
+    foreach (['learning', 'parents'] as $key) {
+        $this->get(route('blog.index', ['category' => $key]))
+            ->assertOk()
+            ->assertSeeText('Δυσλεξία και γονείς');
+    }
+});
+
+it('shows every category on the article, each one a way into the rest', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    $article = Article::factory()->by($maria)->inCategory('learning', 'parents')->create([
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    $html = $this->get(route('blog.show', $article->slug))->assertOk()->getContent();
+
+    preg_match('/<div class="cat-pills">(.*?)<\/div>/s', $html, $m);
+
+    expect($m[1] ?? '')->toContain(e('Μαθησιακές δυσκολίες'))
+        ->and($m[1])->toContain(e('Γονείς'))
+        // A pill is a question — what else is there about this? — so it has
+        // to answer it.
+        ->and($m[1])->toContain('category=learning')
+        ->and($m[1])->toContain('category=parents');
+});
+
+it('wears the first category it was given', function () {
+    $maria = writer('Μαρία Παπαδοπούλου');
+    $article = Article::factory()->by($maria)->inCategory('parents', 'learning')->create([
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    // The order the boxes were ticked in decides the colour of the card and
+    // the drawing a coverless article falls back to.
+    expect($article->category)->toBe('parents')
+        ->and($article->category_color)->toBe('yellow')
+        ->and($article->categoryKeys())->toBe(['parents', 'learning']);
 });
 
 /* ------------------------------------------------- εκδηλώσεις · χρονιά */
@@ -244,29 +348,34 @@ it('keeps the picker out of the hero, which clips what opens inside it', functio
     $hero = mb_substr($html, mb_strpos($html, 'page-hero'));
     $hero = mb_substr($hero, 0, mb_strpos($hero, '</section>'));
 
-    expect($hero)->not->toContain('author-select')
+    expect($hero)->not->toContain('list-select')
         // It lives with the list it filters instead.
         ->and($html)->toContain('list-toolbar')
-        ->and($html)->toContain('author-select');
+        ->and($html)->toContain('list-select');
 });
 
-it('still keeps the category chips in the hero', function () {
+it('puts the category filter beside the author one, not in the hero', function () {
     $maria = writer('Μαρία Παπαδοπούλου');
-    postBy($maria, 'Άρθρο της Μαρίας');
+    postBy($maria, 'Άρθρο της Μαρίας', 'learning');
+    postBy($maria, 'Κάτι άλλο', 'parents');
 
     $html = $this->get(route('blog.index'))->getContent();
 
-    // Chips do not open anything, so clipping cannot hurt them.
     $hero = mb_substr($html, mb_strpos($html, 'page-hero'));
     $hero = mb_substr($hero, 0, mb_strpos($hero, '</section>'));
 
-    expect($hero)->toContain('class="chip');
+    // Both filters open a panel, and the hero clips what leaves it.
+    expect($hero)->not->toContain('is-categories')
+        ->and($html)->toContain('is-categories')
+        // Side by side in the one bar above the list.
+        ->and(mb_strpos($html, 'is-categories'))
+        ->toBeGreaterThan(mb_strpos($html, 'list-toolbar'));
 });
 
 it('opens the panel below its own button, not centred on the page', function () {
     $css = file_get_contents(resource_path('css/arogi.css'));
 
-    preg_match('/\.author-select-panel \{(.*?)\}/s', $css, $m);
+    preg_match('/\.list-select-panel \{(.*?)\}/s', $css, $m);
 
     expect($m[1])->toContain('left: 0')
         ->and($m[1])->not->toContain('translateX(-50%)');

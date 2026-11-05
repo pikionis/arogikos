@@ -28,7 +28,7 @@ class ArticleController extends Controller
         $search = trim((string) $request->query('q', ''));
 
         $articles = $articleModel::query()
-            ->with(['authors', 'media'])
+            ->with(['authors', 'categoryLinks', 'media'])
             ->when($status === 'published', fn ($q) => $q->where('is_published', true))
             ->when($status === 'draft', fn ($q) => $q->where('is_published', false))
             ->when($search !== '', fn ($q) => $q->where(
@@ -65,6 +65,7 @@ class ArticleController extends Controller
         $this->fill($article, $request);
         $article->save();
         $this->signBy($article, $request);
+        $this->fileUnder($article, $request);
 
         MediaUpload::sync($article, $request, 'cover');
 
@@ -80,9 +81,9 @@ class ArticleController extends Controller
         return view('admin.articles.form', [
             'article' => $article,
             'authorGroups' => AuthorPicker::groups(),
-            // Includes this article's own category even if it was withdrawn,
-            // so saving never drops it.
-            'categories' => app(Categories::class)->forPicker($article->category),
+            // Includes this article's own categories even if one was
+            // withdrawn, so saving never drops it.
+            'categories' => app(Categories::class)->forPicker(...$article->categoryKeys()),
         ]);
     }
 
@@ -91,6 +92,7 @@ class ArticleController extends Controller
         $this->fill($article, $request);
         $article->save();
         $this->signBy($article, $request);
+        $this->fileUnder($article, $request);
 
         MediaUpload::sync($article, $request, 'cover');
 
@@ -110,6 +112,26 @@ class ArticleController extends Controller
     }
 
     /* ------------------------------------------------------------ helpers */
+
+    /**
+     * What it is about.
+     *
+     * The order the boxes were ticked in is kept: the first category colours
+     * the card and chooses the drawing an article without a cover falls back
+     * to, so it is worth being able to decide which one that is.
+     */
+    private function fileUnder(Article $article, ArticleRequest $request): void
+    {
+        $keys = array_values($request->validated()['category_keys'] ?? []);
+
+        $article->categoryLinks()->delete();
+
+        foreach ($keys as $i => $key) {
+            $article->categoryLinks()->create(['category_key' => $key, 'position' => $i + 1]);
+        }
+
+        $article->unsetRelation('categoryLinks');
+    }
 
     /**
      * Who signs it.
@@ -132,7 +154,6 @@ class ArticleController extends Controller
         $article->title = $data['title'];
         $article->excerpt = $data['excerpt'] ?? null;
         $article->body = $data['body'] ?? null;
-        $article->category = $data['category'] ?? null;
         // Empty means "no ready-made scene", which is a null and not a '' —
         // the accessor looks the key up in the registry either way.
         $article->cover_preset = filled($data['cover_preset'] ?? null) ? $data['cover_preset'] : null;

@@ -74,12 +74,16 @@ class Categories
      *
      * @return array<string, array{label: string, color: string, motif: string, archived: bool}>
      */
-    public function forPicker(?string $current = null): array
+    public function forPicker(string ...$current): array
     {
         $options = $this->active();
 
-        if ($current !== null && $current !== '' && ! isset($options[$current]) && $this->has($current)) {
-            $options[$current] = $this->all()[$current];
+        // An article keeps a withdrawn category it already carries, so the
+        // picker has to offer it back or saving would quietly drop it.
+        foreach ($current as $key) {
+            if ($key !== '' && ! isset($options[$key]) && $this->has($key)) {
+                $options[$key] = $this->all()[$key];
+            }
         }
 
         return $options;

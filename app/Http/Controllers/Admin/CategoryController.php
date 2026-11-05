@@ -152,7 +152,10 @@ class CategoryController extends Controller
         /** @var class-string<Article> $articleModel */
         $articleModel = cms_model('article');
 
-        return $articleModel::where('category', $key)->count();
+        return $articleModel::whereHas(
+            'categoryLinks',
+            fn ($q) => $q->where('category_key', $key)
+        )->count();
     }
 
     /** @return array<int, array<string, mixed>> */

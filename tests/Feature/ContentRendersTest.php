@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\Cms\Article;
+use App\Models\Cms\ArticleCategory;
+use App\Models\Cms\Author;
 use App\Models\Cms\ContentBlock;
 use App\Models\Cms\Event;
 use Database\Seeders\DatabaseSeeder;
@@ -121,10 +123,23 @@ it('renders the article breadcrumb and reading time on an article page', functio
 });
 
 it('renders the empty-list copy when a filter finds nothing', function () {
-    Article::query()->update(['category' => 'learning']);
+    // A category on its own can no longer come up empty — only the ones
+    // something is filed under are offered. Two filters together still can:
+    // this writer has nothing under that category.
+    ArticleCategory::query()->delete();
+    Article::query()->each(fn (Article $a) => $a->categoryLinks()->create([
+        'category_key' => 'learning', 'position' => 1,
+    ]));
 
-    $this->get(route('blog.index', ['category' => 'career']))
+    $maria = Author::factory()->create(['name' => 'Μαρία Παπαδοπούλου']);
+    $other = Article::factory()->by($maria)->inCategory('career')->create([
+        'is_published' => true,
+        'published_at' => now()->subDay(),
+    ]);
+
+    $this->get(route('blog.index', ['category' => 'learning', 'author' => $maria->id]))
         ->assertOk()
+        ->assertDontSeeText($other->title)
         ->assertSeeText('Δεν βρέθηκαν άρθρα σε αυτή την κατηγορία.')
         ->assertSeeText('Δείτε όλα τα άρθρα');
 });
