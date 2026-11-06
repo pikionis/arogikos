@@ -360,7 +360,27 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .cat-pill.green { background: var(--soft-green); color: var(--green-800); }
 .cat-pill.coral { background: var(--soft-coral); color: var(--coral-800); }
 .cat-pill.yellow { background: var(--soft-yellow); color: var(--yellow-800); }
-.post-card h3 { font-size: 1.4rem; line-height: 1.25; }
+/* Ο τίτλος της κάρτας διαβάζεται με μια ματιά, καθώς το μάτι σαρώνει τη
+   λίστα· δεν χρειάζεται να φωνάζει. Το κανονικό του μέγεθος το κρατά η
+   σελίδα του άρθρου.
+
+   Με κλάση και όχι με h3: στη λίστα των άρθρων η κάρτα ακολουθεί κατευθείαν
+   τον h1, οπότε ο τίτλος της βγαίνει h2 για να μη χάσει σκαλί η ιεραρχία —
+   και έπαιρνε το μέγεθος του h2, 41px, τρεις φορές την περίληψή του. Το
+   μέγεθος το ορίζει τι είναι το στοιχείο, όχι σε ποιο βάθος βρίσκεται. */
+.post-card .post-title { font-size: 1.2rem; line-height: 1.38; }
+/* Και με φραγμό στις γραμμές: ένας τίτλος έντεκα λέξεων φούσκωνε την κάρτα,
+   έσπρωχνε την περίληψη εκτός οθόνης και χαλούσε τη σειρά με τις διπλανές
+   του. Τέσσερις γραμμές χωρούν σχεδόν κάθε τίτλο ακέραιο. */
+.post-card .post-title,
+.post-card .post-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+.post-card .post-excerpt { -webkit-line-clamp: 3; line-clamp: 3; }
 .post-meta { display: flex; align-items: center; gap: var(--s-2); margin-top: auto; padding-top: var(--s-3); color: var(--ink-400); font-size: .9rem; }
 .avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-weight: 800; font-size: .85rem; color: #fff; flex: none; }
 .avatar.g { background: var(--green-700); } .avatar.c { background: var(--coral-700); }

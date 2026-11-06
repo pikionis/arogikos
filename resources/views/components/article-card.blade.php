@@ -35,10 +35,10 @@
     </div>
     <div class="post-body">
         <span class="cat-pill {{ $color }}">{{ $article->category_label }}</span>
-        <h{{ $level }}>{{ $article->title }}</h{{ $level }}>
+        <h{{ $level }} class="post-title">{{ $article->title }}</h{{ $level }}>
         <span class="title-underline"></span>
         @if ($showExcerpt && filled($article->excerpt))
-            <p style="color:var(--ink-600);font-size:.96rem">{{ $article->excerpt }}</p>
+            <p class="post-excerpt" style="color:var(--ink-600);font-size:.96rem">{{ $article->excerpt }}</p>
         @endif
         <div class="post-meta">
             {{-- Faces overlap so three of them still read as one byline and
