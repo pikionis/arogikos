@@ -412,8 +412,25 @@ import { motif } from './motifs.js';
       if (moveFocus) band.focus({ preventScroll: true });
       checkReveals();
 
+      /* Η ζώνη ανεβαίνει στη θέση της, ώστε να φανεί ότι ήρθε στην κορυφή.
+         Το περιεχόμενό της μπαίνει στη θέση του χωρίς δική του κίνηση: η
+         .svc-settling κόβει το transition της εισόδου για ένα καρέ, γιατί
+         αλλιώς θα κινούνταν η ζώνη και το περιεχόμενο ταυτόχρονα, προς
+         διαφορετικές αποστάσεις. */
+      band.classList.add('svc-settling');
+      band.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+      band.classList.remove('arriving');
+      void band.offsetWidth;
+      band.classList.remove('svc-settling');
+      band.classList.add('arriving');
+
       placedAt = Math.round(window.scrollY);
     }
+
+    /* Η κλάση φεύγει μόλις τελειώσει, αλλιώς η επόμενη επιλογή δεν θα έπαιζε. */
+    list.addEventListener('animationend', function (e) {
+      if (e.animationName === 'svc-arrive') e.target.classList.remove('arriving');
+    });
 
     links.forEach(function (a) {
       a.addEventListener('click', function (e) {

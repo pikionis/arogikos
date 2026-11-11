@@ -485,6 +485,20 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
    οπότε το περίγραμμα εστίασης δεν δείχνει πουθενά — απλώς πλαισιώνει μισή
    οθόνη με μαύρο. Ποια διαβάζεται φαίνεται από το σημάδι στη λίστα. */
 .svc-band:focus { outline: none; }
+
+/* Η άφιξη της επιλεγμένης ζώνης. Χωρίς κίνηση η σελίδα απλώς «κόβει» σε άλλη
+   υπηρεσία και δεν φαίνεται ότι κάτι ήρθε στην κορυφή — ανεβαίνοντας στη θέση
+   της το λέει μόνο του. Κινείται μόνο η ζώνη: το περιεχόμενό της κάθεται ήδη
+   στη θέση του (δες .svc-settling), αλλιώς θα κουνιόνταν δύο πράγματα μαζί. */
+@keyframes svc-arrive {
+  from { opacity: 0; transform: translateY(56px); }
+  to   { opacity: 1; transform: none; }
+}
+.svc-band.arriving { animation: svc-arrive .52s var(--ease-out) both; }
+.svc-band.svc-settling .reveal { transition: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .svc-band.arriving { animation: none; }
+}
 .svc-band .zig-media { background: var(--soft-green); }
 
 .svc-list > .svc-band:nth-child(3n+2) {
