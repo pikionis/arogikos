@@ -115,3 +115,30 @@ it('leaves the list out when there is only one service', function () {
     // A menu of one is noise above the only thing on the page.
     expect($this->get(route('services'))->getContent())->not->toContain('jump-list');
 });
+
+it('keeps every service in one list the reader can reorder', function () {
+    storeServices([aService('Πρώτη'), aService('Δεύτερη'), aService('Τρίτη')]);
+
+    $html = $this->get(route('services'))->assertOk()->getContent();
+
+    // Το κλικ στέλνει μια ζώνη στην αρχή της λίστας. Για να μπορεί, κάθε ζώνη
+    // πρέπει να είναι απευθείας παιδί της — χωμένη ένα επίπεδο πιο μέσα, η
+    // μετακίνηση θα την έβγαζε από τη θέση της στη σελίδα.
+    [, $after] = explode('<div class="svc-list" id="svc-list">', $html, 2);
+
+    expect(trim(mb_substr($after, 0, mb_strpos($after, '<section'))))->toBe('')
+        ->and(substr_count($html, 'class="section svc-band"'))->toBe(3);
+});
+
+it('leaves the zig-zag rhythm to the stylesheet', function () {
+    storeServices([aService('Πρώτη'), aService('Δεύτερη'), aService('Τρίτη')]);
+
+    [, $bands] = explode('<div class="svc-list"', $this->get(route('services'))->getContent(), 2);
+
+    // Γραμμένος στο markup, ο ρυθμός θα κρατούσε το φόντο της κάθε ζώνης
+    // κολλημένο πάνω της: μετά από μια αναδιάταξη θα έπεφταν δύο ίδιες ζώνες
+    // η μία δίπλα στην άλλη. Στο CSS μετράει θέσεις, όχι περιεχόμενο.
+    expect($bands)->not->toContain('bg-coral')
+        ->and($bands)->not->toContain('rev reveal')
+        ->and($bands)->not->toContain('background:var(--soft-yellow)');
+});

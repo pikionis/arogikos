@@ -472,8 +472,29 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 
 /* ---- zig-zag service detail ---- */
 .zig { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-12); align-items: center; }
-.zig.rev .zig-media { order: 2; }
 .zig-media { aspect-ratio: 4/3; }
+
+/* Ο ρυθμός της λίστας είναι θέσης και όχι περιεχομένου: η σειρά της υπηρεσίας
+   ορίζει το φόντο της ζώνης, την πλευρά της εικόνας και την απόχρωση πίσω της.
+   Γραμμένος με nth-child κι όχι με κλάσεις μέσα στο markup, γιατί ο αναγνώστης
+   στέλνει μια υπηρεσία στην κορυφή με ένα κλικ — έτσι ο ρυθμός ξαναδένει μόνος
+   του γύρω από τη νέα σειρά, αντί να κολλήσουν δύο ίδιες ζώνες μαζί. */
+.svc-band { background: var(--white); }
+/* Η ζώνη παίρνει εστίαση όταν έρθει πρώτη, ώστε το πληκτρολόγιο και ο
+   αναγνώστης οθόνης να την ακολουθήσουν. Δεν μπαίνει ποτέ με Tab (tabindex="-1"),
+   οπότε το περίγραμμα εστίασης δεν δείχνει πουθενά — απλώς πλαισιώνει μισή
+   οθόνη με μαύρο. Ποια διαβάζεται φαίνεται από το σημάδι στη λίστα. */
+.svc-band:focus { outline: none; }
+.svc-band .zig-media { background: var(--soft-green); }
+
+.svc-list > .svc-band:nth-child(3n+2) {
+  background: var(--soft-coral);
+  /* πάνω σε απόχρωση οι -700 πέφτουν κάτω από 4.5:1 — ό,τι κάνει και η .bg-coral */
+  --green-700: var(--green-800);
+  --coral-700: var(--coral-800);
+}
+.svc-list > .svc-band:nth-child(3n+2) .zig-media { background: var(--white); order: 2; }
+.svc-list > .svc-band:nth-child(3n+3) .zig-media { background: var(--soft-yellow); }
 
 /* ---- the story on the About page ---- */
 /* Written in the panel as several paragraphs; preflight strips the browser's
@@ -814,6 +835,11 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
 .jump-list a:hover, .jump-list a:focus-visible {
   background: #fff; color: var(--green-700); transform: translateY(-2px);
 }
+/* Η υπηρεσία που διαβάζεται τώρα. Το κλικ την ανεβάζει πρώτη, οπότε χωρίς
+   σημάδι εδώ η λίστα δεν θα έλεγε ποια από τις δεκατέσσερις βλέπεις. */
+.jump-list a.current {
+  background: #fff; color: var(--green-700); box-shadow: inset 0 0 0 2px currentColor;
+}
 @media (max-width: 560px) {
   /* Wrapping fourteen pills at phone width would push the first service a
      screen and a half down, so they scroll sideways instead. */
@@ -927,7 +953,7 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
 /* ---- responsive components ---- */
 @media (max-width: 880px) {
   .hero-grid, .contact-grid, .zig { grid-template-columns: 1fr; gap: var(--s-8); }
-  .zig.rev .zig-media { order: 0; }
+  .svc-list > .svc-band:nth-child(3n+2) .zig-media { order: 0; }
   .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
   .gal-grid { columns: 2; }
 }

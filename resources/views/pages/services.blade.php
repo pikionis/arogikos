@@ -36,25 +36,18 @@
   @endif
 </x-page-hero>
 
-@php
-  // The zig-zag rhythm is positional: section background, which side the
-  // media sits on, and the tint behind the illustration all alternate, so it
-  // keeps working however many services there are and in whatever order the
-  // panel puts them.
-  $layouts = [
-    ['section' => 'bg-white', 'rev' => false, 'media' => 'var(--soft-green)'],
-    ['section' => 'bg-coral', 'rev' => true,  'media' => '#fff'],
-    ['section' => 'bg-white', 'rev' => false, 'media' => 'var(--soft-yellow)'],
-  ];
-@endphp
-
+{{-- Η σειρά δεν είναι γραμμένη στην πέτρα: πατώντας ένα όνομα παραπάνω, η
+     υπηρεσία έρχεται εδώ πρώτη, αντί να ταξιδέψει ο αναγνώστης δεκατρείς
+     οθόνες ως εκείνη. Ο ζιγκ-ζαγκ ρυθμός —φόντο ζώνης, πλευρά εικόνας,
+     απόχρωση— είναι θέσης και όχι περιεχομένου, γι' αυτό ζει στο CSS με
+     nth-child: όταν η σειρά αλλάξει, ο ρυθμός ξαναδένει μόνος του αντί να
+     κολλήσουν δύο ίδιες ζώνες η μία πάνω στην άλλη. --}}
+<div class="svc-list" id="svc-list">
 @foreach ($services as $i => $service)
-  @php $layout = $layouts[$i % 3]; @endphp
-
-  <section id="{{ $service['anchor'] }}" class="section {{ $layout['section'] }}" data-play>
+  <section id="{{ $service['anchor'] }}" class="section svc-band" tabindex="-1" data-play>
     <div class="container">
-      <div class="zig {{ $layout['rev'] ? 'rev' : '' }} reveal">
-        <div class="zig-media frame-soft" style="background:{{ $layout['media'] }};overflow:hidden">
+      <div class="zig reveal">
+        <div class="zig-media frame-soft">
           @if (filled($service['icon'] ?? null))
             <x-article-cover :scene="$service['icon']" live />
           @else
@@ -98,6 +91,7 @@
     </div>
   </section>
 @endforeach
+</div>
 
 @php
   // Blank slots are how staff remove a question, so only render the filled ones.

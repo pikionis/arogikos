@@ -360,8 +360,90 @@ import { motif } from './motifs.js';
     initShareMenus();
   }
 
+
+  /* ---- υπηρεσίες: η επιλεγμένη έρχεται πρώτη ----
+
+     Δεκατέσσερις υπηρεσίες σε μια στήλη σημαίνει ότι η δέκατη τέταρτη είναι
+     δεκατρείς οθόνες μακριά. Αντί να ταξιδέψει ο αναγνώστης ως εκείνη, έρχεται
+     εκείνη σε αυτόν: το κλικ στο όνομα τη μεταφέρει στην αρχή της λίστας και η
+     σελίδα στήνεται ακριβώς από πάνω της, χωρίς κύλιση.
+
+     Η μετακίνηση είναι αληθινή αλλαγή σειράς στο DOM, όχι οπτικό τέχνασμα με
+     order: έτσι το nth-child του ζιγκ-ζαγκ ρυθμού βλέπει τη νέα σειρά και
+     ξαναδένει μόνο του.
+
+     Χωρίς JavaScript ο σύνδεσμος μένει ένα απλό #anchor και κατεβάζει τη
+     σελίδα όπως πάντα — τίποτα δεν χάνεται, απλώς δεν κερδίζεται. */
+  function initServiceOrder() {
+    var list = document.getElementById('svc-list');
+    if (!list) return;
+
+    var links = Array.prototype.slice.call(document.querySelectorAll('.jump-list a[href^="#"]'));
+    if (!links.length) return;
+
+    /* Μόνο ζώνη αυτής της λίστας μετακινείται· οτιδήποτε άλλο (π.χ. οι συχνές
+       ερωτήσεις) μένει στον σύνδεσμο που ήξερε ο browser. */
+    function bandFor(hash) {
+      if (!hash || hash.length < 2) return null;
+      var el = document.getElementById(decodeURIComponent(hash.slice(1)));
+      return el && el.parentNode === list ? el : null;
+    }
+
+    var placedAt = -1;
+
+    function bring(band, moveFocus) {
+      if (list.firstElementChild !== band) list.insertBefore(band, list.firstElementChild);
+
+      links.forEach(function (a) {
+        var on = a.getAttribute('href') === '#' + band.id;
+        a.classList.toggle('current', on);
+        if (on) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+
+      /* Η ζώνη μπορεί να μην πέρασε ποτέ από την οθόνη, οπότε να κρατάει ακόμα
+         το opacity: 0 της εισόδου. Αποκαλύπτουμε πριν και μετά το άλμα: πριν
+         για εκείνη, μετά για όσες έφερε μαζί της. */
+      checkReveals();
+      /* 'instant' και όχι 'auto': το auto σημαίνει «ό,τι λέει το CSS», και το
+         CSS εδώ λέει scroll-behavior: smooth — δηλαδή ακριβώς το ταξίδι που
+         ήρθαμε να καταργήσουμε. */
+      band.scrollIntoView({ behavior: 'instant', block: 'start' });
+      if (moveFocus) band.focus({ preventScroll: true });
+      checkReveals();
+
+      placedAt = Math.round(window.scrollY);
+    }
+
+    links.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var band = bandFor(a.getAttribute('href'));
+        if (!band) return;
+        e.preventDefault();
+        bring(band, true);
+        /* replace και όχι push: δεκατέσσερις επιλογές δεν γίνονται δεκατέσσερα
+           πατήματα του «πίσω» για να φύγει κανείς από τη σελίδα. */
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', '#' + band.id);
+        }
+      });
+    });
+
+    /* Ένας μοιρασμένος σύνδεσμος φέρνει την ίδια σελίδα με τον ίδιο τρόπο. */
+    var atLoad = bandFor(window.location.hash);
+    if (!atLoad) return;
+
+    bring(atLoad, false);
+    window.addEventListener('load', function () {
+      /* Αν κάτι που φόρτωσε αργότερα μετακίνησε τη σελίδα από κάτω του,
+         ξαναστήσου — εκτός αν ο αναγνώστης κύλισε στο μεταξύ μόνος του. */
+      if (Math.abs(window.scrollY - placedAt) < 4) bring(atLoad, false);
+    });
+  }
+
   initProfiles();
   initAuthorSelect();
   initCarousels();
   initShare();
+  initServiceOrder();
 })();
