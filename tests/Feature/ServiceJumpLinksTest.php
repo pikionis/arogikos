@@ -126,8 +126,8 @@ it('keeps every service in one list the reader can reorder', function () {
     // μετακίνηση θα την έβγαζε από τη θέση της στη σελίδα.
     [, $after] = explode('<div class="svc-list" id="svc-list">', $html, 2);
 
-    expect(trim(mb_substr($after, 0, mb_strpos($after, '<section'))))->toBe('')
-        ->and(substr_count($html, 'class="section svc-band"'))->toBe(3);
+    expect(trim(mb_substr($after, 0, mb_strpos($after, '<details'))))->toBe('')
+        ->and(substr_count($html, 'class="svc-band"'))->toBe(3);
 });
 
 it('leaves the zig-zag rhythm to the stylesheet', function () {
@@ -141,4 +141,46 @@ it('leaves the zig-zag rhythm to the stylesheet', function () {
     expect($bands)->not->toContain('bg-coral')
         ->and($bands)->not->toContain('rev reveal')
         ->and($bands)->not->toContain('background:var(--soft-yellow)');
+});
+
+it('folds every service behind a «read more»', function () {
+    storeServices([aService('Πρώτη'), aService('Δεύτερη'), aService('Τρίτη')]);
+
+    $html = $this->get(route('services'))->assertOk()->getContent();
+
+    expect(substr_count($html, '<summary class="svc-head">'))->toBe(3)
+        ->and($html)->toContain(content('services.more_label'));
+});
+
+it('keeps a folded service readable by a search engine', function () {
+    storeServices([aService('Λογοθεραπεία')]);
+
+    // Κλειστό δεν σημαίνει απόν: το <details> κρατάει το κείμενο μέσα στη
+    // σελίδα, κι αυτό είναι ο λόγος που δεν φτιάχτηκε με JavaScript.
+    $html = $this->get(route('services'))->getContent();
+
+    expect($html)->toContain('Σημάδι για Λογοθεραπεία')
+        ->and($html)->toContain('Περιλαμβάνει για Λογοθεραπεία')
+        ->and($html)->toContain('Βήμα για Λογοθεραπεία');
+});
+
+it('sends a card on the home page to its own service', function () {
+    storeServices([aService('Πρώτη'), aService('Λογοθεραπεία')]);
+
+    $html = $this->get(route('home'))->assertOk()->getContent();
+    $anchors = array_column(service_list(), 'anchor');
+
+    // Η κάρτα έστελνε στη σελίδα· τώρα στέλνει στην υπηρεσία της.
+    expect($html)->toContain(route('services').'#'.$anchors[1])
+        ->and($html)->not->toContain('href="'.route('services').'">'.content('home.services.card_link'));
+});
+
+it('offers the phone a picker instead of fourteen pills', function () {
+    storeServices([aService('Πρώτη'), aService('Δεύτερη')]);
+
+    $html = $this->get(route('services'))->getContent();
+    $anchors = array_column(service_list(), 'anchor');
+
+    expect($html)->toContain('id="svc-picker"')
+        ->and($html)->toContain('<option value="'.$anchors[1].'">Δεύτερη</option>');
 });

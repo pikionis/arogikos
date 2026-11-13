@@ -4,7 +4,11 @@
 ])
 
 {{--
-    The animated icon for one of the three services, picked positionally.
+    The animated icon for a service, picked positionally out of three.
+
+    Τα τρία σχέδια κυκλώνουν (index % 3). Πριν, το @default έπιανε κάθε δείκτη
+    από το δύο και πάνω, οπότε στη σελίδα των δεκατεσσάρων υπηρεσιών οι δώδεκα
+    φορούσαν το ίδιο εικονίδιο.
 
     These stay in code on purpose: the class names (.ico-climb-dot,
     .ico-hug-arch, .ico-branch-up…) are what resources/js/app.js toggles to
@@ -14,7 +18,7 @@
 @php $style = $size ? "width:{$size};height:{$size}" : null; @endphp
 
 <svg class="svc-icon" @if ($style) style="{{ $style }}" @endif viewBox="0 0 84 84" aria-hidden="true">
-    @switch($index)
+    @switch($index % 3)
         @case(0)
             <rect x="8" y="56" width="20" height="20" rx="4" fill="#1E9E58"/>
             <rect x="30" y="44" width="20" height="32" rx="4" fill="#1E9E58"/>

@@ -78,7 +78,7 @@ it('hides the blank question slots', function () {
 
     $html = $this->get(route('services'))->getContent();
 
-    expect(substr_count($html, '<details'))->toBe($filled)
+    expect(substr_count($html, 'class="faq-item'))->toBe($filled)
         ->and($filled)->toBeLessThan(8);
 });
 
@@ -150,7 +150,7 @@ it('drops the whole section when every question is cleared', function () {
 
     $html = $this->get(route('services'))->assertOk()->getContent();
 
-    expect($html)->not->toContain('<details')
+    expect($html)->not->toContain('class="faq-item')
         ->and($html)->not->toContain('FAQPage');
 });
 

@@ -11,6 +11,10 @@ import { motif } from './motifs.js';
 (function () {
   "use strict";
 
+  /* Ό,τι εμφανίζεται μόνο όταν υπάρχει JavaScript να το συνδέσει, κρέμεται
+     από εδώ — π.χ. ο επιλογέας υπηρεσίας στο κινητό. */
+  document.documentElement.classList.add('has-js');
+
   /* ---- sticky nav shadow ---- */
   const nav = document.getElementById('nav');
 
@@ -379,6 +383,7 @@ import { motif } from './motifs.js';
     if (!list) return;
 
     var links = Array.prototype.slice.call(document.querySelectorAll('.jump-list a[href^="#"]'));
+    var picker = document.getElementById('svc-picker');
     if (!links.length) return;
 
     /* Μόνο ζώνη αυτής της λίστας μετακινείται· οτιδήποτε άλλο (π.χ. οι συχνές
@@ -394,12 +399,16 @@ import { motif } from './motifs.js';
     function bring(band, moveFocus) {
       if (list.firstElementChild !== band) list.insertBefore(band, list.firstElementChild);
 
+      /* Ανοίγει κιόλας: ο αναγνώστης διάλεξε υπηρεσία, όχι τίτλο υπηρεσίας. */
+      band.open = true;
+
       links.forEach(function (a) {
         var on = a.getAttribute('href') === '#' + band.id;
         a.classList.toggle('current', on);
         if (on) a.setAttribute('aria-current', 'true');
         else a.removeAttribute('aria-current');
       });
+      if (picker) picker.value = band.id;
 
       /* Η ζώνη μπορεί να μην πέρασε ποτέ από την οθόνη, οπότε να κρατάει ακόμα
          το opacity: 0 της εισόδου. Αποκαλύπτουμε πριν και μετά το άλμα: πριν
@@ -413,15 +422,10 @@ import { motif } from './motifs.js';
       checkReveals();
 
       /* Η ζώνη ανεβαίνει στη θέση της, ώστε να φανεί ότι ήρθε στην κορυφή.
-         Το περιεχόμενό της μπαίνει στη θέση του χωρίς δική του κίνηση: η
-         .svc-settling κόβει το transition της εισόδου για ένα καρέ, γιατί
-         αλλιώς θα κινούνταν η ζώνη και το περιεχόμενο ταυτόχρονα, προς
-         διαφορετικές αποστάσεις. */
-      band.classList.add('svc-settling');
-      band.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('in'); });
+         Η κλάση φεύγει και ξαναμπαίνει με μια μέτρηση ανάμεσα, γιατί αλλιώς
+         το δεύτερο διαδοχικό διάλεγμα δεν θα ξανάπαιζε την κίνηση. */
       band.classList.remove('arriving');
       void band.offsetWidth;
-      band.classList.remove('svc-settling');
       band.classList.add('arriving');
 
       placedAt = Math.round(window.scrollY);
@@ -445,6 +449,17 @@ import { motif } from './motifs.js';
         }
       });
     });
+
+    if (picker) {
+      picker.addEventListener('change', function () {
+        var band = picker.value ? bandFor('#' + picker.value) : null;
+        if (!band) return;
+        bring(band, true);
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, '', '#' + band.id);
+        }
+      });
+    }
 
     /* Ένας μοιρασμένος σύνδεσμος φέρνει την ίδια σελίδα με τον ίδιο τρόπο. */
     var atLoad = bandFor(window.location.hash);

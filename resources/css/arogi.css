@@ -233,8 +233,8 @@ image-slot { display: block; width: 100%; height: 100%; }
   overflow-y: auto;
 }
 .mobile-menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
-.mobile-menu a { display: block; font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; padding: var(--s-4) 0; border-bottom: 1px solid var(--hair-soft); color: var(--ink); }
-.mobile-menu a.active { color: var(--green-700); }
+.mobile-menu a:not(.btn) { display: block; font-family: var(--font-head); font-weight: 800; font-size: 1.5rem; padding: var(--s-4) 0; border-bottom: 1px solid var(--hair-soft); color: var(--ink); }
+.mobile-menu a:not(.btn).active { color: var(--green-700); }
 .mobile-menu .btn { margin-top: var(--s-6); width: 100%; }
 
 /* ---------- Footer ---------- */
@@ -322,7 +322,11 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 /* ---- Hero ---- */
 .hero { background: var(--white); overflow: hidden; position: relative; }
 .hero-grid { display: grid; grid-template-columns: 1.05fr 1.15fr; gap: var(--s-12); align-items: center; padding-block: clamp(var(--s-10), 6vw, var(--s-20)); }
-.hero-copy h1 { margin-bottom: var(--s-5); }
+/* Η ετικέτα είναι μια ολόκληρη πρόταση με κεφαλαία, όχι δυο λέξεις: κολλητά
+   πάνω σε έναν τίτλο 58px διαβάζονταν σαν ένα μπλοκ. Λίγο μικρότερος τίτλος,
+   και αέρας ανάμεσά τους. */
+.hero-copy .eyebrow { display: flex; margin-bottom: var(--s-4); line-height: 1.5; }
+.hero-copy h1 { font-size: clamp(1.95rem, 4.6vw, 3.05rem); margin-bottom: var(--s-5); }
 .hero-copy .lead { margin-bottom: var(--s-8); max-width: 34ch; }
 .hero-cta { display: flex; flex-wrap: wrap; gap: var(--s-3); }
 .hero-stage { background: var(--soft-yellow); border-radius: var(--r-xl); padding: var(--s-6); position: relative; }
@@ -474,40 +478,82 @@ html.reveal-on .reveal.in { opacity: 1; transform: none; }
 .zig { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-12); align-items: center; }
 .zig-media { aspect-ratio: 4/3; }
 
-/* Ο ρυθμός της λίστας είναι θέσης και όχι περιεχομένου: η σειρά της υπηρεσίας
-   ορίζει το φόντο της ζώνης, την πλευρά της εικόνας και την απόχρωση πίσω της.
-   Γραμμένος με nth-child κι όχι με κλάσεις μέσα στο markup, γιατί ο αναγνώστης
-   στέλνει μια υπηρεσία στην κορυφή με ένα κλικ — έτσι ο ρυθμός ξαναδένει μόνος
-   του γύρω από τη νέα σειρά, αντί να κολλήσουν δύο ίδιες ζώνες μαζί. */
-.svc-band { background: var(--white); }
+/* ---- η λίστα των υπηρεσιών ----
+   Κλειστές, η μία κάτω από την άλλη, με μια γραμμή ανάμεσά τους. Ο ρυθμός των
+   χρωμάτων είναι θέσης και όχι περιεχομένου — γραμμένος με nth-child, γιατί ο
+   αναγνώστης στέλνει μια υπηρεσία στην κορυφή με ένα κλικ και ο ρυθμός πρέπει
+   να ξαναδένει μόνος του γύρω από τη νέα σειρά. */
+.svc-list { border-top: 1px solid var(--hair-soft); }
+.svc-band { border-bottom: 1px solid var(--hair-soft); scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
+
+.svc-head {
+  display: flex; align-items: center; gap: var(--s-5);
+  padding: var(--s-5) 0; cursor: pointer; list-style: none;
+}
+.svc-head::-webkit-details-marker { display: none; }
+.svc-head:hover .svc-toggle { color: var(--green-800); }
+.svc-head:focus-visible { outline: 2px solid var(--green-700); outline-offset: 4px; border-radius: var(--r-md); }
+
+.svc-ico {
+  flex: none; width: 84px; height: 84px; border-radius: var(--r-lg);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--soft-green);
+}
+.svc-head-text { flex: 1 1 auto; min-width: 0; }
+/* Στον συμπτυγμένο κατάλογο ο τίτλος είναι όνομα σε σειρά, όχι επικεφαλίδα
+   αφίσας: με το καθολικό μέγεθος του h2 κάθε γραμμή θα φώναζε 41px. */
+.svc-head h2 { font-size: clamp(1.15rem, 2.2vw, 1.45rem); line-height: 1.3; }
+.svc-head-text p {
+  color: var(--ink-600); font-size: .98rem; margin-top: 6px;
+  display: -webkit-box; -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden;
+}
+.svc-toggle {
+  flex: none; display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-head); font-weight: 800; font-size: .92rem;
+  color: var(--green-700); transition: color .2s var(--ease-out);
+}
+.svc-toggle svg { transition: transform .25s var(--ease-out); }
+.svc-band[open] .svc-toggle svg { transform: rotate(180deg); }
+
+.svc-body { padding-bottom: var(--s-10); }
+.svc-body h3 { font-size: 1.05rem; margin: var(--s-5) 0 var(--s-3); }
+.svc-body h3:first-child { margin-top: 0; }
+.svc-body .tri-list { margin-bottom: var(--s-5); }
+.svc-body .step-list { margin-bottom: var(--s-6); }
+.svc-note { color: var(--ink-400); font-weight: 700; font-family: var(--font-head); }
+
+/* Το άνοιγμα δεν είναι ακαριαίο κόψιμο: το περιεχόμενο κατεβαίνει στη θέση του. */
+@keyframes svc-open {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: none; }
+}
+.svc-band[open] .svc-body { animation: svc-open .3s var(--ease-out) both; }
+
 /* Η ζώνη παίρνει εστίαση όταν έρθει πρώτη, ώστε το πληκτρολόγιο και ο
    αναγνώστης οθόνης να την ακολουθήσουν. Δεν μπαίνει ποτέ με Tab (tabindex="-1"),
    οπότε το περίγραμμα εστίασης δεν δείχνει πουθενά — απλώς πλαισιώνει μισή
    οθόνη με μαύρο. Ποια διαβάζεται φαίνεται από το σημάδι στη λίστα. */
 .svc-band:focus { outline: none; }
 
-/* Η άφιξη της επιλεγμένης ζώνης. Χωρίς κίνηση η σελίδα απλώς «κόβει» σε άλλη
-   υπηρεσία και δεν φαίνεται ότι κάτι ήρθε στην κορυφή — ανεβαίνοντας στη θέση
-   της το λέει μόνο του. Κινείται μόνο η ζώνη: το περιεχόμενό της κάθεται ήδη
-   στη θέση του (δες .svc-settling), αλλιώς θα κουνιόνταν δύο πράγματα μαζί. */
+/* Η άφιξη της επιλεγμένης υπηρεσίας. Χωρίς κίνηση η λίστα απλώς αναδιατάσσεται
+   κάτω από τα μάτια σου και δεν φαίνεται τι ήρθε στην κορυφή. Κινείται μόνο η
+   ζώνη — το άνοιγμα του σώματός της σιωπά όσο ταξιδεύει, αλλιώς θα κουνιόνταν
+   δύο πράγματα μαζί προς διαφορετικές κατευθύνσεις. */
 @keyframes svc-arrive {
   from { opacity: 0; transform: translateY(56px); }
   to   { opacity: 1; transform: none; }
 }
 .svc-band.arriving { animation: svc-arrive .52s var(--ease-out) both; }
-.svc-band.svc-settling .reveal { transition: none !important; }
+.svc-band.arriving .svc-body { animation: none; }
 @media (prefers-reduced-motion: reduce) {
-  .svc-band.arriving { animation: none; }
+  .svc-band.arriving, .svc-band[open] .svc-body { animation: none; }
 }
-.svc-band .zig-media { background: var(--soft-green); }
 
-.svc-list > .svc-band:nth-child(3n+2) {
-  background: var(--soft-coral);
-  /* πάνω σε απόχρωση οι -700 πέφτουν κάτω από 4.5:1 — ό,τι κάνει και η .bg-coral */
-  --green-700: var(--green-800);
-  --coral-700: var(--coral-800);
-}
-.svc-list > .svc-band:nth-child(3n+2) .zig-media { background: var(--white); order: 2; }
+.svc-band .zig-media { background: var(--soft-green); }
+.svc-list > .svc-band:nth-child(3n+2) .svc-ico { background: var(--soft-coral); }
+.svc-list > .svc-band:nth-child(3n+2) .zig-media { background: var(--soft-coral); order: 2; }
+.svc-list > .svc-band:nth-child(3n+3) .svc-ico { background: var(--soft-yellow); }
 .svc-list > .svc-band:nth-child(3n+3) .zig-media { background: var(--soft-yellow); }
 
 /* ---- the story on the About page ---- */
@@ -851,12 +897,28 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
 }
 /* Η υπηρεσία που διαβάζεται τώρα. Το κλικ την ανεβάζει πρώτη, οπότε χωρίς
    σημάδι εδώ η λίστα δεν θα έλεγε ποια από τις δεκατέσσερις βλέπεις. */
+/* Ο επιλογέας του κινητού. Ζει πάντα στο markup αλλά φαίνεται μόνο σε στενή
+   οθόνη και μόνο όταν υπάρχει JavaScript να τον συνδέσει — αλλιώς θα ήταν ένα
+   κουτί που δεν κάνει τίποτα, και οι πλάκες από κάτω είναι η σωστή εφεδρεία. */
+.jump-select { display: none; }
+
 .jump-list a.current {
   background: #fff; color: var(--green-700); box-shadow: inset 0 0 0 2px currentColor;
 }
 @media (max-width: 560px) {
-  /* Wrapping fourteen pills at phone width would push the first service a
-     screen and a half down, so they scroll sideways instead. */
+  html.has-js .jump-select {
+    display: block; width: 100%; max-width: 420px; margin: var(--s-8) auto 0;
+    font-family: var(--font-head); font-weight: 700; font-size: 1rem; color: var(--ink);
+    padding: 14px 46px 14px 18px; border-radius: var(--r-pill);
+    border: 1px solid rgba(255,255,255,0.9); background-color: #fff;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%232B2B2B' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 16px center;
+    -webkit-appearance: none; appearance: none;
+  }
+  html.has-js .jump-list { display: none; }
+
+  /* Χωρίς JavaScript μένουν οι πλάκες: δεκατέσσερις σε πλάτος τηλεφώνου θα
+     έσπρωχναν την πρώτη υπηρεσία μιάμιση οθόνη κάτω, οπότε κυλούν πλάγια. */
   .jump-list {
     flex-wrap: nowrap; justify-content: flex-start;
     overflow-x: auto; scroll-snap-type: x proximity;
@@ -965,6 +1027,19 @@ section[id] { scroll-margin-top: calc(var(--header-h) + var(--s-4)); }
 }
 
 /* ---- responsive components ---- */
+@media (max-width: 640px) {
+  /* Τα διακοσμητικά σχήματα είναι τοποθετημένα σε ποσοστά πλάτους: σε μεγάλη
+     οθόνη αιωρούνται στο περιθώριο, σε τηλέφωνο κάθονται πάνω στον τίτλο. */
+  .page-hero .deco { display: none; }
+
+  /* Σε πλάτος τηλεφώνου το «Διαβάστε περισσότερα» δεν χωράει δίπλα στο όνομα
+     χωρίς να στριμώξει και τα δύο: κατεβαίνει δική του γραμμή, στοιχισμένο με
+     το κείμενο. Ολόκληρη η σειρά παραμένει πατητή. */
+  .svc-head { flex-wrap: wrap; gap: var(--s-4); }
+  .svc-ico { width: 62px; height: 62px; }
+  .svc-toggle { width: 100%; padding-left: calc(62px + var(--s-4)); }
+}
+
 @media (max-width: 880px) {
   .hero-grid, .contact-grid, .zig { grid-template-columns: 1fr; gap: var(--s-8); }
   .svc-list > .svc-band:nth-child(3n+2) .zig-media { order: 0; }

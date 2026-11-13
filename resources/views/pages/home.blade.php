@@ -86,7 +86,10 @@
     @php
       // Only the services the panel marked for the home page, in the order it
       // put them. Colour and reveal delay stay positional.
-      $featured = collect(content_items('services.services'))
+      // service_list() και όχι content_items(): φέρνει το ίδιο περιεχόμενο με
+      // το anchor της κάθε υπηρεσίας υπολογισμένο μία φορά, ώστε η κάρτα εδώ
+      // και η ενότητα εκεί να μη μπορούν να δείξουν σε διαφορετικό σημείο.
+      $featured = collect(service_list())
           ->filter(fn (array $s) => ($s['on_home'] ?? false) && filled($s['name'] ?? null))
           ->values();
 
@@ -113,7 +116,7 @@
             </div>
             <h3>{{ $service['name'] ?? '' }}</h3>
             <p>{{ $service['card_body'] ?? '' }}</p>
-            <a class="link-arrow" href="{{ route('services') }}">{{ content('home.services.card_link') }} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a class="link-arrow" href="{{ route('services') }}#{{ $service['anchor'] }}">{{ content('home.services.card_link') }} <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           </article>
         @endforeach
       </div>

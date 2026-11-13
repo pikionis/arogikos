@@ -26,8 +26,22 @@
   </x-slot:deco>
 
   {{-- A parent arrives for one thing. Naming them all here means they land on
-       it, instead of scrolling past everything else to find out we do it. --}}
+       it, instead of scrolling past everything else to find out we do it.
+
+       Σε τηλέφωνο όμως δεκατέσσερα ονόματα δεν χωρούν: γίνονταν μια οριζόντια
+       λωρίδα που την έσερνες στα τυφλά μέχρι να βρεις το σωστό. Εκεί μπαίνει ο
+       εγγενής επιλογέας — ένα άγγιγμα, η λίστα του ίδιου του κινητού, όλα τα
+       ονόματα ακέραια. Οι πλάκες μένουν για τις μεγάλες οθόνες, και για όποιον
+       δεν έχει JavaScript σε οποιαδήποτε οθόνη. --}}
   @if (count($named) > 1)
+    <select class="jump-select reveal reveal-d2" id="svc-picker"
+            aria-label="{{ content('services.jump_label') }}">
+      <option value="">{{ content('services.jump_label') }}</option>
+      @foreach ($named as $service)
+        <option value="{{ $service['anchor'] }}">{{ $service['name'] }}</option>
+      @endforeach
+    </select>
+
     <nav class="jump-list reveal reveal-d2" aria-label="{{ content('services.hero.crumb') }}">
       @foreach ($named as $service)
         <a href="#{{ $service['anchor'] }}">{{ $service['name'] }}</a>
@@ -36,62 +50,85 @@
   @endif
 </x-page-hero>
 
-{{-- Η σειρά δεν είναι γραμμένη στην πέτρα: πατώντας ένα όνομα παραπάνω, η
-     υπηρεσία έρχεται εδώ πρώτη, αντί να ταξιδέψει ο αναγνώστης δεκατρείς
-     οθόνες ως εκείνη. Ο ζιγκ-ζαγκ ρυθμός —φόντο ζώνης, πλευρά εικόνας,
-     απόχρωση— είναι θέσης και όχι περιεχομένου, γι' αυτό ζει στο CSS με
-     nth-child: όταν η σειρά αλλάξει, ο ρυθμός ξαναδένει μόνος του αντί να
-     κολλήσουν δύο ίδιες ζώνες η μία πάνω στην άλλη. --}}
-<div class="svc-list" id="svc-list">
-@foreach ($services as $i => $service)
-  <section id="{{ $service['anchor'] }}" class="section svc-band" tabindex="-1" data-play>
-    <div class="container">
-      <div class="zig reveal">
-        <div class="zig-media frame-soft">
-          @if (filled($service['icon'] ?? null))
-            <x-article-cover :scene="$service['icon']" live />
-          @else
-            <div style="display:flex;align-items:center;justify-content:center;height:100%">
-              <x-service-icon :index="$i" size="200px" />
+{{-- Δεκατέσσερις υπηρεσίες ανοιχτές η μία κάτω από την άλλη έκαναν μια σελίδα
+     δώδεκα χιλιάδων pixel: για να φτάσεις στη δέκατη τέταρτη περνούσες
+     υποχρεωτικά μέσα από τις δεκατρείς. Τώρα η καθεμία δείχνει όνομα και δυο
+     γραμμές εισαγωγής, και ανοίγει όποια θέλεις.
+
+     Το <details> τα κάνει όλα μόνο του: πληκτρολόγιο, αναγνώστης οθόνης και
+     λειτουργία χωρίς JavaScript έρχονται δωρεάν, και το κείμενο μένει μέσα στη
+     σελίδα ακόμα κι όταν είναι κλειστό — οπότε η Google το διαβάζει κανονικά
+     και οι υπηρεσίες δεν χάνουν την ορατότητά τους στην αναζήτηση.
+
+     Η σειρά δεν είναι γραμμένη στην πέτρα: πατώντας ένα όνομα παραπάνω, η
+     υπηρεσία έρχεται εδώ πρώτη και ανοίγει. Ο ρυθμός των χρωμάτων είναι θέσης
+     και όχι περιεχομένου, γι' αυτό ζει στο CSS με nth-child: όταν η σειρά
+     αλλάξει, ξαναδένει μόνος του. --}}
+<section class="section bg-white">
+  <div class="container">
+    <div class="svc-list" id="svc-list">
+      @foreach ($services as $i => $service)
+        <details class="svc-band" id="{{ $service['anchor'] }}" tabindex="-1" data-play>
+          <summary class="svc-head">
+            <span class="svc-ico"><x-service-icon :index="$i" size="46px" /></span>
+            <span class="svc-head-text">
+              <h2>{{ $service['name'] ?? '' }}</h2>
+              <p>{{ $service['lead'] ?? '' }}</p>
+            </span>
+            <span class="svc-toggle">
+              <span class="svc-toggle-word">{{ content('services.more_label') }}</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </summary>
+
+          <div class="svc-body">
+            <div class="zig">
+              <div class="zig-media frame-soft">
+                @if (filled($service['icon'] ?? null))
+                  <x-article-cover :scene="$service['icon']" live />
+                @else
+                  <div style="display:flex;align-items:center;justify-content:center;height:100%">
+                    <x-service-icon :index="$i" size="200px" />
+                  </div>
+                @endif
+              </div>
+              <div>
+                @if (filled($service['signs'] ?? []) && filled(content('services.signs_heading')))
+                  <h3>{{ content('services.signs_heading') }}</h3>
+                  <ul class="tri-list">
+                    @foreach ((array) $service['signs'] as $sign)
+                      <li>{{ $sign }}</li>
+                    @endforeach
+                  </ul>
+                @endif
+
+                @if (filled($service['bullets'] ?? []) && filled(content('services.bullets_heading')))
+                  <h3>{{ content('services.bullets_heading') }}</h3>
+                  <ul class="tri-list">
+                    @foreach ((array) $service['bullets'] as $bullet)
+                      <li>{{ $bullet }}</li>
+                    @endforeach
+                  </ul>
+                @endif
+
+                @if (filled($service['process'] ?? []) && filled(content('services.process_heading')))
+                  <h3>{{ content('services.process_heading') }}</h3>
+                  <ol class="step-list">
+                    @foreach ((array) $service['process'] as $step)
+                      <li>{{ $step }}</li>
+                    @endforeach
+                  </ol>
+                @endif
+
+                <p class="svc-note">{{ $service['note'] ?? '' }}</p>
+              </div>
             </div>
-          @endif
-        </div>
-        <div>
-          <h2>{{ $service['name'] ?? '' }}</h2>
-          <p class="lead" style="margin:var(--s-4) 0 var(--s-5)">{{ $service['lead'] ?? '' }}</p>
-          @if (filled($service['signs'] ?? []) && filled(content('services.signs_heading')))
-            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">{{ content('services.signs_heading') }}</h3>
-            <ul class="tri-list" style="margin-bottom:var(--s-5)">
-              @foreach ((array) $service['signs'] as $sign)
-                <li>{{ $sign }}</li>
-              @endforeach
-            </ul>
-          @endif
-
-          @if (filled($service['bullets'] ?? []) && filled(content('services.bullets_heading')))
-            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">{{ content('services.bullets_heading') }}</h3>
-            <ul class="tri-list" style="margin-bottom:var(--s-5)">
-              @foreach ((array) $service['bullets'] as $bullet)
-                <li>{{ $bullet }}</li>
-              @endforeach
-            </ul>
-          @endif
-
-          @if (filled($service['process'] ?? []) && filled(content('services.process_heading')))
-            <h3 style="font-size:1.05rem;margin:var(--s-5) 0 var(--s-3)">{{ content('services.process_heading') }}</h3>
-            <ol class="step-list" style="margin-bottom:var(--s-6)">
-              @foreach ((array) $service['process'] as $step)
-                <li>{{ $step }}</li>
-              @endforeach
-            </ol>
-          @endif
-          <p style="color:var(--ink-400);font-weight:700;font-family:var(--font-head)">{{ $service['note'] ?? '' }}</p>
-        </div>
-      </div>
+          </div>
+        </details>
+      @endforeach
     </div>
-  </section>
-@endforeach
-</div>
+  </div>
+</section>
 
 @php
   // Blank slots are how staff remove a question, so only render the filled ones.
