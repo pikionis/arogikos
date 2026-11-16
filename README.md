@@ -1,4 +1,86 @@
-# ΑΡΩΓΗ — Website
+# arogikos.gr
+
+**The website and content panel of ΑΡΩΓΗ, a learning-support, counselling and career-guidance
+centre on the island of Kos, Greece.** A server-rendered Laravel application: a public site in
+Greek, and a panel where the centre's staff write articles, announce events, manage galleries and
+edit every text on the site themselves.
+
+Live at [arogikos.gr](https://arogikos.gr).
+
+## What it does
+
+**For visitors:** home, about and team, services, a blog with categories and authors, events,
+photo galleries and a contact form.
+
+**For the staff (`/admin`):**
+- articles with a rich-text editor, scheduled publishing and a preview before going live
+- events, albums and photos, authors and categories
+- every page's copy editable in place, with the original text as the fallback
+- contact messages, site settings (phones, address, hours, social links, analytics id)
+- three roles (owner, admin, editor), and accounts created by invitation only: there is no public
+  sign-up
+
+## Engineering highlights
+
+**Editor text is sanitised against an allow-list.** Article and page bodies are rendered as HTML,
+so anything an editor account saves would otherwise be stored XSS against every visitor and against
+the owner's session. `App\Support\HtmlSanitizer` keeps only the tags and attributes the editor can
+legitimately produce.
+
+**Nothing about the business is hard-coded.** Contact details, opening hours and social links come
+from a settings table. The schema.org JSON-LD is assembled from the same table in PHP, so the
+structured data search engines read cannot drift from what the page shows, and it is covered by
+tests.
+
+**Editable copy without a migration per text.** Every field is declared in `config/cms-content.php`
+with its default Greek text. A database row is an override, so with an empty table the site renders
+exactly as designed.
+
+**Share images generated from the site's own artwork.** Social platforms do not read SVG, so the
+cover scenes are rasterised to PNG by a small renderer written for this project
+(`App\Support\Brand`): an SVG path parser, a rasteriser on GD, and a WOFF unpacker that rebuilds
+the TrueType font inside the bundled web fonts so Greek text can be drawn. One source, and a share
+card that matches what a visitor sees.
+
+**Two crops per portrait.** The site shows a team photo as a small circle beside a byline and as a
+tall arch on the team page, so the panel stores a crop for each, checked on the server.
+
+**Privacy by default.** Fonts are self-hosted, analytics loads only when an id is set in the
+settings, and the contact form uses a honeypot instead of a third-party captcha.
+
+**Tested.** 600+ Pest tests across 52 files cover the public pages, the panel, roles and
+invitations, scheduled publishing, meta tags, structured data and accessibility.
+
+**Built for the hosting it runs on.** Shared hosting with no Node and no queue worker: built assets
+are committed, the database is SQLite, and the deploy script backs it up before every migration.
+
+## Stack
+
+Laravel 13 · PHP 8.3+ · Blade (server-rendered, no SPA) · Vite · Tailwind 4 · Alpine.js · Trix ·
+SQLite · spatie/laravel-medialibrary, sluggable and sitemap · Pest
+
+## Getting started
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed     # demo content on SQLite, no configuration needed
+php artisan storage:link
+npm install
+npm run dev
+php artisan serve
+```
+
+## Author
+
+Built by **Petros Pikionis**, AI Product Engineer.
+[onehublabs.com](https://onehublabs.com) ·
+[LinkedIn](https://www.linkedin.com/in/petros-platon-pikionis-4045a782/)
+
+---
+
+# Τεχνικές σημειώσεις (ελληνικά)
 
 Δημόσιο website του κέντρου μαθησιακής υποστήριξης, συμβουλευτικής και
 επαγγελματικού προσανατολισμού **ΑΡΩΓΗ** (Κως). Laravel 13 + Blade + Vite +
