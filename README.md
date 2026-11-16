@@ -1,4 +1,91 @@
-# ΑΡΩΓΗ — Website
+# arogikos.gr
+
+**The website and content panel of ΑΡΩΓΗ, a learning-support, counselling and career-guidance
+centre on the island of Kos, Greece.** A server-rendered Laravel application: a public site in
+Greek, and a custom-built CMS where the centre's staff write articles, announce events, manage galleries and
+edit every text on the site themselves.
+
+Live at [arogikos.gr](https://arogikos.gr).
+
+## What it does
+
+**For visitors:** home, about and team, services, a blog with categories and authors, events,
+photo galleries and a contact form.
+
+**For the staff (`/admin`):**
+- articles with a rich-text editor, scheduled publishing and a preview before going live
+- events, albums and photos, authors and categories
+- every page's copy editable in place, with the original text as the fallback
+- contact messages, site settings (phones, address, hours, social links, analytics id)
+- three roles (owner, admin, editor), and accounts created by invitation only: there is no public
+  sign-up
+
+## Engineering highlights
+
+**Its own CMS, written for this site.** The panel is not Filament, Nova or any other admin
+package: models, controllers, roles, invitations, the editor integration and the image handling are
+all in this repository (`app/Models/Cms`, `app/Http/Controllers/Admin`, `routes/admin.php`). The
+staff get exactly the screens the centre needs, in Greek, and nothing else.
+
+**Editor text is sanitised against an allow-list.** Article and page bodies are rendered as HTML,
+so anything an editor account saves would otherwise be stored XSS against every visitor and against
+the owner's session. `App\Support\HtmlSanitizer` keeps only the tags and attributes the editor can
+legitimately produce.
+
+**Nothing about the business is hard-coded.** Contact details, opening hours and social links come
+from a settings table. The schema.org JSON-LD is assembled from the same table in PHP, so the
+structured data search engines read cannot drift from what the page shows, and it is covered by
+tests.
+
+**Editable copy without a migration per text.** Every field is declared in `config/cms-content.php`
+with its default Greek text. A database row is an override, so with an empty table the site renders
+exactly as designed.
+
+**Share images generated from the site's own artwork.** Social platforms do not read SVG, so the
+cover scenes are rasterised to PNG by a small renderer written for this project
+(`App\Support\Brand`): an SVG path parser, a rasteriser on GD, and a WOFF unpacker that rebuilds
+the TrueType font inside the bundled web fonts so Greek text can be drawn. One source, and a share
+card that matches what a visitor sees.
+
+**Two crops per portrait.** The site shows a team photo as a small circle beside a byline and as a
+tall arch on the team page, so the panel stores a crop for each, checked on the server.
+
+**Privacy by default.** Fonts are self-hosted, analytics loads only when an id is set in the
+settings, and the contact form uses a honeypot instead of a third-party captcha.
+
+**Tested.** 600+ Pest tests across 52 files cover the public pages, the panel, roles and
+invitations, scheduled publishing, meta tags, structured data and accessibility.
+
+**Built for the hosting it runs on.** Shared hosting with no Node and no queue worker: built assets
+are committed, the database is SQLite, and the deploy script backs it up before every migration.
+
+## Stack
+
+Laravel 13 · PHP 8.3+ · Blade (server-rendered, no SPA) · Vite · Tailwind 4 · Alpine.js · Trix ·
+SQLite · spatie/laravel-medialibrary, sluggable and sitemap · Pest
+
+## Getting started
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed     # demo content on SQLite, no configuration needed
+php artisan storage:link
+npm install
+npm run dev
+php artisan serve
+```
+
+## Author
+
+Built by **Petros Pikionis**, AI Product Engineer.
+[onehublabs.com](https://onehublabs.com) ·
+[LinkedIn](https://www.linkedin.com/in/petros-platon-pikionis-4045a782/)
+
+---
+
+# Τεχνικές σημειώσεις (ελληνικά)
 
 Δημόσιο website του κέντρου μαθησιακής υποστήριξης, συμβουλευτικής και
 επαγγελματικού προσανατολισμού **ΑΡΩΓΗ** (Κως). Laravel 13 + Blade + Vite +
@@ -48,36 +135,17 @@ php artisan serve
 - **Performance**: eager loading στις λίστες (όχι N+1), responsive/lazy εικόνες
   μέσω medialibrary conversions.
 
-## Αρχιτεκτονική: προσωρινά models → cms-core
+## Το δικό του CMS
 
-Το διαχειριστικό (`/admin`) και τα content models θα παρέχονται από το
-επαναχρησιμοποιήσιμο package **`pikionis/cms-core`** (Filament). Επειδή το package
-ήταν ακόμα υπό κατασκευή, το site χτίστηκε με **προσωρινά τοπικά models** στο
-`app/Models/Cms/`, σχεδιασμένα ώστε η μετάβαση να είναι καθαρή:
+Το διαχειριστικό (`/admin`) είναι γραμμένο μέσα σε αυτό το repo, ειδικά για το site. Δεν
+χρησιμοποιεί Filament ούτε κάποιο εξωτερικό CMS package.
 
-- Ίδια ονόματα κλάσεων & πεδίων, ίδια table names, ίδιες media collections
-  (`cover`/`photo`/`image`) και conversions (`thumb`/`web`) με το cms-core.
-- Οι controllers αναλύουν τα models μέσω `cms_model('article')`, με χάρτη στο
-  `config/cms-models.php`. **Τα views δεν αναφέρουν ποτέ class names.**
-
-### Swap σε cms-core (όταν είναι έτοιμο)
-
-1. Πρόσθεσε το path repository και απαίτησε το package:
-   ```jsonc
-   // composer.json
-   "repositories": [{ "type": "path", "url": "../cms-core" }]
-   ```
-   ```bash
-   composer require pikionis/cms-core:@dev
-   php artisan cms:install      # migrations, ρόλοι, πρώτος admin, (προαιρετικά) seed
-   ```
-2. Άλλαξε το `config/cms-models.php` να δείχνει στα `Pikionis\Cms\Models\*`.
-3. Σβήσε τα τοπικά `app/Models/Cms/*` και τα `database/migrations/2026_06_04_15*`
-   (το cms-core φέρνει τα δικά του). Τρέξε σε φρέσκια βάση.
-4. Σε production: γύρισε το composer από path σε VCS με tagged version
-   (`"pikionis/cms-core": "^0.1"`).
-
-Καμία αλλαγή σε routes/controllers/views δεν χρειάζεται.
+- **Models** στο `app/Models/Cms/`: σελίδες, άρθρα, κατηγορίες, συντάκτες, εκδηλώσεις, άλμπουμ,
+  φωτογραφίες, μηνύματα επικοινωνίας, ρυθμίσεις και κείμενα σελίδων.
+- **Controllers** στο `app/Http/Controllers/Admin/`, με routes στο `routes/admin.php`.
+- **Ρόλοι** (`app/Enums/Role.php`): owner, admin, editor. Νέοι λογαριασμοί μόνο με πρόσκληση.
+- Οι controllers βρίσκουν τα models μέσω `cms_model('article')`, με χάρτη στο
+  `config/cms-models.php`. Τα views δεν αναφέρουν ποτέ class names.
 
 ## Production / deployment (arogikos.gr — Hostinger, EU)
 
