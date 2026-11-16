@@ -2,7 +2,7 @@
 
 **The website and content panel of ΑΡΩΓΗ, a learning-support, counselling and career-guidance
 centre on the island of Kos, Greece.** A server-rendered Laravel application: a public site in
-Greek, and a panel where the centre's staff write articles, announce events, manage galleries and
+Greek, and a custom-built CMS where the centre's staff write articles, announce events, manage galleries and
 edit every text on the site themselves.
 
 Live at [arogikos.gr](https://arogikos.gr).
@@ -21,6 +21,11 @@ photo galleries and a contact form.
   sign-up
 
 ## Engineering highlights
+
+**Its own CMS, written for this site.** The panel is not Filament, Nova or any other admin
+package: models, controllers, roles, invitations, the editor integration and the image handling are
+all in this repository (`app/Models/Cms`, `app/Http/Controllers/Admin`, `routes/admin.php`). The
+staff get exactly the screens the centre needs, in Greek, and nothing else.
 
 **Editor text is sanitised against an allow-list.** Article and page bodies are rendered as HTML,
 so anything an editor account saves would otherwise be stored XSS against every visitor and against
@@ -130,36 +135,17 @@ php artisan serve
 - **Performance**: eager loading στις λίστες (όχι N+1), responsive/lazy εικόνες
   μέσω medialibrary conversions.
 
-## Αρχιτεκτονική: προσωρινά models → cms-core
+## Το δικό του CMS
 
-Το διαχειριστικό (`/admin`) και τα content models θα παρέχονται από το
-επαναχρησιμοποιήσιμο package **`pikionis/cms-core`** (Filament). Επειδή το package
-ήταν ακόμα υπό κατασκευή, το site χτίστηκε με **προσωρινά τοπικά models** στο
-`app/Models/Cms/`, σχεδιασμένα ώστε η μετάβαση να είναι καθαρή:
+Το διαχειριστικό (`/admin`) είναι γραμμένο μέσα σε αυτό το repo, ειδικά για το site. Δεν
+χρησιμοποιεί Filament ούτε κάποιο εξωτερικό CMS package.
 
-- Ίδια ονόματα κλάσεων & πεδίων, ίδια table names, ίδιες media collections
-  (`cover`/`photo`/`image`) και conversions (`thumb`/`web`) με το cms-core.
-- Οι controllers αναλύουν τα models μέσω `cms_model('article')`, με χάρτη στο
-  `config/cms-models.php`. **Τα views δεν αναφέρουν ποτέ class names.**
-
-### Swap σε cms-core (όταν είναι έτοιμο)
-
-1. Πρόσθεσε το path repository και απαίτησε το package:
-   ```jsonc
-   // composer.json
-   "repositories": [{ "type": "path", "url": "../cms-core" }]
-   ```
-   ```bash
-   composer require pikionis/cms-core:@dev
-   php artisan cms:install      # migrations, ρόλοι, πρώτος admin, (προαιρετικά) seed
-   ```
-2. Άλλαξε το `config/cms-models.php` να δείχνει στα `Pikionis\Cms\Models\*`.
-3. Σβήσε τα τοπικά `app/Models/Cms/*` και τα `database/migrations/2026_06_04_15*`
-   (το cms-core φέρνει τα δικά του). Τρέξε σε φρέσκια βάση.
-4. Σε production: γύρισε το composer από path σε VCS με tagged version
-   (`"pikionis/cms-core": "^0.1"`).
-
-Καμία αλλαγή σε routes/controllers/views δεν χρειάζεται.
+- **Models** στο `app/Models/Cms/`: σελίδες, άρθρα, κατηγορίες, συντάκτες, εκδηλώσεις, άλμπουμ,
+  φωτογραφίες, μηνύματα επικοινωνίας, ρυθμίσεις και κείμενα σελίδων.
+- **Controllers** στο `app/Http/Controllers/Admin/`, με routes στο `routes/admin.php`.
+- **Ρόλοι** (`app/Enums/Role.php`): owner, admin, editor. Νέοι λογαριασμοί μόνο με πρόσκληση.
+- Οι controllers βρίσκουν τα models μέσω `cms_model('article')`, με χάρτη στο
+  `config/cms-models.php`. Τα views δεν αναφέρουν ποτέ class names.
 
 ## Production / deployment (arogikos.gr — Hostinger, EU)
 
