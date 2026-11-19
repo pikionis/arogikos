@@ -1,4 +1,19 @@
-# Arogi — Website
+<p align="center">
+  <a href="https://arogikos.gr"><img src=".github/readme/banner.svg" alt="Arogi: learning support, counselling and career guidance on Kos, Greece" width="100%"></a>
+</p>
+
+<h1 align="center">Arogi — Website</h1>
+
+<p align="center"><b>Support at every step of learning.</b></p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/PHP-8.3%2B-157A45?logo=php&logoColor=white" alt="PHP 8.3+">
+  <img src="https://img.shields.io/badge/Laravel-13-157A45?logo=laravel&logoColor=white" alt="Laravel 13">
+  <img src="https://img.shields.io/badge/SQLite-database-157A45?logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/Vite-8-B54836?logo=vite&logoColor=white" alt="Vite 8">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-v4-B54836?logo=tailwindcss&logoColor=white" alt="Tailwind CSS v4">
+  <img src="https://img.shields.io/badge/fonts-self--hosted_(GDPR)-946200" alt="Self-hosted fonts (GDPR)">
+</p>
 
 Public website of **Arogi**, a centre for learning support, counselling and career
 guidance on Kos. Laravel 13 + Blade + Vite + Tailwind, server-rendered, **Greek only**,
@@ -146,3 +161,8 @@ invitation from the panel.
 
 The `arogi/` folder holds the original static HTML/CSS/JS prototype, kept as a
 reference (it is not served). Any UI change is made in Blade and `resources`.
+
+<p align="center">
+  <a href="https://arogikos.gr"><img src=".github/readme/logo.svg" width="64" alt="Arogi"></a><br>
+  <sub>arogikos.gr · Kos, Greece</sub>
+</p>
